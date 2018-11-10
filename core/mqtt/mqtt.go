@@ -12,7 +12,13 @@ import (
 
 // Mqtt topics
 const (
-	CAutoDiscover = "axihome/5/field/device/discover/#"
+	// Special topics
+	CAutoDiscover            = "axihome/5/field/device/discover/#"
+	CRequestBroadcastStatus  = "axihome/5/admin/status/broadcast"
+	CRequestBroadcastDevices = "axihome/5/admin/devices/broadcast"
+
+	// Client status
+	CClientStatus = "axihome/5/status/" // Add to this topic : HomeID/Group/ID
 )
 
 // Mqtt is the mqtt core client
@@ -37,27 +43,56 @@ func (mq *Mqtt) Run() {
 	mq.cli = mqttclient.NewMqttClient("AxihomeCore", mq.server)
 	mq.cli.Connect()
 
-	mq.SubscribeMainTopics()
+	mq.MqttSubscribeRequestBroadcastStatus()
+	mq.MqttSubscribeRequestBroadcastDevices()
+	mq.DBLoadAndRegisterFieldStatus()
+	mq.MqttSubscribeDeviceAutoRegister()
 }
 
-// SubscribeMainTopics subscribe to main topics
-func (mq *Mqtt) SubscribeMainTopics() {
+// DBLoadAndRegisterFieldStatus subscribe to mqtt topic for field device
+func (mq *Mqtt) DBLoadAndRegisterFieldStatus() {
 
-	// Devices status
+	// Load from database all the registered FieldDevices
 	var devices []types.FieldDevice
 	mq.db.GetAll(&devices)
 	for _, device := range devices {
 
-		log.Println(device) // Subscribe to device field status topic and device client topic
+		mq.MqttSubscribeDeviceTopics(device)
 	}
 
+	// Subscribe to database changes for field devices
 	mq.db.SubscribeChangesCallback("FieldDevice", func(val interface{}) {
 
 		dev := val.(*types.FieldDevice)
-		log.Println("New device :", dev) // Subscribe to device field status topic and device client topic
+		mq.MqttSubscribeDeviceTopics(*dev)
 	})
+}
 
-	// Devices auto-register
+// MqttSubscribeRequestBroadcastStatus subscribe to special topics
+func (mq *Mqtt) MqttSubscribeRequestBroadcastStatus() {
+
+	mq.cli.SubscribeTopic(CRequestBroadcastStatus, func(msg *message.PublishMessage) error {
+
+		// TODO : Send all status to mqtt
+
+		return nil
+	})
+}
+
+// MqttSubscribeRequestBroadcastDevices subscribe to special topics
+func (mq *Mqtt) MqttSubscribeRequestBroadcastDevices() {
+
+	mq.cli.SubscribeTopic(CRequestBroadcastDevices, func(msg *message.PublishMessage) error {
+
+		// TODO : Send all devices to mqtt
+
+		return nil
+	})
+}
+
+// MqttSubscribeDeviceAutoRegister subscribe to device autoregister
+func (mq *Mqtt) MqttSubscribeDeviceAutoRegister() {
+
 	mq.cli.SubscribeTopic(CAutoDiscover, func(msg *message.PublishMessage) error {
 
 		var dev types.FieldDevice
@@ -66,10 +101,54 @@ func (mq *Mqtt) SubscribeMainTopics() {
 		var devdb types.FieldDevice
 		err := mq.db.Get("ID", dev.ID, &devdb)
 		if err != nil {
+
+			// Save device to database
 			log.Println("Saving new discovered device :", dev.HomeID+"."+dev.Group+"."+dev.ID)
 			mq.db.Save(&dev)
+
+			// TODO : Send device to clients
 		}
 
 		return nil
 	})
+}
+
+// MqttSubscribeDeviceTopics subscribe to main topics
+func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) { // TODO : Check if the device is not registered already
+
+	log.Println("Subscribing to device topics : ", dev.HomeID+"."+dev.Group+"."+dev.ID)
+
+	// Subscribe to device status topic
+	mq.cli.SubscribeTopic(dev.StatusTopic, func(msg *message.PublishMessage) error {
+
+		var pl interface{}
+		json.Unmarshal(msg.Payload(), &pl)
+
+		log.Println("Device", dev.HomeID+"."+dev.Group+"."+dev.ID, "sent new status :", pl)
+
+		// Write the value to the database
+		ds := types.DeviceStatus{
+			Name:  dev.HomeID + "." + dev.Group + "." + dev.ID,
+			Value: pl,
+		}
+		mq.db.Save(&ds)
+
+		// Send the value to the client status topic
+		mq.cli.PublishMessage(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.ID, pl)
+
+		return nil
+	})
+
+	// Subscribe to the client command topic
+	if dev.CmdTopic != "" {
+
+		mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.ID+"/cmd", func(msg *message.PublishMessage) error {
+
+			// Send the value to the client status topic
+			log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.ID)
+			mq.cli.PublishMessage(dev.CmdTopic, msg.Payload())
+
+			return nil
+		})
+	}
 }
