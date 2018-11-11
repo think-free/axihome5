@@ -17,8 +17,9 @@ const (
 	CRequestBroadcastStatus  = "axihome/5/admin/status/broadcast"
 	CRequestBroadcastDevices = "axihome/5/admin/devices/broadcast"
 
-	// Client status
-	CClientStatus = "axihome/5/status/" // Add to this topic : HomeID/Group/ID
+	// Client status and devices
+	CClientStatus  = "axihome/5/status/" // Add to this topic : HomeID/Group/ID
+	CClientDevices = "axihome/5/device/discover"
 )
 
 // Mqtt is the mqtt core client
@@ -73,7 +74,7 @@ func (mq *Mqtt) MqttSubscribeRequestBroadcastStatus() {
 
 	mq.cli.SubscribeTopic(CRequestBroadcastStatus, func(msg *message.PublishMessage) error {
 
-		// TODO : Send all status to mqtt
+		// TODO : Send all status to mqtt clients
 
 		return nil
 	})
@@ -84,7 +85,20 @@ func (mq *Mqtt) MqttSubscribeRequestBroadcastDevices() {
 
 	mq.cli.SubscribeTopic(CRequestBroadcastDevices, func(msg *message.PublishMessage) error {
 
-		// TODO : Send all devices to mqtt
+		var devices []types.FieldDevice
+		mq.db.GetAll(&devices)
+
+		// Send all devices registered to mqtt clients
+		for _, dev := range devices {
+			cd := types.ClientDevice{
+				Name:   dev.Name,
+				Group:  dev.Group,
+				HomeID: dev.HomeID,
+				Type:   dev.Type,
+			}
+
+			mq.cli.PublishMessage(CClientDevices, cd)
+		}
 
 		return nil
 	})
@@ -106,7 +120,15 @@ func (mq *Mqtt) MqttSubscribeDeviceAutoRegister() {
 			log.Println("Saving new discovered device :", dev.HomeID+"."+dev.Group+"."+dev.ID)
 			mq.db.Save(&dev)
 
-			// TODO : Send device to clients
+			// Send the new device to the client topic
+			cd := types.ClientDevice{
+				Name:   dev.Name,
+				Group:  dev.Group,
+				HomeID: dev.HomeID,
+				Type:   dev.Type,
+			}
+
+			mq.cli.PublishMessage(CClientDevices, cd)
 		}
 
 		return nil

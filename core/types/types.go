@@ -23,10 +23,10 @@ const (
 
 // ClientDevice is the device sent to the clients
 type ClientDevice struct {
-	Name   string `json:"name"`   // Device name (can be modified), used for frontend
-	HomeID string `json:"homeId"` // The Id of the home
-	Group  string `json:"group"`  // The group of the device
-	Type   string `json:"type"`   // See above
+	Name   string     `json:"name"`   // Device name (can be modified), used for frontend
+	HomeID string     `json:"homeId"` // The Id of the home
+	Group  string     `json:"group"`  // The group of the device
+	Type   DeviceType `json:"type"`   // See above
 }
 
 // FieldDevice is the internal device type

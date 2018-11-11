@@ -25,6 +25,10 @@ Mqtt topics for client communication
 
     axihome/5/status/{homeid}/{group}/{name}/cmd - value
 
+**Device register (client subscribe)**
+
+    axihome/5/device/discover - client device json
+
 Mqtt topics for field communication (device auto discover)
 -------------------------------------------------------------------
 
