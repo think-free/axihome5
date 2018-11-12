@@ -1,5 +1,6 @@
 version: "3"
 services:
+
     mosquitto:
         container_name: mosquitto
         image: eclipse-mosquitto
@@ -8,3 +9,10 @@ services:
             - "0.0.0.0:9001:9001"
         volumes:
             - ./mosquitto:/mosquitto/config
+
+    core:
+        container_name: core
+        image: thinkfree84/ax5_core:latest
+        build: ../core/
+        volumes:
+            - ./ax5:/ax5

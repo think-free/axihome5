@@ -16,11 +16,12 @@ func main() {
 	// Parameters
 
 	mqttServer := flag.String("mqttServer", "localhost", "The broker host")
+	configPath := flag.String("configPath", "./ax5/", "The path to the configuration")
 	flag.Parse()
 
 	// Databases
 
-	db := stormwrapper.New("./ax5/")
+	db := stormwrapper.New(*configPath)
 
 	// Mqtt client
 
