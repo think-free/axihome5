@@ -1,8 +1,9 @@
 package main
 
 import (
-	"flag"
 	"time"
+
+	"github.com/namsral/flag"
 
 	"github.com/think-free/axihome5/core/types"
 	"github.com/think-free/mqttclient"

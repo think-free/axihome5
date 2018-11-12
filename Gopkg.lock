@@ -21,6 +21,12 @@
   revision = "2c1e067432bbea64f9bd7348613e2977e11ca299"
 
 [[projects]]
+  name = "github.com/namsral/flag"
+  packages = ["."]
+  revision = "71ceffbeb0ba60fccc853971bb3ed4d7d90bfd04"
+  version = "v1.7.4-pre"
+
+[[projects]]
   branch = "master"
   name = "github.com/surge/glog"
   packages = ["."]
@@ -70,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "363bb67e7c568a5b6ce993c59468b268361cf2f90f78dd726893c6d27495d705"
+  inputs-digest = "2dbd3d7ac56066c0fada006fd530a3836fb809a65bd15102971054e44cf1f82a"
   solver-name = "gps-cdcl"
   solver-version = 1

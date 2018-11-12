@@ -1,11 +1,12 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/namsral/flag"
 
 	"github.com/think-free/axihome5/core/mqtt"
 	"github.com/think-free/storm-wrapper"
@@ -15,7 +16,7 @@ func main() {
 
 	// Parameters
 
-	mqttServer := flag.String("mqttServer", "localhost", "The broker host")
+	mqttServer := flag.String("mqttServer", "mosquitto", "The broker host")
 	configPath := flag.String("configPath", "./ax5/", "The path to the configuration")
 	flag.Parse()
 

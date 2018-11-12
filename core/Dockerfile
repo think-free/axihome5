@@ -2,7 +2,6 @@
 
 FROM golang:alpine AS builder
 
-ARG gh="github.com/think-free/"
 ARG repo="github.com/think-free/axihome5"
 ARG sub=""
 ARG app="core"
@@ -10,8 +9,7 @@ ARG app="core"
 RUN apk update && apk add git
 RUN go get -u github.com/golang/dep/cmd/dep
 
-WORKDIR $GOPATH/src/$gh
-RUN git clone https://$repo.git
+ADD . src/$repo
 WORKDIR $GOPATH/src/$repo
 RUN dep ensure
 WORKDIR $GOPATH/

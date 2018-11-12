@@ -13,6 +13,12 @@ services:
     core:
         container_name: core
         image: thinkfree84/ax5_core:latest
-        build: ../core/
+        build:
+            context: ../
+            dockerfile: core/Dockerfile
+        environment:
+            - mqttServer=mosquitto
+        depends_on:
+            - mosquitto
         volumes:
             - ./ax5:/ax5
