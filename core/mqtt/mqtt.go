@@ -150,13 +150,13 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) { // TODO : Che
 
 		// Write the value to the database
 		ds := types.DeviceStatus{
-			Name:  dev.HomeID + "." + dev.Group + "." + dev.ID,
+			Name:  dev.HomeID + "/" + dev.Group + "/" + dev.ID,
 			Value: pl,
 		}
 		mq.db.Save(&ds)
 
 		// Send the value to the client status topic
-		mq.cli.PublishMessage(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.ID, pl)
+		mq.cli.PublishMessage(CClientStatus+ds.Name, pl)
 
 		return nil
 	})
