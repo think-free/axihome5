@@ -3,6 +3,7 @@ package mqtt
 import (
 	"encoding/json"
 	"log"
+	"sync"
 
 	"github.com/surgemq/message"
 	"github.com/think-free/axihome5/core/types"
@@ -27,14 +28,18 @@ type Mqtt struct {
 	server string
 	cli    *mqttclient.MqttClient
 	db     *stormwrapper.Db
+
+	registeredDevices map[string]struct{}
+	sync.Mutex
 }
 
 // New create a Mqtt object
 func New(db *stormwrapper.Db, server string) *Mqtt {
 
 	return &Mqtt{
-		server: server,
-		db:     db,
+		server:            server,
+		db:                db,
+		registeredDevices: make(map[string]struct{}),
 	}
 }
 
@@ -74,7 +79,14 @@ func (mq *Mqtt) MqttSubscribeRequestBroadcastStatus() {
 
 	mq.cli.SubscribeTopic(CRequestBroadcastStatus, func(msg *message.PublishMessage) error {
 
-		// TODO : Send all status to mqtt clients
+		// Send all status to mqtt clients
+		var dss []types.DeviceStatus
+		mq.db.GetAll(&dss)
+
+		for _, ds := range dss {
+
+			mq.cli.PublishMessage(CClientStatus+ds.Name, ds.Value)
+		}
 
 		return nil
 	})
@@ -135,12 +147,45 @@ func (mq *Mqtt) MqttSubscribeDeviceAutoRegister() {
 	})
 }
 
-// MqttSubscribeDeviceTopics subscribe to main topics
-func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) { // TODO : Check if the device is not registered already
+// MqttSubscribeTasksAutoRegister subscribe to tasks autoregister
+func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 
-	log.Println("Subscribing to device topics : ", dev.HomeID+"."+dev.Group+"."+dev.ID)
+	mq.cli.SubscribeTopic(CAutoDiscover, func(msg *message.PublishMessage) error {
+
+		var tsk types.Task
+		json.Unmarshal(msg.Payload(), &tsk)
+
+		var tskdb types.Task
+		err := mq.db.Get("Name", tsk.Name, &tskdb)
+		if err != nil {
+
+			// Save device to database
+			log.Println("Saving new discovered task :", tsk.Name)
+			mq.db.Save(&tsk)
+		}
+
+		return nil
+	})
+}
+
+// MqttSubscribeDeviceTopics subscribe to main topics
+func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
+
+	// Check if the device is not registered already
+	mq.Lock()
+	if _, ok := mq.registeredDevices[dev.ID]; ok {
+
+		log.Println("Device already registered : ", dev.HomeID+"."+dev.Group+"."+dev.ID)
+		mq.Unlock()
+		return
+	}
+
+	mq.registeredDevices[dev.ID] = struct{}{}
+	mq.Unlock()
 
 	// Subscribe to device status topic
+	log.Println("Subscribing to device topics : ", dev.HomeID+"."+dev.Group+"."+dev.ID)
+
 	mq.cli.SubscribeTopic(dev.StatusTopic, func(msg *message.PublishMessage) error {
 
 		var pl interface{}
@@ -156,7 +201,7 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) { // TODO : Che
 		mq.db.Save(&ds)
 
 		// Send the value to the client status topic
-		mq.cli.PublishMessage(CClientStatus+ds.Name, pl)
+		mq.cli.PublishMessage(CClientStatus+ds.Name, ds.Value)
 
 		return nil
 	})

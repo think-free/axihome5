@@ -50,6 +50,17 @@ type FieldDevice struct {
 
 // DeviceStatus is the current value of a device
 type DeviceStatus struct {
-	Name  string `storm:"name"` // Device Name
+	Name  string `storm:"name"` // Device Name (mqtt path -> HomeID + Group + DeviceName)
 	Value interface{}
+}
+
+/* Tasks */
+/* *************************************** */
+
+// Task define a task that autoregister his interface on the core
+type Task struct {
+	Name string `json:"name" storm:"id"`
+	URL  string `json:"url" storm:"index" storm:"unique"`
+	Host string `json:"host"`
+	Port string `json:"port"`
 }
