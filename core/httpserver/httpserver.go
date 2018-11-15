@@ -30,13 +30,14 @@ func (s *HTTPServer) Run() {
 	http.HandleFunc("/core/getTasks", s.handlerGetTasks)
 	http.HandleFunc("/core/deleteTask", s.handlerDeleteTasks)
 
-	// Devices
-	http.HandleFunc("/core/getDevices", s.handlerGetDevice)
-	http.HandleFunc("/core/modifyDevice", s.handlerModifyDevice)
-	http.HandleFunc("/core/addDevice", s.handlerAddDevice)
-	http.HandleFunc("/core/deleteDevice", s.handlerDeleteDevice)
+	// Devices Config
+	http.HandleFunc("/core/getDevicesConfig", s.handlerGetDeviceConfig)
+	http.HandleFunc("/core/modifyDeviceConfig", s.handlerModifyDeviceConfig)
+	http.HandleFunc("/core/addDeviceConfig", s.handlerAddDeviceConfig)
+	http.HandleFunc("/core/deleteDeviceConfig", s.handlerDeleteDeviceConfig)
 
 	// Devices values
+	http.HandleFunc("/core/getDevices", s.handlerGetDevices)
 	http.HandleFunc("/core/getAllValues", s.handlerGetAllValues)
 	http.HandleFunc("/core/writeValue", s.handlerWriteValue)
 	http.HandleFunc("/core/forceValue", s.handlerForceValue)
@@ -60,7 +61,7 @@ func (s *HTTPServer) handlerDeleteTasks(w http.ResponseWriter, r *http.Request) 
 }
 
 // Devices
-func (s *HTTPServer) handlerGetDevice(w http.ResponseWriter, r *http.Request) {
+func (s *HTTPServer) handlerGetDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 	var fd []types.FieldDevice
 	s.db.GetAll(&fd)
@@ -68,17 +69,36 @@ func (s *HTTPServer) handlerGetDevice(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(fdJSON)
 }
-func (s *HTTPServer) handlerModifyDevice(w http.ResponseWriter, r *http.Request) {
+func (s *HTTPServer) handlerModifyDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 }
-func (s *HTTPServer) handlerAddDevice(w http.ResponseWriter, r *http.Request) {
+func (s *HTTPServer) handlerAddDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 }
-func (s *HTTPServer) handlerDeleteDevice(w http.ResponseWriter, r *http.Request) {
+func (s *HTTPServer) handlerDeleteDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 }
 
 // Devices values
+func (s *HTTPServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
+
+	var fd []types.FieldDevice
+	s.db.GetAll(&fd)
+
+	var cd []types.ClientDevice
+	for _, d := range fd {
+		cd = append(cd, types.ClientDevice{
+			Name:   d.Name,
+			Group:  d.Group,
+			HomeID: d.HomeID,
+			Type:   d.Type,
+		})
+	}
+
+	dsJSON, _ := json.Marshal(cd)
+
+	w.Write(dsJSON)
+}
 func (s *HTTPServer) handlerGetAllValues(w http.ResponseWriter, r *http.Request) {
 
 	var ds []types.DeviceStatus
