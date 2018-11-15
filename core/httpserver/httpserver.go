@@ -38,7 +38,7 @@ func (s *HTTPServer) Run() {
 
 	// Devices values
 	http.HandleFunc("/core/getDevices", s.handlerGetDevices)
-	http.HandleFunc("/core/getAllValues", s.handlerGetAllValues)
+	http.HandleFunc("/core/getValues", s.handlerGetAllValues)
 	http.HandleFunc("/core/writeValue", s.handlerWriteValue)
 	http.HandleFunc("/core/forceValue", s.handlerForceValue)
 
