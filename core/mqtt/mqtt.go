@@ -85,7 +85,7 @@ func (mq *Mqtt) MqttSubscribeRequestBroadcastStatus() {
 
 		for _, ds := range dss {
 
-			mq.cli.PublishMessage(CClientStatus+ds.Name, ds.Value)
+			mq.cli.PublishMessage(CClientStatus+ds.Route, ds.Value)
 		}
 
 		return nil
@@ -195,13 +195,14 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 
 		// Write the value to the database
 		ds := types.DeviceStatus{
-			Name:  dev.HomeID + "/" + dev.Group + "/" + dev.ID,
+			Name:  dev.HomeID + "." + dev.Group + "." + dev.ID,
+			Route: dev.HomeID + "/" + dev.Group + "/" + dev.ID,
 			Value: pl,
 		}
 		mq.db.Save(&ds)
 
 		// Send the value to the client status topic
-		mq.cli.PublishMessage(CClientStatus+ds.Name, ds.Value)
+		mq.cli.PublishMessage(CClientStatus+ds.Route, ds.Value)
 
 		return nil
 	})

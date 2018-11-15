@@ -50,8 +50,9 @@ type FieldDevice struct {
 
 // DeviceStatus is the current value of a device
 type DeviceStatus struct {
-	Name  string `storm:"name"` // Device Name (mqtt path -> HomeID + Group + DeviceName)
-	Value interface{}
+	Name  string      `json:"key" storm:"index"` // Device Name (mqtt path -> HomeID + Group + DeviceName)
+	Route string      `json:"-" storm:"id"`
+	Value interface{} `json:"value"`
 }
 
 /* Tasks */
