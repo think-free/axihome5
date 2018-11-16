@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/think-free/axihome5/core/types"
@@ -24,9 +25,22 @@ func New(db *stormwrapper.Db) *HTTPServer {
 // Run start the http server
 func (s *HTTPServer) Run() {
 
-	// TODO : Register all tasks routes
+	// Subscribe for db change for tasks to auto register new routes
+	s.db.SubscribeChangesCallback("Task", func(val interface{}) {
+
+		task := val.(*types.Task)
+		s.addTaskRouteHandler(task)
+	})
+
+	// Initial register all tasks routes
+	var tasks []types.Task
+	s.db.GetAll(&tasks)
+	for _, task := range tasks {
+		s.addTaskRouteHandler(&task)
+	}
 
 	// Tasks
+	http.HandleFunc("/core/setDefaultUI", s.handlerSetDefaultUI)
 	http.HandleFunc("/core/getTasks", s.handlerGetTasks)
 	http.HandleFunc("/core/deleteTask", s.handlerDeleteTasks)
 
@@ -42,10 +56,44 @@ func (s *HTTPServer) Run() {
 	http.HandleFunc("/core/writeValue", s.handlerWriteValue)
 	http.HandleFunc("/core/forceValue", s.handlerForceValue)
 
+	// UI
+	http.HandleFunc("/", s.handlerDefaultUI)
+	http.HandleFunc("/admin", s.handlerAdminUI)
+
+	// TODO : Register admin handler (/admin) ui for remote tasks
+
 	http.ListenAndServe("localhost:8080", nil)
 }
 
+/* Tasks routes */
+
+func (s *HTTPServer) addTaskRouteHandler(task *types.Task) {
+
+	// TODO : Add handler for task if not already registered
+	http.HandleFunc("/"+task.URL+"/", s.handlerTasksForwardRequest)
+}
+
+func (s *HTTPServer) handlerTasksForwardRequest(w http.ResponseWriter, r *http.Request) {
+
+	// TODO : Forward request to destionation task
+	log.Println("handlerTasksForwardRequest :", r.RequestURI)
+}
+
+/* Http handlers for UI */
+
+func (s *HTTPServer) handlerDefaultUI(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *HTTPServer) handlerAdminUI(w http.ResponseWriter, r *http.Request) {
+
+}
+
 /* Http handlers for core */
+
+func (s *HTTPServer) handlerSetDefaultUI(w http.ResponseWriter, r *http.Request) {
+
+}
 
 // Tasks
 func (s *HTTPServer) handlerGetTasks(w http.ResponseWriter, r *http.Request) {

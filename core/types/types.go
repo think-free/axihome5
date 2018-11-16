@@ -65,3 +65,14 @@ type Task struct {
 	Host string `json:"host"`
 	Port string `json:"port"`
 }
+
+/* Config */
+/* *************************************** */
+
+// Config is a configuration Key Value object that tasks can use
+type Config struct {
+	KeyTask string `storm:"id"`
+	Key     string `json:"key"`
+	Value   string `json:"value" storm:"index"`
+	Task    string `json:"task"`
+}
