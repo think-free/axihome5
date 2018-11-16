@@ -41,6 +41,7 @@ func (s *HTTPServer) Run() {
 
 	// Tasks
 	http.HandleFunc("/core/setDefaultUI", s.handlerSetDefaultUI)
+	http.HandleFunc("/core/getDefaultUI", s.handlerGetDefaultUI)
 	http.HandleFunc("/core/getTasks", s.handlerGetTasks)
 	http.HandleFunc("/core/deleteTask", s.handlerDeleteTasks)
 
@@ -92,6 +93,10 @@ func (s *HTTPServer) handlerAdminUI(w http.ResponseWriter, r *http.Request) {
 /* Http handlers for core */
 
 func (s *HTTPServer) handlerSetDefaultUI(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *HTTPServer) handlerGetDefaultUI(w http.ResponseWriter, r *http.Request) {
 
 }
 
