@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -92,15 +93,36 @@ func (s *HTTPServer) handlerAdminUI(w http.ResponseWriter, r *http.Request) {
 
 /* Http handlers for core */
 
+// DONE
 func (s *HTTPServer) handlerSetDefaultUI(w http.ResponseWriter, r *http.Request) {
 
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("Error getting default UI :", err)
+	}
+	log.Println("Setting default UI to :", string(body))
+
+	c := types.Config{
+		KeyTask: "DefaultUI-core",
+		Key:     "DefaultUI",
+		Value:   string(body),
+		Task:    "core",
+	}
+	s.db.Save(&c)
+
+	w.Write([]byte("OK"))
 }
 
+// DONE
 func (s *HTTPServer) handlerGetDefaultUI(w http.ResponseWriter, r *http.Request) {
 
+	var c types.Config
+	s.db.Get("KeyTask", "DefaultUI-core", &c)
+	w.Write([]byte(c.Value))
 }
 
 // Tasks
+// DONE
 func (s *HTTPServer) handlerGetTasks(w http.ResponseWriter, r *http.Request) {
 
 	var tsks []types.Task
@@ -114,6 +136,7 @@ func (s *HTTPServer) handlerDeleteTasks(w http.ResponseWriter, r *http.Request) 
 }
 
 // Devices
+// DONE
 func (s *HTTPServer) handlerGetDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 	var fd []types.FieldDevice
@@ -127,12 +150,26 @@ func (s *HTTPServer) handlerModifyDeviceConfig(w http.ResponseWriter, r *http.Re
 }
 func (s *HTTPServer) handlerAddDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("Error Add device config :", err)
+	}
+	log.Println("Adding new device :", string(body))
+
+	var dev types.FieldDevice
+	errUnmarshal := json.Unmarshal(body, &dev)
+	if errUnmarshal != nil {
+
+		log.Println(errUnmarshal)
+	}
+	s.db.Save(&dev)
 }
 func (s *HTTPServer) handlerDeleteDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 }
 
 // Devices values
+// DONE
 func (s *HTTPServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
 
 	var fd []types.FieldDevice
@@ -152,6 +189,8 @@ func (s *HTTPServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(dsJSON)
 }
+
+// DONE
 func (s *HTTPServer) handlerGetAllValues(w http.ResponseWriter, r *http.Request) {
 
 	var ds []types.DeviceStatus
@@ -160,9 +199,11 @@ func (s *HTTPServer) handlerGetAllValues(w http.ResponseWriter, r *http.Request)
 
 	w.Write(dsJSON)
 }
+
 func (s *HTTPServer) handlerWriteValue(w http.ResponseWriter, r *http.Request) {
 
 }
+
 func (s *HTTPServer) handlerForceValue(w http.ResponseWriter, r *http.Request) {
 
 }
