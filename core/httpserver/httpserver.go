@@ -148,6 +148,8 @@ func (s *HTTPServer) handlerGetDeviceConfig(w http.ResponseWriter, r *http.Reque
 func (s *HTTPServer) handlerModifyDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 }
+
+// DONE
 func (s *HTTPServer) handlerAddDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -166,6 +168,16 @@ func (s *HTTPServer) handlerAddDeviceConfig(w http.ResponseWriter, r *http.Reque
 }
 func (s *HTTPServer) handlerDeleteDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("Error Delete device config :", err)
+	}
+	log.Println("Deleting device :", string(body))
+
+	var dev types.FieldDevice
+	s.db.Get("ID", string(body), &dev)
+
+	s.db.Remove(&dev)
 }
 
 // Devices values
