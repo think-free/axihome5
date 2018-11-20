@@ -176,6 +176,7 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 	if _, ok := mq.registeredDevices[dev.ID]; ok {
 
 		log.Println("Device already registered : ", dev.HomeID+"."+dev.Group+"."+dev.ID)
+		log.Println("Restart the server if you have changed the device name")
 		mq.Unlock()
 		return
 	}
@@ -184,19 +185,19 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 	mq.Unlock()
 
 	// Subscribe to device status topic
-	log.Println("Subscribing to device topics : ", dev.HomeID+"."+dev.Group+"."+dev.ID)
+	log.Println("Subscribing to device topics : ", dev.HomeID+"."+dev.Group+"."+dev.Name)
 
 	mq.cli.SubscribeTopic(dev.StatusTopic, func(msg *message.PublishMessage) error {
 
 		var pl interface{}
 		json.Unmarshal(msg.Payload(), &pl)
 
-		log.Println("Device", dev.HomeID+"."+dev.Group+"."+dev.ID, "sent new status :", pl)
+		log.Println("Device", dev.HomeID+"."+dev.Group+"."+dev.Name, "sent new status :", pl)
 
 		// Write the value to the database
 		ds := types.DeviceStatus{
-			Name:  dev.HomeID + "." + dev.Group + "." + dev.ID,
-			Route: dev.HomeID + "/" + dev.Group + "/" + dev.ID,
+			Name:  dev.HomeID + "." + dev.Group + "." + dev.Name,
+			Route: dev.HomeID + "/" + dev.Group + "/" + dev.Name,
 			Value: pl,
 		}
 		mq.db.Save(&ds)
@@ -210,10 +211,10 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 	// Subscribe to the client command topic
 	if dev.CmdTopic != "" {
 
-		mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.ID+"/cmd", func(msg *message.PublishMessage) error {
+		mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/cmd", func(msg *message.PublishMessage) error {
 
 			// Send the value to the client status topic
-			log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.ID)
+			log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name)
 			mq.cli.PublishMessage(dev.CmdTopic, msg.Payload())
 
 			return nil
