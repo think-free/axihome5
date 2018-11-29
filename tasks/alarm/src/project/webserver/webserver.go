@@ -7,6 +7,8 @@ import (
 	"github.com/asdine/storm"
 )
 
+const projectName = "alarm"
+
 // WebServer create the main web server that handle the gui requests
 type WebServer struct {
 	db *storm.DB
@@ -21,11 +23,11 @@ func New(db *storm.DB, dev bool) *WebServer {
 
 	// Server the web app and the files in the docker compose tree
 	if dev {
-		http.Handle("/alarm/", http.StripPrefix("/alarm/", http.FileServer(http.Dir("./src/project/gui/out/"))))
+		http.Handle("/"+projectName+"/", http.StripPrefix("/"+projectName+"/", http.FileServer(http.Dir("./src/project/gui/out/"))))
 
 	} else {
 		box := rice.MustFindBox("../gui/out/")
-		http.Handle("/alarm/", http.StripPrefix("/alarm/", http.FileServer(box.HTTPBox())))
+		http.Handle("/"+projectName+"/", http.StripPrefix("/"+projectName+"/", http.FileServer(box.HTTPBox())))
 	}
 
 	return s
