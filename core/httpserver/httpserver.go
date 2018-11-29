@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"strings"
 
 	"github.com/think-free/axihome5/core/types"
 	stormwrapper "github.com/think-free/storm-wrapper"
@@ -31,10 +30,10 @@ func (s *HTTPServer) Run() {
 
 	// TODO : Remove the following dummy task
 	s.addTaskRouteHandler(&types.Task{
-		Host: "projects1.docker",
-		Port: "80",
-		URL:  "test",
-		Name: "Test",
+		Host: "localhost",
+		Port: "8123",
+		URL:  "alarm",
+		Name: "alarm",
 	})
 
 	// Subscribe for db change for tasks to auto register new routes
@@ -89,17 +88,7 @@ func (s *HTTPServer) addTaskRouteHandler(task *types.Task) {
 	log.Println("Registering task http handler :", task.Name)
 	u, _ := url.Parse("http://" + task.Host + ":" + task.Port)
 
-	// Option 1:
-	//http.Handle("/"+task.URL+"/", http.StripPrefix("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u)))
-
-	// Option 2:
-	reverseProxy := httputil.NewSingleHostReverseProxy(u)
-	http.HandleFunc("/"+task.URL+"/", func(w http.ResponseWriter, r *http.Request) {
-		r.Host = r.URL.Host
-		r.RequestURI = strings.TrimPrefix(r.RequestURI, "/"+task.URL)
-		r.URL, _ = url.Parse(strings.TrimPrefix(r.URL.String(), "/"+task.URL))
-		reverseProxy.ServeHTTP(w, r)
-	})
+	http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
 }
 
 /* Http handlers for UI */
