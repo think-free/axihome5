@@ -2,6 +2,15 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/GeertJohan/go.rice"
+  packages = [
+    ".",
+    "embedded"
+  ]
+  revision = "c02ca9a983da5807ddf7d796784928f5be4afd09"
+
+[[projects]]
   name = "github.com/asdine/storm"
   packages = [
     ".",
@@ -16,9 +25,21 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/daaku/go.zipexe"
+  packages = ["."]
+  revision = "a5fe2436ffcb3236e175e5149162b41cd28bd27d"
+
+[[projects]]
+  branch = "master"
   name = "github.com/grafov/bcast"
   packages = ["."]
   revision = "2c1e067432bbea64f9bd7348613e2977e11ca299"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/kardianos/osext"
+  packages = ["."]
+  revision = "ae77be60afb1dcacde03767a8c37337fad28ac14"
 
 [[projects]]
   name = "github.com/namsral/flag"
@@ -76,6 +97,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2dbd3d7ac56066c0fada006fd530a3836fb809a65bd15102971054e44cf1f82a"
+  inputs-digest = "d3e1070c3c2acb01476fa1bd909e7a9734291f2bacac9dc7fe2c10880510a033"
   solver-name = "gps-cdcl"
   solver-version = 1

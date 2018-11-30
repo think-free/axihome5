@@ -1,4 +1,4 @@
-package httpserver
+package webserver
 
 import (
 	"encoding/json"
@@ -12,21 +12,21 @@ import (
 	stormwrapper "github.com/think-free/storm-wrapper"
 )
 
-// HTTPServer is the core http server
-type HTTPServer struct {
+// WebServer is the core http server
+type WebServer struct {
 	db *stormwrapper.Db
 }
 
 // New create a new http server instance
-func New(db *stormwrapper.Db) *HTTPServer {
+func New(db *stormwrapper.Db) *WebServer {
 
-	return &HTTPServer{
+	return &WebServer{
 		db: db,
 	}
 }
 
 // Run start the http server
-func (s *HTTPServer) Run() {
+func (s *WebServer) Run() {
 
 	// TODO : Remove the following dummy task
 	s.addTaskRouteHandler(&types.Task{
@@ -81,7 +81,7 @@ func (s *HTTPServer) Run() {
 
 /* Tasks routes */
 
-func (s *HTTPServer) addTaskRouteHandler(task *types.Task) {
+func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 
 	// TODO : Solve problem serving react app
 
@@ -93,12 +93,12 @@ func (s *HTTPServer) addTaskRouteHandler(task *types.Task) {
 
 /* Http handlers for UI */
 
-func (s *HTTPServer) handlerDefaultUI(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerDefaultUI(w http.ResponseWriter, r *http.Request) {
 
 	// TODO : Route to default UI (task)
 }
 
-func (s *HTTPServer) handlerAdminUI(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerAdminUI(w http.ResponseWriter, r *http.Request) {
 
 	// TODO : Server admin ui
 }
@@ -106,7 +106,7 @@ func (s *HTTPServer) handlerAdminUI(w http.ResponseWriter, r *http.Request) {
 /* Http handlers for core */
 
 // Config
-func (s *HTTPServer) handlerSetConfig(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerSetConfig(w http.ResponseWriter, r *http.Request) {
 
 	// Reading post body
 	body, err := ioutil.ReadAll(r.Body)
@@ -133,7 +133,7 @@ func (s *HTTPServer) handlerSetConfig(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("{\"type\" : \"log\", \"msg\": \"Default UI changed\"}"))
 }
 
-func (s *HTTPServer) handlerGetConfig(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerGetConfig(w http.ResponseWriter, r *http.Request) {
 
 	// Get key parameter
 	keys, ok := r.URL.Query()["key"]
@@ -160,7 +160,7 @@ func (s *HTTPServer) handlerGetConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 // Tasks
-func (s *HTTPServer) handlerGetTasks(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerGetTasks(w http.ResponseWriter, r *http.Request) {
 
 	var tsks []types.Task
 	s.db.GetAll(&tsks)
@@ -169,7 +169,7 @@ func (s *HTTPServer) handlerGetTasks(w http.ResponseWriter, r *http.Request) {
 	w.Write(tsksJSON)
 }
 
-func (s *HTTPServer) handlerDeleteTasks(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerDeleteTasks(w http.ResponseWriter, r *http.Request) {
 
 	keys, ok := r.URL.Query()["name"]
 	if !ok || len(keys[0]) < 1 {
@@ -188,7 +188,7 @@ func (s *HTTPServer) handlerDeleteTasks(w http.ResponseWriter, r *http.Request) 
 }
 
 // Devices
-func (s *HTTPServer) handlerGetDeviceConfig(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerGetDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 	var fd []types.FieldDevice
 	s.db.GetAll(&fd)
@@ -197,7 +197,7 @@ func (s *HTTPServer) handlerGetDeviceConfig(w http.ResponseWriter, r *http.Reque
 	w.Write(fdJSON)
 }
 
-func (s *HTTPServer) handlerModifyDeviceConfig(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerModifyDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 	// Getting body
 	body, err := ioutil.ReadAll(r.Body)
@@ -234,7 +234,7 @@ func (s *HTTPServer) handlerModifyDeviceConfig(w http.ResponseWriter, r *http.Re
 	w.Write([]byte("{\"type\" : \"log\", \"msg\": \"New device added\"}"))
 }
 
-func (s *HTTPServer) handlerAddDeviceConfig(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerAddDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -257,7 +257,7 @@ func (s *HTTPServer) handlerAddDeviceConfig(w http.ResponseWriter, r *http.Reque
 	w.Write([]byte("{\"type\" : \"log\", \"msg\": \"New device added\"}"))
 }
 
-func (s *HTTPServer) handlerDeleteDeviceConfig(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerDeleteDeviceConfig(w http.ResponseWriter, r *http.Request) {
 
 	keys, ok := r.URL.Query()["id"]
 	if !ok || len(keys[0]) < 1 {
@@ -276,7 +276,7 @@ func (s *HTTPServer) handlerDeleteDeviceConfig(w http.ResponseWriter, r *http.Re
 }
 
 // Devices values
-func (s *HTTPServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
 
 	var fd []types.FieldDevice
 	s.db.GetAll(&fd)
@@ -296,7 +296,7 @@ func (s *HTTPServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
 	w.Write(dsJSON)
 }
 
-func (s *HTTPServer) handlerGetAllValues(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerGetAllValues(w http.ResponseWriter, r *http.Request) {
 
 	var ds []types.DeviceStatus
 	s.db.GetAll(&ds)
@@ -305,7 +305,7 @@ func (s *HTTPServer) handlerGetAllValues(w http.ResponseWriter, r *http.Request)
 	w.Write(dsJSON)
 }
 
-func (s *HTTPServer) handlerGetSingleValues(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerGetSingleValues(w http.ResponseWriter, r *http.Request) {
 
 	keys, ok := r.URL.Query()["key"]
 	if !ok || len(keys[0]) < 1 {
@@ -322,17 +322,17 @@ func (s *HTTPServer) handlerGetSingleValues(w http.ResponseWriter, r *http.Reque
 	w.Write(dsJSON)
 }
 
-func (s *HTTPServer) handlerWriteValue(w http.ResponseWriter, r *http.Request) { // TODO
+func (s *WebServer) handlerWriteValue(w http.ResponseWriter, r *http.Request) { // TODO
 
 	// Send to mqtt field topic for this device
 }
 
-func (s *HTTPServer) handlerForceValue(w http.ResponseWriter, r *http.Request) { // TODO
+func (s *WebServer) handlerForceValue(w http.ResponseWriter, r *http.Request) { // TODO
 
 	// Save to database and send to mqtt client topic
 }
 
-func (s *HTTPServer) handlerDeleteValue(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) handlerDeleteValue(w http.ResponseWriter, r *http.Request) {
 
 	keys, ok := r.URL.Query()["key"]
 	if !ok || len(keys[0]) < 1 {

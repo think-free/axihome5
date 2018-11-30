@@ -8,8 +8,8 @@ import (
 
 	"github.com/namsral/flag"
 
-	"github.com/think-free/axihome5/core/httpserver"
 	"github.com/think-free/axihome5/core/mqtt"
+	"github.com/think-free/axihome5/core/webserver"
 	"github.com/think-free/storm-wrapper"
 )
 
@@ -32,7 +32,7 @@ func main() {
 
 	// Http server
 
-	hs := httpserver.New(db)
+	hs := webserver.New(db)
 	go hs.Run()
 
 	// Handle ctrl+c and exit signals

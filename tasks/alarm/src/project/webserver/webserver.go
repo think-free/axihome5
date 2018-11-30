@@ -15,7 +15,7 @@ type WebServer struct {
 }
 
 // New create the webserver
-func New(db *storm.DB, dev bool) *WebServer {
+func New(dev bool) *WebServer {
 
 	s := &WebServer{
 		db: db,
