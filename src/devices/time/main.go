@@ -17,7 +17,9 @@ const (
 
 func main() {
 
-	mqttServer := flag.String("mqttServer", "localhost", "The broker host")
+	broker := flag.String("broker", "localhost", "The broker host")
+	_ := flag.String("config", "./ax5/", "The path to the configuration")
+
 	homeID := flag.String("homeId", "home", "The home ID")
 	group := flag.String("group", "server", "The group of the message")
 	instanceName := flag.String("instance", "time", "The instance name")
@@ -27,7 +29,7 @@ func main() {
 	deviceTopic := CDeviceTopic + *homeID + "/" + *group
 
 	// Mqtt client
-	cli := mqttclient.NewMqttClient("Task_"+*instanceName, *mqttServer)
+	cli := mqttclient.NewMqttClient("Device_"+*instanceName, *broker)
 	cli.Connect()
 	cli.SendHB(topic + "/hb")
 

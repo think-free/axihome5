@@ -14,6 +14,7 @@ import (
 // Mqtt topics
 const (
 	// Special topics
+	CAutoDiscoverTask        = "axihome/5/tasks/discover/#"
 	CAutoDiscover            = "axihome/5/field/device/discover/#"
 	CRequestBroadcastStatus  = "axihome/5/admin/status/broadcast"
 	CRequestBroadcastDevices = "axihome/5/admin/devices/broadcast"
@@ -150,7 +151,7 @@ func (mq *Mqtt) MqttSubscribeDeviceAutoRegister() {
 // MqttSubscribeTasksAutoRegister subscribe to tasks autoregister
 func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 
-	mq.cli.SubscribeTopic(CAutoDiscover, func(msg *message.PublishMessage) error {
+	mq.cli.SubscribeTopic(CAutoDiscoverTask, func(msg *message.PublishMessage) error {
 
 		var tsk types.Task
 		json.Unmarshal(msg.Payload(), &tsk)

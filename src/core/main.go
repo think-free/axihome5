@@ -17,17 +17,17 @@ func main() {
 
 	// Parameters
 
-	mqttServer := flag.String("mqttServer", "mosquitto", "The broker host")
-	configPath := flag.String("configPath", "./ax5/", "The path to the configuration")
+	broker := flag.String("broker", "mosquitto", "The broker host")
+	config := flag.String("config", "./ax5/", "The path to the configuration")
 	flag.Parse()
 
 	// Databases
 
-	db := stormwrapper.New(*configPath)
+	db := stormwrapper.New(*config)
 
 	// Mqtt client
 
-	mq := mqtt.New(db, *mqttServer)
+	mq := mqtt.New(db, *broker)
 	go mq.Run()
 
 	// Http server

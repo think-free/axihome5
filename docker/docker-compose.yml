@@ -17,20 +17,7 @@ services:
             context: ../
             dockerfile: src/core/Dockerfile
         environment:
-            - mqttServer=mosquitto
-        depends_on:
-            - mosquitto
-        volumes:
-            - ./ax5:/ax5
-
-    time:
-        container_name: time
-        image: thinkfree84/ax5_time:latest
-        build:
-            context: ../
-            dockerfile: src/devices/time/Dockerfile
-        environment:
-            - mqttServer=mosquitto
+            - broker=mosquitto
         depends_on:
             - mosquitto
         volumes:
@@ -43,7 +30,27 @@ services:
             context: ../
             dockerfile: src/tasks/alarm/Dockerfile
         environment:
-            - mqttServer=mosquitto
+            - broker=mosquitto
+            - host=alarm
+            - port=8123
+        depends_on:
+            - mosquitto
+        ports:
+            - "0.0.0.0:8123:8123"
+        volumes:
+            - ./ax5:/ax5
+
+    time:
+        container_name: time
+        image: thinkfree84/ax5_time:latest
+        build:
+            context: ../
+            dockerfile: src/devices/time/Dockerfile
+        environment:
+            - broker=mosquitto
+            - homeId=home
+            - group=server
+            - instance=time
         depends_on:
             - mosquitto
         volumes:

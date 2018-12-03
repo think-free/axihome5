@@ -4,15 +4,45 @@ import (
 	"flag"
 	"log"
 
+	"github.com/namsral/flag"
+	"github.com/think-free/axihome5/core/types"
+	"github.com/think-free/mqttclient"
+
 	"tasks/alarm/webserver"
 )
 
 func main() {
 
-	/* Getting parameters */
+	broker := flag.String("broker", "localhost", "The broker host")
+	host := flag.String("host", "localhost", "The host name for autoregister")
+	_ := flag.String("config", "./ax5/", "The path to the configuration")
+
 	dev := flag.Bool("dev", false, "Dev mode : use the folder './src/project/gui/out/' as gui")
-	port := flag.String("p", "8123", "Port for the webserver")
+	port := flag.String("port", "8123", "Port for the webserver")
 	flag.Parse()
+
+	/* Tasks register */
+
+	topic := CWriteTopic + *homeID + "/" + *group
+
+	// Mqtt client
+	cli := mqttclient.NewMqttClient("Task_Alarm", *broker)
+	cli.Connect()
+	cli.SendHB(topic + "/hb")
+
+	tsk := types.Task{
+		Host: *host,
+		Port: *port,
+		URL:  "alarm",
+		Name: "alarm",
+	}
+
+	go func() {
+		for {
+			cli.PublishMessage("axihome/5/tasks/discover/alarm", &tsk)
+			time.Sleep(time.Second * 30)
+		}
+	}()
 
 	/* Webserver */
 	s := webserver.New(*dev, *port)
