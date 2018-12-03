@@ -1,2 +1,5 @@
 vendor/
 docker/ax5/
+pkg/
+rice-box.go
+/bin

@@ -15,7 +15,33 @@ services:
         image: thinkfree84/ax5_core:latest
         build:
             context: ../
-            dockerfile: core/Dockerfile
+            dockerfile: src/core/Dockerfile
+        environment:
+            - mqttServer=mosquitto
+        depends_on:
+            - mosquitto
+        volumes:
+            - ./ax5:/ax5
+
+    time:
+        container_name: time
+        image: thinkfree84/ax5_time:latest
+        build:
+            context: ../
+            dockerfile: src/devices/time/Dockerfile
+        environment:
+            - mqttServer=mosquitto
+        depends_on:
+            - mosquitto
+        volumes:
+            - ./ax5:/ax5
+
+    alarm:
+        container_name: alarm
+        image: thinkfree84/ax5_alarm:latest
+        build:
+            context: ../
+            dockerfile: src/tasks/alarm/Dockerfile
         environment:
             - mqttServer=mosquitto
         depends_on:
