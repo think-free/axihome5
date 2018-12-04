@@ -49,3 +49,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/think-free/mqttclient"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/think-free/axihome5"

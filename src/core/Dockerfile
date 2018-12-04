@@ -18,5 +18,5 @@ RUN go build $app
 # Last stage : Creating final container
 FROM alpine
 WORKDIR /
-COPY --from=builder /go/$app ./
-ENTRYPOINT ./$app
+COPY --from=builder /go/core /core
+ENTRYPOINT /core
