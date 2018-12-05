@@ -1,39 +1,43 @@
 package main
 
 import (
+	"log"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+	"flag"
 
-	"github.com/namsral/flag"
-
-	"github.com/think-free/axihome5/core/mqtt"
-	"github.com/think-free/axihome5/core/webserver"
+	"github.com/jamiealquiza/envy"
 	"github.com/think-free/storm-wrapper"
+
+	"core/mqtt"
+	"core/webserver"
 )
 
 func main() {
 
+	log.Println("Starting core application")
+
 	// Parameters
 
-	broker := flag.String("broker", "mosquitto", "The broker host")
-	config := flag.String("config", "./ax5/", "The path to the configuration")
+	broker := flag.String("broker", "localhost", "The broker host")
+	config := flag.String("config", "/etc/ax5/", "The path to the configuration")
+	envy.Parse("AX")
 	flag.Parse()
 
 	// Databases
-
 	db := stormwrapper.New(*config)
 
 	// Mqtt client
-
 	mq := mqtt.New(db, *broker)
 	go mq.Run()
 
 	// Http server
-
 	hs := webserver.New(db)
 	go hs.Run()
+
+	log.Println("Application started")
 
 	// Handle ctrl+c and exit signals
 

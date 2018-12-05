@@ -8,8 +8,9 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	"github.com/think-free/axihome5/core/types"
 	stormwrapper "github.com/think-free/storm-wrapper"
+
+	"core/types"
 )
 
 // WebServer is the core http server
@@ -27,14 +28,6 @@ func New(db *stormwrapper.Db) *WebServer {
 
 // Run start the http server
 func (s *WebServer) Run() {
-
-	// TODO : Remove the following dummy task
-	s.addTaskRouteHandler(&types.Task{
-		Host: "localhost",
-		Port: "8123",
-		URL:  "alarm",
-		Name: "alarm",
-	})
 
 	// Subscribe for db change for tasks to auto register new routes
 	s.db.SubscribeChangesCallback("Task", func(val interface{}) {
@@ -74,9 +67,9 @@ func (s *WebServer) Run() {
 
 	// UI
 	http.HandleFunc("/", s.handlerDefaultUI)
-	http.HandleFunc("/admin", s.handlerAdminUI)
 
-	http.ListenAndServe("localhost:8080", nil)
+	log.Println("Core will start listening on port :8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 /* Tasks routes */
@@ -96,11 +89,6 @@ func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 func (s *WebServer) handlerDefaultUI(w http.ResponseWriter, r *http.Request) {
 
 	// TODO : Route to default UI (task)
-}
-
-func (s *WebServer) handlerAdminUI(w http.ResponseWriter, r *http.Request) {
-
-	// TODO : Server admin ui
 }
 
 /* Http handlers for core */

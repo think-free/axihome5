@@ -33,5 +33,5 @@
   unused-packages = true
 
 [[constraint]]
-  name = "github.com/namsral/flag"
-  version = "1.7.4-pre"
+  name = "github.com/jamiealquiza/envy"
+  branch = "master"

@@ -17,11 +17,13 @@ services:
             context: ../
             dockerfile: src/core/Dockerfile
         environment:
-            - broker=mosquitto
+            - AX_BROKER=mosquitto
         depends_on:
             - mosquitto
+        ports:
+            - "0.0.0.0:8080:8080"
         volumes:
-            - ./ax5:/ax5
+            - ./ax5:/etc/ax5
 
     alarm:
         container_name: alarm
@@ -30,15 +32,13 @@ services:
             context: ../
             dockerfile: src/tasks/alarm/Dockerfile
         environment:
-            - broker=mosquitto
-            - host=alarm
-            - port=8123
+            - AX_BROKER=mosquitto
+            - AX_HOST=alarm
+            - AX_PORT=8123
         depends_on:
             - mosquitto
-        ports:
-            - "0.0.0.0:8123:8123"
         volumes:
-            - ./ax5:/ax5
+            - ./ax5:/etc/ax5
 
     time:
         container_name: time
@@ -47,11 +47,11 @@ services:
             context: ../
             dockerfile: src/devices/time/Dockerfile
         environment:
-            - broker=mosquitto
-            - homeId=home
-            - group=server
-            - instance=time
+            - AX_BROKER=mosquitto
+            - AX_HOMEID=home
+            - AX_GROUP=server
+            - AX_INSTANCE=time
         depends_on:
             - mosquitto
         volumes:
-            - ./ax5:/ax5
+            - ./ax5:/etc/ax5

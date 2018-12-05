@@ -42,3 +42,14 @@
   branch = "master"
   name = "github.com/GeertJohan/go.rice"
 
+[[constraint]]
+  name = "github.com/jamiealquiza/envy"
+  branch = "master"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/think-free/mqttclient"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/think-free/axihome5"

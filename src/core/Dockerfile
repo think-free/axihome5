@@ -19,4 +19,5 @@ RUN go build $app
 FROM alpine
 WORKDIR /
 COPY --from=builder /go/core /core
+EXPOSE 8080
 ENTRYPOINT /core

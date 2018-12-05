@@ -1,9 +1,10 @@
 package main
 
 import (
+	"flag"
 	"time"
 
-	"github.com/namsral/flag"
+	"github.com/jamiealquiza/envy"
 
 	"github.com/think-free/axihome5/core/types"
 	"github.com/think-free/mqttclient"
@@ -23,6 +24,7 @@ func main() {
 	homeID := flag.String("homeId", "home", "The home ID")
 	group := flag.String("group", "server", "The group of the message")
 	instanceName := flag.String("instance", "time", "The instance name")
+	envy.Parse("AX")
 	flag.Parse()
 
 	topic := CWriteTopic + *homeID + "/" + *group

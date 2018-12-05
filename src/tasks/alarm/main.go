@@ -1,10 +1,11 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"time"
 
-	"github.com/namsral/flag"
+	"github.com/jamiealquiza/envy"
 	"github.com/think-free/axihome5/src/core/types"
 	"github.com/think-free/mqttclient"
 
@@ -13,20 +14,21 @@ import (
 
 func main() {
 
+	/* Getting parameters */
 	broker := flag.String("broker", "localhost", "The broker host")
-	host := flag.String("host", "localhost", "The host name for autoregister")
 	_ = flag.String("config", "./ax5/", "The path to the configuration")
+	host := flag.String("host", "localhost", "The host name for autoregister")
+	port := flag.String("port", "8123", "Port for the webserver")
 
 	dev := flag.Bool("dev", false, "Dev mode : use the folder './src/project/gui/out/' as gui")
-	port := flag.String("port", "8123", "Port for the webserver")
+
+	envy.Parse("AX")
 	flag.Parse()
 
 	/* Tasks register */
-
-	// Mqtt client
 	cli := mqttclient.NewMqttClient("Task_Alarm", *broker)
 	cli.Connect()
-	cli.SendHB("axihome/5/tasks/hb")
+	cli.SendHB("axihome/5/tasks/alarm/hb")
 
 	tsk := types.Task{
 		Host: *host,

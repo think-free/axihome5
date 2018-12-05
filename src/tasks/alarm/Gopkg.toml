@@ -43,8 +43,8 @@
   name = "github.com/GeertJohan/go.rice"
 
 [[constraint]]
-  name = "github.com/namsral/flag"
-  version = "1.7.4-pre"
+  name = "github.com/jamiealquiza/envy"
+  branch = "master"
 
 [[constraint]]
   branch = "master"
