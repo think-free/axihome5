@@ -163,15 +163,12 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 		}
 
 		var tskdb types.Task
-		errGet := mq.db.Get("Name", tsk.Name, &tskdb)
+		errGet := mq.db.Get("URL", tsk.URL, &tskdb)
 		if errGet != nil {
 
 			// Save device to database
 			log.Println("Saving new discovered task :", tsk.Name)
 			mq.db.Save(&tsk)
-		} else {
-
-			log.Println("Device already exists  new discovered task :", tsk.Name)
 		}
 
 		return nil

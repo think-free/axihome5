@@ -12,7 +12,9 @@ Mqtt topics for special requests
 
 **Register task to the core**
 
-    axihome/5/admin/tasks/register - the task struct (tbd)
+Should publish every 30 seconds
+
+    axihome/5/tasks/discover/{name} - task json
 
 Mqtt topics for client communication
 -------------------------------------------------------------------
