@@ -6,7 +6,7 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 )
 
-const projectName = "alarm"
+const projectName = "admin"
 
 // WebServer create the main web server that handle the gui requests
 type WebServer struct {

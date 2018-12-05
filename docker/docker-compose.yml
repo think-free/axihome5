@@ -1,6 +1,8 @@
 version: "3"
 services:
 
+# CORE
+# ##########################
     mosquitto:
         container_name: mosquitto
         image: eclipse-mosquitto
@@ -25,6 +27,25 @@ services:
         volumes:
             - ./ax5:/etc/ax5
 
+# GUI
+# ##########################
+    admin:
+        container_name: admin
+        image: thinkfree84/ax5_admin:latest
+        build:
+            context: ../
+            dockerfile: src/guis/admin/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOST=admin
+            - AX_PORT=8123
+        depends_on:
+            - mosquitto
+        volumes:
+            - ./ax5:/etc/ax5
+
+# TASKS
+# ##########################
     alarm:
         container_name: alarm
         image: thinkfree84/ax5_alarm:latest
@@ -40,6 +61,8 @@ services:
         volumes:
             - ./ax5:/etc/ax5
 
+# DEVICES
+# ##########################
     time:
         container_name: time
         image: thinkfree84/ax5_time:latest

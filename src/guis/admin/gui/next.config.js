@@ -1,5 +1,5 @@
 module.exports = {
-  assetPrefix: '/alarm/',
+  assetPrefix: '/admin/',
   exportPathMap: function () {
     return {
       "/": { page: "/" }

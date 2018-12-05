@@ -55,6 +55,7 @@ func (mq *Mqtt) Run() {
 	mq.MqttSubscribeRequestBroadcastDevices()
 	mq.DBLoadAndRegisterFieldStatus()
 	mq.MqttSubscribeDeviceAutoRegister()
+	mq.MqttSubscribeTasksAutoRegister()
 }
 
 // DBLoadAndRegisterFieldStatus subscribe to mqtt topic for field device
@@ -155,15 +156,22 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 	mq.cli.SubscribeTopic(CAutoDiscoverTask, func(msg *message.PublishMessage) error {
 
 		var tsk types.Task
-		json.Unmarshal(msg.Payload(), &tsk)
+		err := json.Unmarshal(msg.Payload(), &tsk)
+
+		if err != nil{
+			log.Println("Can't register task, json not valid :", err)
+		}
 
 		var tskdb types.Task
-		err := mq.db.Get("Name", tsk.Name, &tskdb)
-		if err != nil {
+		errGet := mq.db.Get("Name", tsk.Name, &tskdb)
+		if errGet != nil {
 
 			// Save device to database
 			log.Println("Saving new discovered task :", tsk.Name)
 			mq.db.Save(&tsk)
+		} else {
+
+			log.Println("Device already exists  new discovered task :", tsk.Name)
 		}
 
 		return nil

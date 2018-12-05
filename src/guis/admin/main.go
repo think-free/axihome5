@@ -34,7 +34,7 @@ func main() {
 		Host: *host,
 		Port: *port,
 		URL:  "admin",
-		Name: "admin",
+		Name: "Admin",
 	}
 
 	go func() {
