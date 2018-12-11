@@ -24,7 +24,7 @@ func New(dev bool, port string) *WebServer {
 
 	// Server the web app and the files in the docker compose tree
 	if dev {
-		http.Handle("/"+projectName+"/", http.StripPrefix("/"+projectName+"/", http.FileServer(http.Dir("./src/project/gui/out/"))))
+		http.Handle("/"+projectName+"/", http.StripPrefix("/"+projectName+"/", http.FileServer(http.Dir("./src/guis/admin/gui/out/"))))
 
 	} else {
 		box := rice.MustFindBox("../gui/out/")

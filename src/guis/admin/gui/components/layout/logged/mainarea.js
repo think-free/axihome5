@@ -2,6 +2,20 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
 
+import mainStyle from '../../../styles/global.js'
+
+const layoutStyle = {
+    display: 'block',
+    position: 'fixed',
+    height: 'auto',
+    width: 'auto',
+    top:mainStyle.headerHeight + 10,
+    left:mainStyle.menuWidth + 10,
+    bottom:10,
+    right:10,
+    color: mainStyle.textColor,
+}
+
 const mapStateToProps = (state) => {
     return {
         MainArea: state.MainArea
@@ -24,8 +38,7 @@ class MainArea extends React.Component {
 
     render() {
         return (
-          <div>
-            <h1 onClick={this.buttonClick}>MainArea Component {this.props.MainArea}</h1>
+          <div style={layoutStyle}>
           </div>
         );
     }

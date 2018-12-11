@@ -25,7 +25,7 @@ class Index extends React.Component {
     }
 
     async componentDidMount() {
-        document.title = "Project";
+        document.title = "Administration";
     }
 
     render() {
