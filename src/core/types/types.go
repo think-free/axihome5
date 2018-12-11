@@ -60,8 +60,8 @@ type DeviceStatus struct {
 
 // Task define a task that autoregister his interface on the core
 type Task struct {
-	Name string `json:"name" storm:"id"`
-	URL  string `json:"url" storm:"index" storm:"unique"`
+	Name string `json:"name" storm:"index" storm:"unique"`
+	URL  string `json:"url" storm:"id"`
 	Host string `json:"host"`
 	Port string `json:"port"`
 }
