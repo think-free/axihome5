@@ -60,7 +60,7 @@ class Menu extends React.Component {
     }
 
     async getData(url){
-        var url = "http://localhost:8080/core/getTasks"
+        var url = "/core/getTasks"
 
         fetch(url)
         .then(response => response.json())
