@@ -52,7 +52,7 @@ class Menu extends React.Component {
         // Periodicaly refresh states
         this.interval = setInterval(() => {
             this.getData();
-        }, 2000);
+        }, 30000);
     }
 
     componentWillUnmount() {
