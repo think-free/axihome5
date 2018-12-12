@@ -16,6 +16,7 @@ import (
 // WebServer is the core http server
 type WebServer struct {
 	db *stormwrapper.Db
+	registeredRoutes map[string]struct{}
 }
 
 // New create a new http server instance
@@ -23,6 +24,7 @@ func New(db *stormwrapper.Db) *WebServer {
 
 	return &WebServer{
 		db: db,
+		registeredRoutes: make(map[string]struct{}), 
 	}
 }
 
@@ -81,7 +83,14 @@ func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 	log.Println("Registering task http handler :", task.Name)
 	u, _ := url.Parse("http://" + task.Host + ":" + task.Port)
 
-	http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
+	if _, ok := s.registeredRoutes[task.URL]; !ok {
+
+		s.registeredRoutes[task.URL] = struct{}{}
+		http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
+
+	} else {
+		log.Println("Already registered route, skipping")
+	}
 }
 
 /* Http handlers for UI */

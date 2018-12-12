@@ -170,6 +170,11 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 			log.Println("Saving new discovered task :", tsk.Name)
 			mq.db.Save(&tsk)
 
+		} else if tskdb.Host != tsk.Host || tskdb.Port != tsk.Port {
+
+			log.Println("Saving task modification :", tsk.Name)
+			mq.db.Remove(&tskdb)
+			mq.db.Save(&tsk)
 		}
 
 		return nil

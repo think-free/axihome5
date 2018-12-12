@@ -4,6 +4,9 @@ import { setValue } from '../../redux/store.js'
 
 import mainStyle from '../../../styles/global.js'
 
+
+/* Menu */
+
 const layoutStyle = {
     display: 'block',
     position: 'fixed',
@@ -14,6 +17,15 @@ const layoutStyle = {
     bottom:0,
     color: mainStyle.textColor,
     backgroundColor: mainStyle.menuBackgroundColor
+}
+
+const listStyle = {
+    listStyleType: 'none',
+    margin: 7,
+    padding: 0,
+    marginTop: 50,
+    width: mainStyle.menuWidth,
+    overflowY: 'auto'
 }
 
 const mapStateToProps = (state) => {
@@ -64,16 +76,69 @@ class Menu extends React.Component {
 
         return (
           <div style={layoutStyle}>
-              <ul>
+              <ul style={listStyle}>
                   {sections.map(function(section){
-                      return (
-                          <li>AAA</li>
-                      )
+                      let im = "/"+section.url+"/static/icon.png"
+
+                      if (section.url != "admin"){
+
+                          return (
+                              <ElementList section={section}>
+                                <img src={im} alt={section.name} width="35" height="35" draggable="false"/>
+                              </ElementList>
+                          )
+
+                      } else {
+
+                          return (null);
+                      }
+
                   })}
               </ul>
           </div>
         );
     }
 }
+
+/* Menu element */
+
+const listElement = {
+    cursor: "pointer",
+    userSelect: "pointer",
+    border: mainStyle.interactable,
+    marginTop: 10
+}
+
+const mapStateToPropsElementList = (state) => {
+    return {
+        currentTab: state.currentTab
+    }
+}
+
+class ElementList extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.handleClick=this.handleClick.bind(this); // For 'this' to be available in 'handleClick' function
+    }
+
+    handleClick(e) {
+        this.props.dispatch(setValue("currentTab",this.props.section.name ));
+        this.props.dispatch(setValue("currentSection",this.props.section ));
+    }
+
+    render(){
+
+        return (
+            <li onClick={this.handleClick} style={listElement}>
+                {this.props.children}
+            </li>
+        )
+
+    }
+}
+
+ElementList = connect(mapStateToPropsElementList)(ElementList)
 
 export default connect(mapStateToProps)(Menu);

@@ -17,9 +17,27 @@ const layoutStyle = {
     borderBottom: mainStyle.borderAlternative
 }
 
+const logoStyle = {
+    margin: "auto",
+    position: "absolute",
+    top: 15,
+    left: 15
+}
+
+const pageTitleStyle = {
+    color: mainStyle.textDarkerColor,
+    fontSize: 35,
+    margin: "auto",
+    position: "absolute",
+    top: 5,
+    left: 100,
+    bottom: 0,
+    right: 0
+}
+
 const mapStateToProps = (state) => {
     return {
-        Header: state.Header
+        currentTab: state.currentTab
     }
 }
 
@@ -38,9 +56,15 @@ class Header extends React.Component {
     }
 
     render() {
+
+        const currentTab = this.props.currentTab
+
         return (
           <div style={layoutStyle}>
-
+            <img style={logoStyle} src="/admin/static/ax5.png" width="75" height="75" draggable="false"/>
+            <div style={pageTitleStyle}>
+                {currentTab}
+            </div>
           </div>
         );
     }

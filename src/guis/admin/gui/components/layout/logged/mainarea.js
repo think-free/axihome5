@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
+import Iframe from 'react-iframe'
 
 import mainStyle from '../../../styles/global.js'
 
@@ -18,7 +19,7 @@ const layoutStyle = {
 
 const mapStateToProps = (state) => {
     return {
-        MainArea: state.MainArea
+        currentSection: state.currentSection
     }
 }
 
@@ -37,10 +38,30 @@ class MainArea extends React.Component {
     }
 
     render() {
-        return (
-          <div style={layoutStyle}>
-          </div>
-        );
+
+        const currentSection = this.props.currentSection
+
+        if (currentSection != undefined) {
+
+            var currentUrl = window.location.href;
+            var arr = currentUrl.split("/");
+            var url = arr[0] + "//" + arr[2] + "/" + currentSection.url;
+
+            return (
+              <div style={layoutStyle}>
+                <Iframe url={url}
+                    width="100%"
+                    height="100%"
+                    id="apllicationFrame"
+                    className="myClassname"
+                    display="initial"
+                    position="relative"
+                    allowFullScreen/>
+              </div>
+            );
+        } else {
+            return (null);
+        }
     }
 }
 
