@@ -1,4 +1,5 @@
 import React from 'react'
+import Radium from 'radium';
 import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
 
@@ -24,7 +25,7 @@ const listStyle = {
     margin: 7,
     padding: 0,
     marginTop: 50,
-    width: mainStyle.menuWidth,
+    width: mainStyle.menuWidth + 50,
     overflowY: 'auto'
 }
 
@@ -77,6 +78,15 @@ class Menu extends React.Component {
         return (
           <div style={layoutStyle}>
               <ul style={listStyle}>
+
+                  <ElementList section={{"name": "Devices", "url": "internal"}}>
+                    <img src="/admin/static/devices.png" alt="devices" width="35" height="35" draggable="false"/>
+                  </ElementList>
+
+                  <ElementList section={{"name": "Variables", "url": "internal"}}>
+                    <img src="/admin/static/variables.png" alt="variables" width="35" height="35" draggable="false"/>
+                  </ElementList>
+
                   {sections.map(function(section){
                       let im = "/"+section.url+"/static/icon.png"
 
@@ -106,7 +116,12 @@ const listElement = {
     cursor: "pointer",
     userSelect: "pointer",
     border: mainStyle.interactable,
-    marginTop: 10
+    marginTop: 10,
+    ':hover': {
+      backgroundColor: mainStyle.menuBackgroundColor,
+      borderRight: mainStyle.borderAlternative,
+      width: mainStyle.menuWidth
+    }
 }
 
 const mapStateToPropsElementList = (state) => {
@@ -139,6 +154,8 @@ class ElementList extends React.Component {
     }
 }
 
+ElementList = Radium(ElementList);
 ElementList = connect(mapStateToPropsElementList)(ElementList)
 
+Menu = Radium(Menu);
 export default connect(mapStateToProps)(Menu);

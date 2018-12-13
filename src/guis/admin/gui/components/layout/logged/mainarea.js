@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
 import Iframe from 'react-iframe'
 
+import Devices from "./mainarea/devices.js"
+
 import mainStyle from '../../../styles/global.js'
 
 const layoutStyle = {
@@ -10,10 +12,10 @@ const layoutStyle = {
     position: 'fixed',
     height: 'auto',
     width: 'auto',
-    top:mainStyle.headerHeight + 10,
-    left:mainStyle.menuWidth + 10,
-    bottom:10,
-    right:10,
+    top:mainStyle.headerHeight + 20,
+    left:mainStyle.menuWidth + 20,
+    bottom:20,
+    right:20,
     color: mainStyle.textColor,
 }
 
@@ -43,24 +45,52 @@ class MainArea extends React.Component {
 
         if (currentSection != undefined) {
 
-            var currentUrl = window.location.href;
-            var arr = currentUrl.split("/");
-            var url = arr[0] + "//" + arr[2] + "/" + currentSection.url;
+            if (currentSection.url != "internal"){
 
-            return (
-              <div style={layoutStyle}>
-                <Iframe url={url}
-                    width="100%"
-                    height="100%"
-                    id="apllicationFrame"
-                    className="myClassname"
-                    display="initial"
-                    position="relative"
-                    allowFullScreen/>
-              </div>
-            );
+                var currentUrl = window.location.href;
+                var arr = currentUrl.split("/");
+                var url = arr[0] + "//" + arr[2] + "/" + currentSection.url;
+
+                return (
+                  <div style={layoutStyle}>
+                    <Iframe url={url}
+                        width="100%"
+                        height="100%"
+                        id="apllicationFrame"
+                        className="myClassname"
+                        display="initial"
+                        position="relative"
+                        allowFullScreen/>
+                  </div>
+                );
+            } else {
+
+                if (currentSection.name == "Devices") {
+                    return (
+                        <Devices style={layoutStyle}/>
+                    )
+
+                } else if (currentSection.name == "Variables") {
+                    return (
+                        <div style={layoutStyle}>
+
+                        </div>
+                    )
+                } else {
+                    return (
+                        <div style={layoutStyle}>
+
+                        </div>
+                    )
+                }
+            }
+
+
         } else {
-            return (null);
+            return (
+                <div style={layoutStyle}>
+                </div>
+            )
         }
     }
 }

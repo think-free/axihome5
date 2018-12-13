@@ -6,6 +6,12 @@ import Header from './logged/header.js'
 import Menu from './logged/menu.js'
 import MainArea from './logged/mainarea.js'
 
+import mainStyle from '../../styles/global.js'
+
+const htmlStyle = {
+    backgroundColor: mainStyle.mainBackgroundColor
+}
+
 const layoutStyle = {
     display: 'block',
     position: 'fixed',
@@ -14,9 +20,8 @@ const layoutStyle = {
     top:0,
     left:0,
     right:0,
-    margin: 20,
-    padding: 20,
-    border: '1px solid #DDD'
+    color: mainStyle.textColor,
+    backgroundColor: mainStyle.mainBackgroundColor
 }
 
 class Logged extends React.Component {
@@ -32,7 +37,7 @@ class Logged extends React.Component {
     render() {
 
         return (
-            <div>
+            <div style={htmlStyle}>
                 <style global jsx>{`
                   html,
                   body,
@@ -51,6 +56,7 @@ class Logged extends React.Component {
                     <Header />
                     <Menu />
                     <MainArea />
+                    Test
                 </div>
             </div>
         )

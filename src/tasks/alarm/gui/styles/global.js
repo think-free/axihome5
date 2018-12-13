@@ -18,7 +18,7 @@ let mainStyle = {
     menuWidth: 50,
     headerHeight: 50,
 
-    icon: "#22ADF6"
+    icon: "#999DAB"
 }
 
 export default mainStyle

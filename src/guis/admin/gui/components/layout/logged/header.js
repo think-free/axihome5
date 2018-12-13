@@ -26,10 +26,10 @@ const logoStyle = {
 
 const pageTitleStyle = {
     color: mainStyle.textDarkerColor,
-    fontSize: 35,
+    fontSize: 20,
     margin: "auto",
     position: "absolute",
-    top: 5,
+    top: 15,
     left: 100,
     bottom: 0,
     right: 0
