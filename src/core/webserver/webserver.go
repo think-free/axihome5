@@ -24,7 +24,7 @@ func New(db *stormwrapper.Db) *WebServer {
 
 	return &WebServer{
 		db: db,
-		registeredRoutes: make(map[string]struct{}), 
+		registeredRoutes: make(map[string]struct{}),
 	}
 }
 
@@ -280,15 +280,25 @@ func (s *WebServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
 
 	var cd []types.ClientDevice
 	for _, d := range fd {
-		cd = append(cd, types.ClientDevice{
-			Name:   d.Name,
-			Group:  d.Group,
-			HomeID: d.HomeID,
-			Type:   d.Type,
-		})
+
+		cd := types.ClientDevice{
+			Name:   dev.Name,
+			Group:  dev.Group,
+			HomeID: dev.HomeID,
+			Type:   dev.Type,
+		}
+
+		for _, va := range dev.Variables {
+			v := ClientVariable{
+				Type: va.Type
+			}
+			cd.Variables = append(cd.Variables, v)
+		}
+
+		cdar = append(cdar, cd)
 	}
 
-	dsJSON, _ := json.Marshal(cd)
+	dsJSON, _ := json.Marshal(cdar)
 
 	w.Write(dsJSON)
 }

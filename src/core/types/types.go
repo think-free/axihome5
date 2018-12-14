@@ -1,6 +1,28 @@
 package types
 
-/* Devices types */
+/* Device types */
+/* *************************************** */
+
+// DeviceType define a device type
+type DeviceType string
+
+// Device type definition
+const (
+	Switch       VariableType = "switch"
+	Dimmer       VariableType = "dimmer"
+	RGBSwitch    VariableType = "rgb"
+	Shutter      VariableType = "shutter"
+	Position     VariableType = "position"
+	Time         VariableType = "time"
+	Climate 	 VariableType = "climate"
+	AudioPlayer  VariableType = "audio"
+	AnalogValue  VariableType = "analog"
+	DigitalValue VariableType = "digital"
+	TextValue    VariableType = "text"
+)
+
+
+/* Variable types */
 /* *************************************** */
 
 // VariableType define a device type
@@ -8,15 +30,11 @@ type VariableType string
 
 // Device type definition
 const (
-	Switch       VariableType = "switch"   // [0,1]
-	Dimmer       VariableType = "dimmer"   // [0-100]
-	Shutter      VariableType = "shutter"  // [0-100]
-	AnalogValue  VariableType = "analog"   // (Read only)
-	DigitalValue VariableType = "digital"  // (Read only)
-	TextValue    VariableType = "text"     // (Read only)
-	Position     VariableType = "position" // [x,y]
-	Time         VariableType = "time"     // int64
-	RGB          VariableType = "rgb"      // [r,g,b]
+	Digital      DeviceType = "digital"   // [0,1]
+	Analog       DeviceType = "analog"   // [0-100]
+	Text    	 DeviceType = "text"     // (text)
+	Position     DeviceType = "position" // [x,y]
+	RGB          DeviceType = "rgb"      // [r,g,b]
 )
 
 /* Devices */
@@ -24,13 +42,19 @@ const (
 
 // ClientDevice is the device sent to the clients
 type ClientDevice struct {
+
+	Type DeviceType `json:"type" storm:"type"`
+
 	Name      string `json:"name"`   // Device name
-	HomeID    string `json:"homeId"` // The Id of the home
 	Group     string `json:"group"`  // The group of the device
-	Variables []struct {
-		Type string `json:"type"` // See above
-		Name string `json:"name"` // Name of the device variable
-	} `json:"variables"`
+	HomeID    string `json:"homeId"` // The Id of the home
+
+	Variables []ClientVariable `json:"variables"`
+}
+
+type ClientVariable struct {
+	Type string `json:"type"` // See above
+	Name string `json:"name"` // Name of the device variable
 }
 
 // FieldDevice is the internal device type
@@ -38,15 +62,23 @@ type ClientDevice struct {
 // axihome/5/field/device/discover/{homeid}/{name} - FieldDevice json
 type FieldDevice struct {
 	ID             string `json:"id" storm:"id"`        // Device ID, fixed (used for backend)
+	Type DeviceType `json:"type" storm:"type"`
+
+	Name   string       `json:"name" storm:"index"`   // Device name (can be modified), used for frontend
+	Group  string       `json:"group" storm:"index"`  // The group of the device
+	HomeID string       `json:"homeId" storm:"index"` // The Id of the home
+
+	Variables []FieldVariables `json:"variables"`
+}
+
+type FieldVariables struct {
+	Name string `json:"name"` // Name of the device variable
+	Type   VariableType `json:"type" storm:"index"`   // See above
+	
 	StatusTopic    string `json:"status" storm:"index"` // Read
 	StatusTemplate string `json:"statusTemplate"`       // If Device is sending a json object, the key to read
 	CmdTopic       string `json:"cmd" storm:"index"`    // Write
 	CmdTemplate    string `json:"cmdTemplate"`          // If we have to send a json object, the key to write
-
-	Name   string       `json:"name" storm:"index"`   // Device name (can be modified), used for frontend
-	HomeID string       `json:"homeId" storm:"index"` // The Id of the home
-	Group  string       `json:"group" storm:"index"`  // The group of the device
-	Type   VariableType `json:"type" storm:"index"`   // See above
 }
 
 /* Variables */
@@ -54,7 +86,7 @@ type FieldDevice struct {
 
 // DeviceStatus is the current value of a device
 type DeviceStatus struct {
-	Name  string      `json:"key" storm:"index"` // Device Name (mqtt path -> HomeID + Group + DeviceName)
+	Name  string      `json:"key" storm:"index"` // Device Name (mqtt path -> HomeID + Group + DeviceName + VariableName)
 	Route string      `json:"-" storm:"id"`
 	Value interface{} `json:"value"`
 }
