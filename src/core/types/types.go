@@ -3,19 +3,20 @@ package types
 /* Devices types */
 /* *************************************** */
 
-// DeviceType define a device type
-type DeviceType string
+// VariableType define a device type
+type VariableType string
 
 // Device type definition
 const (
-	Switch       DeviceType = "switch"   // [0,1]
-	Dimmer       DeviceType = "dimmer"   // [0-100]
-	Shutter      DeviceType = "shutter"  // [0-100]
-	AnalogValue  DeviceType = "analog"   // (Read only)
-	DigitalValue DeviceType = "digital"  // (Read only)
-	TextValue    DeviceType = "text"     // (Read only)
-	Position     DeviceType = "position" // [x,y]
-	Time         DeviceType = "time"     // int64
+	Switch       VariableType = "switch"   // [0,1]
+	Dimmer       VariableType = "dimmer"   // [0-100]
+	Shutter      VariableType = "shutter"  // [0-100]
+	AnalogValue  VariableType = "analog"   // (Read only)
+	DigitalValue VariableType = "digital"  // (Read only)
+	TextValue    VariableType = "text"     // (Read only)
+	Position     VariableType = "position" // [x,y]
+	Time         VariableType = "time"     // int64
+	RGB          VariableType = "rgb"      // [r,g,b]
 )
 
 /* Devices */
@@ -23,10 +24,13 @@ const (
 
 // ClientDevice is the device sent to the clients
 type ClientDevice struct {
-	Name   string     `json:"name"`   // Device name (can be modified), used for frontend
-	HomeID string     `json:"homeId"` // The Id of the home
-	Group  string     `json:"group"`  // The group of the device
-	Type   DeviceType `json:"type"`   // See above
+	Name      string `json:"name"`   // Device name
+	HomeID    string `json:"homeId"` // The Id of the home
+	Group     string `json:"group"`  // The group of the device
+	Variables []struct {
+		Type string `json:"type"` // See above
+		Name string `json:"name"` // Name of the device variable
+	} `json:"variables"`
 }
 
 // FieldDevice is the internal device type
@@ -39,10 +43,10 @@ type FieldDevice struct {
 	CmdTopic       string `json:"cmd" storm:"index"`    // Write
 	CmdTemplate    string `json:"cmdTemplate"`          // If we have to send a json object, the key to write
 
-	Name   string     `json:"name" storm:"index"`   // Device name (can be modified), used for frontend
-	HomeID string     `json:"homeId" storm:"index"` // The Id of the home
-	Group  string     `json:"group" storm:"index"`  // The group of the device
-	Type   DeviceType `json:"type" storm:"index"`   // See above
+	Name   string       `json:"name" storm:"index"`   // Device name (can be modified), used for frontend
+	HomeID string       `json:"homeId" storm:"index"` // The Id of the home
+	Group  string       `json:"group" storm:"index"`  // The group of the device
+	Type   VariableType `json:"type" storm:"index"`   // See above
 }
 
 /* Variables */
