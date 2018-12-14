@@ -33,7 +33,7 @@ const (
 	Digital      DeviceType = "digital"   // [0,1]
 	Analog       DeviceType = "analog"   // [0-100]
 	Text    	 DeviceType = "text"     // (text)
-	Position     DeviceType = "position" // [x,y]
+	Coordinates  DeviceType = "position" // [x,y]
 	RGB          DeviceType = "rgb"      // [r,g,b]
 )
 
@@ -53,7 +53,7 @@ type ClientDevice struct {
 }
 
 type ClientVariable struct {
-	Type string `json:"type"` // See above
+	Type VariableType `json:"type"` // See above
 	Name string `json:"name"` // Name of the device variable
 }
 
@@ -74,7 +74,7 @@ type FieldDevice struct {
 type FieldVariables struct {
 	Name string `json:"name"` // Name of the device variable
 	Type   VariableType `json:"type" storm:"index"`   // See above
-	
+
 	StatusTopic    string `json:"status" storm:"index"` // Read
 	StatusTemplate string `json:"statusTemplate"`       // If Device is sending a json object, the key to read
 	CmdTopic       string `json:"cmd" storm:"index"`    // Write

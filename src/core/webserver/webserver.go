@@ -278,19 +278,19 @@ func (s *WebServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
 	var fd []types.FieldDevice
 	s.db.GetAll(&fd)
 
-	var cd []types.ClientDevice
+	var cdar []types.ClientDevice
 	for _, d := range fd {
 
 		cd := types.ClientDevice{
-			Name:   dev.Name,
-			Group:  dev.Group,
-			HomeID: dev.HomeID,
-			Type:   dev.Type,
+			Name:   d.Name,
+			Group:  d.Group,
+			HomeID: d.HomeID,
+			Type:   d.Type,
 		}
 
-		for _, va := range dev.Variables {
-			v := ClientVariable{
-				Type: va.Type
+		for _, va := range d.Variables {
+			v := types.ClientVariable{
+				Type: va.Type,
 			}
 			cd.Variables = append(cd.Variables, v)
 		}

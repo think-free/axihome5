@@ -113,8 +113,8 @@ func (mq *Mqtt) MqttSubscribeRequestBroadcastDevices() {
 			}
 
 			for _, va := range dev.Variables {
-				v := ClientVariable{
-					Type: va.Type
+				v := types.ClientVariable{
+					Type: va.Type,
 				}
 				cd.Variables = append(cd.Variables, v)
 			}
@@ -151,8 +151,8 @@ func (mq *Mqtt) MqttSubscribeDeviceAutoRegister() {
 			}
 
 			for _, va := range dev.Variables {
-				v := ClientVariable{
-					Type: va.Type
+				v := types.ClientVariable{
+					Type: va.Type,
 				}
 				cd.Variables = append(cd.Variables, v)
 			}
@@ -202,7 +202,7 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 
 		// Check if the device is not registered already
 		mq.Lock()
-		if _, ok := mq.registeredDevices[dev.ID + db.Name]; ok {
+		if _, ok := mq.registeredDevices[dev.ID + dv.Name]; ok {
 
 			log.Println("Device already registered : ", dev.HomeID+"."+dev.Group+"."+dev.ID + "." + dv.Name)
 			log.Println("Restart the server if you have changed the device name")
@@ -210,7 +210,7 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 			return
 		}
 
-		mq.registeredDevices[dev.ID + db.Name] = struct{}{}
+		mq.registeredDevices[dev.ID + dv.Name] = struct{}{}
 		mq.Unlock()
 
 		// Subscribe to device status topic
@@ -238,13 +238,13 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 		})
 
 		// Subscribe to the client command topic
-		if dev.CmdTopic != "" {
+		if dv.CmdTopic != "" {
 
 			mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+dv.Name+"/cmd", func(msg *message.PublishMessage) error {
 
 				// Send the value to the client status topic
 				log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name)
-				mq.cli.PublishMessage(dev.CmdTopic, msg.Payload())
+				mq.cli.PublishMessage(dv.CmdTopic, msg.Payload())
 
 				return nil
 			})
