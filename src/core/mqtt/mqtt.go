@@ -172,7 +172,7 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 		var tsk types.Task
 		err := json.Unmarshal(msg.Payload(), &tsk)
 
-		if err != nil{
+		if err != nil {
 			log.Println("Can't register task, json not valid :", err)
 		}
 
@@ -198,19 +198,19 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 // MqttSubscribeDeviceTopics subscribe to main topics
 func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 
-	for _, dv := range dev.Variables{
+	for _, dv := range dev.Variables {
 
 		// Check if the device is not registered already
 		mq.Lock()
-		if _, ok := mq.registeredDevices[dev.ID + dv.Name]; ok {
+		if _, ok := mq.registeredDevices[dev.ID+dv.Name]; ok {
 
-			log.Println("Device already registered : ", dev.HomeID+"."+dev.Group+"."+dev.ID + "." + dv.Name)
+			log.Println("Device already registered : ", dev.HomeID+"."+dev.Group+"."+dev.ID+"."+dv.Name)
 			log.Println("Restart the server if you have changed the device name")
 			mq.Unlock()
 			return
 		}
 
-		mq.registeredDevices[dev.ID + dv.Name] = struct{}{}
+		mq.registeredDevices[dev.ID+dv.Name] = struct{}{}
 		mq.Unlock()
 
 		// Subscribe to device status topic

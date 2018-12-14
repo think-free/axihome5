@@ -6,7 +6,7 @@ import (
 
 	"github.com/jamiealquiza/envy"
 
-	"github.com/think-free/axihome5/core/types"
+	"github.com/think-free/axihome5/src/core/types"
 	"github.com/think-free/mqttclient"
 )
 
@@ -23,7 +23,7 @@ func main() {
 
 	homeID := flag.String("homeId", "home", "The home ID")
 	group := flag.String("group", "server", "The group of the message")
-	instanceName := flag.String("instance", "time", "The instance name")
+	instanceName := flag.String("instance", "main", "The instance name")
 	envy.Parse("AX")
 	flag.Parse()
 
@@ -37,13 +37,20 @@ func main() {
 
 	// Device register
 	dev := types.FieldDevice{
-		ID:          *instanceName,
-		StatusTopic: topic + "/" + *instanceName,
+		ID:   *instanceName,
+		Type: types.Time,
 
 		Name:   *instanceName,
-		HomeID: *homeID,
 		Group:  *group,
-		Type:   types.Time,
+		HomeID: *homeID,
+
+		Variables: []types.FieldVariables{
+			types.FieldVariables{
+				Name:        "time",
+				Type:        types.Number,
+				StatusTopic: topic + "/" + *instanceName,
+			},
+		},
 	}
 
 	go func() {

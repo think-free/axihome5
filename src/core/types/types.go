@@ -8,19 +8,18 @@ type DeviceType string
 
 // Device type definition
 const (
-	Switch       VariableType = "switch"
-	Dimmer       VariableType = "dimmer"
-	RGBSwitch    VariableType = "rgb"
-	Shutter      VariableType = "shutter"
-	Position     VariableType = "position"
-	Time         VariableType = "time"
-	Climate 	 VariableType = "climate"
-	AudioPlayer  VariableType = "audio"
-	AnalogValue  VariableType = "analog"
-	DigitalValue VariableType = "digital"
-	TextValue    VariableType = "text"
+	Switch       DeviceType = "switch"
+	Dimmer       DeviceType = "dimmer"
+	RGBSwitch    DeviceType = "rgb"
+	Shutter      DeviceType = "shutter"
+	Position     DeviceType = "position"
+	Time         DeviceType = "time"
+	Climate      DeviceType = "climate"
+	AudioPlayer  DeviceType = "audio"
+	AnalogValue  DeviceType = "analog"
+	DigitalValue DeviceType = "digital"
+	TextValue    DeviceType = "text"
 )
-
 
 /* Variable types */
 /* *************************************** */
@@ -30,11 +29,12 @@ type VariableType string
 
 // Device type definition
 const (
-	Digital      DeviceType = "digital"   // [0,1]
-	Analog       DeviceType = "analog"   // [0-100]
-	Text    	 DeviceType = "text"     // (text)
-	Coordinates  DeviceType = "position" // [x,y]
-	RGB          DeviceType = "rgb"      // [r,g,b]
+	Digital     VariableType = "digital"  // [0-1]
+	Analog      VariableType = "analog"   // [0-100]
+	Number      VariableType = "number"   // Any number
+	Text        VariableType = "text"     // (text)
+	Coordinates VariableType = "position" // [x,y]
+	RGB         VariableType = "rgb"      // [r,g,b]
 )
 
 /* Devices */
@@ -42,38 +42,39 @@ const (
 
 // ClientDevice is the device sent to the clients
 type ClientDevice struct {
-
 	Type DeviceType `json:"type" storm:"type"`
 
-	Name      string `json:"name"`   // Device name
-	Group     string `json:"group"`  // The group of the device
-	HomeID    string `json:"homeId"` // The Id of the home
+	Name   string `json:"name"`   // Device name
+	Group  string `json:"group"`  // The group of the device
+	HomeID string `json:"homeId"` // The Id of the home
 
 	Variables []ClientVariable `json:"variables"`
 }
 
+// ClientVariable are used in client devices to define variables in the device
 type ClientVariable struct {
 	Type VariableType `json:"type"` // See above
-	Name string `json:"name"` // Name of the device variable
+	Name string       `json:"name"` // Name of the device variable
 }
 
 // FieldDevice is the internal device type
 // Tasks should send this struct on the mqtt topic :
 // axihome/5/field/device/discover/{homeid}/{name} - FieldDevice json
 type FieldDevice struct {
-	ID             string `json:"id" storm:"id"`        // Device ID, fixed (used for backend)
+	ID   string     `json:"id" storm:"id"` // Device ID, fixed (used for backend)
 	Type DeviceType `json:"type" storm:"type"`
 
-	Name   string       `json:"name" storm:"index"`   // Device name (can be modified), used for frontend
-	Group  string       `json:"group" storm:"index"`  // The group of the device
-	HomeID string       `json:"homeId" storm:"index"` // The Id of the home
+	Name   string `json:"name" storm:"index"`   // Device name (can be modified), used for frontend
+	Group  string `json:"group" storm:"index"`  // The group of the device
+	HomeID string `json:"homeId" storm:"index"` // The Id of the home
 
 	Variables []FieldVariables `json:"variables"`
 }
 
+// FieldVariables are used in field devices to define variables in the device
 type FieldVariables struct {
-	Name string `json:"name"` // Name of the device variable
-	Type   VariableType `json:"type" storm:"index"`   // See above
+	Name string       `json:"name"`               // Name of the device variable
+	Type VariableType `json:"type" storm:"index"` // See above
 
 	StatusTopic    string `json:"status" storm:"index"` // Read
 	StatusTemplate string `json:"statusTemplate"`       // If Device is sending a json object, the key to read
