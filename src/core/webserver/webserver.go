@@ -15,7 +15,7 @@ import (
 
 // WebServer is the core http server
 type WebServer struct {
-	db *stormwrapper.Db
+	db               *stormwrapper.Db
 	registeredRoutes map[string]struct{}
 }
 
@@ -23,7 +23,7 @@ type WebServer struct {
 func New(db *stormwrapper.Db) *WebServer {
 
 	return &WebServer{
-		db: db,
+		db:               db,
 		registeredRoutes: make(map[string]struct{}),
 	}
 }
@@ -291,6 +291,7 @@ func (s *WebServer) handlerGetDevices(w http.ResponseWriter, r *http.Request) {
 		for _, va := range d.Variables {
 			v := types.ClientVariable{
 				Type: va.Type,
+				Name: va.Name,
 			}
 			cd.Variables = append(cd.Variables, v)
 		}

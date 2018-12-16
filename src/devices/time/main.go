@@ -55,7 +55,7 @@ func main() {
 
 	go func() {
 		for {
-			cli.PublishMessage(deviceTopic+"/"+*instanceName, &dev)
+			cli.PublishMessageNoRetain(deviceTopic+"/"+*instanceName, &dev)
 			time.Sleep(time.Second * 30)
 		}
 	}()

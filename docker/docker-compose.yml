@@ -73,7 +73,7 @@ services:
             - AX_BROKER=mosquitto
             - AX_HOMEID=home
             - AX_GROUP=server
-            - AX_INSTANCE=time
+            - AX_INSTANCE=main
         depends_on:
             - mosquitto
         volumes:

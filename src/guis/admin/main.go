@@ -39,7 +39,7 @@ func main() {
 
 	go func() {
 		for {
-			cli.PublishMessage("axihome/5/tasks/discover/admin", &tsk)
+			cli.PublishMessageNoRetain("axihome/5/tasks/discover/admin", &tsk)
 			time.Sleep(time.Second * 30)
 		}
 	}()

@@ -140,7 +140,11 @@ func (mq *Mqtt) MqttSubscribeDeviceAutoRegister() {
 
 			// Save device to database
 			log.Println("Saving new discovered device :", dev.HomeID+"."+dev.Group+"."+dev.ID)
-			mq.db.Save(&dev)
+			err := mq.db.Save(&dev)
+
+			if err != nil {
+				log.Println(err)
+			}
 
 			// Send the new device to the client topic
 			cd := types.ClientDevice{

@@ -62,7 +62,7 @@ type ClientVariable struct {
 // axihome/5/field/device/discover/{homeid}/{name} - FieldDevice json
 type FieldDevice struct {
 	ID   string     `json:"id" storm:"id"` // Device ID, fixed (used for backend)
-	Type DeviceType `json:"type" storm:"type"`
+	Type DeviceType `json:"type"`          // The type of device
 
 	Name   string `json:"name" storm:"index"`   // Device name (can be modified), used for frontend
 	Group  string `json:"group" storm:"index"`  // The group of the device
