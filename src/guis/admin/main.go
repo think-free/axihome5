@@ -26,7 +26,7 @@ func main() {
 	flag.Parse()
 
 	/* Tasks register */
-	cli := mqttclient.NewMqttClient("Task_Admin", *broker)
+	cli := mqttclient.NewMqttClient("Gui_Admin", *broker)
 	cli.Connect()
 	cli.SendHB("axihome/5/tasks/admin/hb")
 
