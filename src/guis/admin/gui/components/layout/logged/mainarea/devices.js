@@ -8,17 +8,29 @@ import mainStyle from '../../../../styles/global.js'
 
 /* Devices */
 
-const toolbarStyle = {
-    display: 'block',
-    height: 100,
-    width: 100,
-    color: mainStyle.textColor,
-    border: mainStyle.border
+const devicesStyle = {
+
+    p100 : {
+        height: '100%',
+        display:'block'
+    },
+    deviceList : {
+        display:'block',
+        position: 'relative',
+        marginTop: 50,
+        height: 'calc(100% - 50px)',
+        fallbacks: [
+            { height: '-moz-calc(100% - 50px)' },
+            { height: '-webkit-calc(100% - 50px)' },
+            { height: '-o-calc(100% - 50px)' }
+        ],
+        overflowY: 'auto'
+    }
 }
 
 const mapStateToProps = (state) => {
     return {
-        Devices: state.Devices
+        devices: state.devices
     }
 }
 
@@ -27,7 +39,7 @@ class Devices extends React.Component {
         super(props);
 
         this.state = {
-            sections: [],
+            devices: [],
         };
 
         this.buttonClick=this.buttonClick.bind(this);
@@ -48,11 +60,11 @@ class Devices extends React.Component {
     }
 
     async getData(url){
-        var url = "/core/getTasks"
+        var url = "/core/getDevices"
 
         fetch(url)
         .then(response => response.json())
-        .then(data => this.setState({ sections: data }))
+        .then(data => this.setState({ devices: data }))
     }
 
     buttonClick(e) {
@@ -60,13 +72,55 @@ class Devices extends React.Component {
     }
 
     render() {
-        const { sections } = this.state;
+        const { devices } = this.state;
 
         return (
-          <div>
-                <div style={toolbarStyle}> </div>
-          </div>
+            <div style={devicesStyle.p100}>
+                <div style={devicesStyle.deviceList}>
+                    {devices.map(function(device){
+
+                        return (
+                            <Device device={device}/>
+                        )
+                    })}
+                </div>
+            </div>
         );
+    }
+}
+
+const deviceStyle = {
+    panel : {
+        color: mainStyle.textColor,
+        marginTop: 10,
+        height: 40,
+        width: "100%",
+        backgroundColor: mainStyle.panelBackgroundColor
+    },
+    name : {
+        color: mainStyle.textItemColor,
+        paddingTop: 10,
+        paddingLeft: 30,
+        display:"inline-block"
+    }
+}
+
+class Device extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+
+        const device = this.props.device;
+        const type = "/admin/static/devicestypes/"+device.type+ "/.png"
+
+        return (
+
+            <div style={deviceStyle.panel}>
+                <span style={deviceStyle.name}><img src={type} alt="devices" width="35" height="35" draggable="false"/> {device.homeId}.{device.group}.{device.name}</span>
+            </div>
+        )
     }
 }
 

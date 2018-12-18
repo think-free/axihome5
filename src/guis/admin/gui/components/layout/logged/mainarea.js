@@ -8,15 +8,14 @@ import Devices from "./mainarea/devices.js"
 import mainStyle from '../../../styles/global.js'
 
 const layoutStyle = {
-    display: 'block',
     position: 'fixed',
-    height: 'auto',
+    height: 'calc(100%-300px)',
     width: 'auto',
     top:mainStyle.headerHeight + 20,
     left:mainStyle.menuWidth + 20,
     bottom:20,
     right:20,
-    color: mainStyle.textColor,
+    color: mainStyle.textColor
 }
 
 const mapStateToProps = (state) => {
@@ -67,7 +66,9 @@ class MainArea extends React.Component {
 
                 if (currentSection.name == "Devices") {
                     return (
-                        <Devices style={layoutStyle}/>
+                        <div style={layoutStyle}>
+                            <Devices/>
+                        </div>
                     )
 
                 } else if (currentSection.name == "Variables") {

@@ -119,7 +119,7 @@ const listElement = {
     marginTop: 10,
     ':hover': {
       backgroundColor: mainStyle.menuBackgroundColor,
-      borderRight: mainStyle.interactable,
+      borderRight: mainStyle.borderOrange,
       width: mainStyle.menuWidth
     }
 }
