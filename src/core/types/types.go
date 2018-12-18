@@ -19,6 +19,7 @@ const (
 	AnalogValue  DeviceType = "analog"
 	DigitalValue DeviceType = "digital"
 	TextValue    DeviceType = "text"
+	Custom   	 DeviceType = "custom"
 )
 
 /* Variable types */

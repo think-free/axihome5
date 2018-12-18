@@ -97,10 +97,14 @@ const deviceStyle = {
         width: "100%",
         backgroundColor: mainStyle.panelBackgroundColor
     },
+    icon : {
+        paddingTop: 10,
+        paddingLeft: 20,
+    },
     name : {
         color: mainStyle.textItemColor,
-        paddingTop: 10,
-        paddingLeft: 30,
+        paddingTop: 5,
+        paddingLeft: 20,
         display:"inline-block"
     }
 }
@@ -118,7 +122,7 @@ class Device extends React.Component {
         return (
 
             <div style={deviceStyle.panel}>
-                <span style={deviceStyle.name}><img src={type} alt="devices" width="35" height="35" draggable="false"/> {device.homeId}.{device.group}.{device.name}</span>
+                <img style={deviceStyle.icon} src={type} alt="devices" width="20" height="20" draggable="false"/> <span style={deviceStyle.name}> {device.homeId}.{device.group}.{device.name}</span>
             </div>
         )
     }
