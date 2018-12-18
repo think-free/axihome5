@@ -113,7 +113,7 @@ class Device extends React.Component {
     render() {
 
         const device = this.props.device;
-        const type = "/admin/static/devicestypes/"+device.type+ "/.png"
+        const type = "/admin/static/devicestypes/"+device.type+ ".png"
 
         return (
 
