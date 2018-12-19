@@ -22,10 +22,11 @@ const layoutStyle = {
 
 const listStyle = {
     listStyleType: 'none',
-    margin: 7,
+    //margin: 7,
     padding: 0,
     marginTop: 50,
-    width: mainStyle.menuWidth + 50,
+    marginBottom: 50,
+    width: mainStyle.menuWidth + 1,
     overflowY: 'auto'
 }
 
@@ -94,7 +95,7 @@ class Menu extends React.Component {
 
                           return (
                               <ElementList section={section}>
-                                <img src={im} alt={section.name} width="35" height="35" draggable="false"/>
+                                <img src={im} alt={section.name} width="36" height="36" draggable="false"/>
                               </ElementList>
                           )
 
@@ -115,12 +116,9 @@ class Menu extends React.Component {
 const listElement = {
     cursor: "pointer",
     userSelect: "pointer",
-    border: mainStyle.interactable,
-    marginTop: 10,
+    padding: 7,
     ':hover': {
-      backgroundColor: mainStyle.menuBackgroundColor,
       borderRight: mainStyle.borderOrange,
-      width: mainStyle.menuWidth
     }
 }
 
