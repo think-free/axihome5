@@ -2,6 +2,7 @@ import React from 'react'
 import Radium from 'radium';
 import { connect } from 'react-redux'
 import { setValue } from '../../../redux/store.js'
+import DeviceAdd from './devices/addDevice.js'
 
 import mainStyle from '../../../../styles/global.js'
 
@@ -13,11 +14,16 @@ const devicesStyle = {
         height: '100%',
         display:'block'
     },
+    toolBar : {
+        position: 'relative',
+        float: 'right'
+    },
     deviceList : {
         display:'block',
         position: 'relative',
         marginTop: 50,
         height: 'calc(100% - 50px)',
+        width: '100%',
         fallbacks: [
             { height: '-moz-calc(100% - 50px)' },
             { height: '-webkit-calc(100% - 50px)' },
@@ -29,7 +35,8 @@ const devicesStyle = {
 
 const mapStateToProps = (state) => {
     return {
-        devices: state.devices
+        devices: state.devices,
+        addPanelVisible: state.addPanelVisible
     }
 }
 
@@ -41,7 +48,8 @@ class Devices extends React.Component {
             devices: [],
         };
 
-        this.buttonClick=this.buttonClick.bind(this);
+        // Buttons handlers
+        this.toggleAddPanelVisible=this.toggleAddPanelVisible.bind(this);
     }
 
     async componentDidMount() {
@@ -51,7 +59,7 @@ class Devices extends React.Component {
         // Periodicaly refresh states
         this.interval = setInterval(() => {
             this.getData();
-        }, 30000);
+        }, 5000);
     }
 
     componentWillUnmount() {
@@ -66,25 +74,39 @@ class Devices extends React.Component {
         .then(data => this.setState({ devices: data }))
     }
 
-    buttonClick(e) {
-        this.props.dispatch(setValue("Devices", "clicked"));
+    // Button handler
+
+    toggleAddPanelVisible(e) {
+        this.props.dispatch(setValue("addPanelVisible", true))
     }
+
+    // Render
 
     render() {
         const { devices } = this.state;
 
-        return (
-            <div style={devicesStyle.p100}>
-                <div style={devicesStyle.deviceList}>
-                    {devices.map(function(device){
+        if (!this.props.addPanelVisible){
 
-                        return (
-                            <Device device={device}/>
-                        )
-                    })}
+            return (
+                <div style={devicesStyle.p100}>
+                    <span style={devicesStyle.toolBar}>
+                        <img key="bt_add" style={mainStyle.menuIcon} src="/admin/static/add.png" width="20" height="20" draggable="false" onClick={this.toggleAddPanelVisible}/>
+                    </span>
+                    <div style={devicesStyle.deviceList}>
+                        {devices.map(function(device){
+
+                            return (
+                                <Device device={device}/>
+                            )
+                        })}
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        } else {
+            return (
+                <DeviceAdd />
+            )
+        }
     }
 }
 
@@ -117,29 +139,16 @@ const deviceStyle = {
         userSelect:"none",
     },
     menuIcon : {
-        paddingTop: 10,
-        paddingRight: 20,
-        paddingBottom: 10,
-        paddingLeft: 20,
-        float: 'right',
-        cursor: "pointer",
-        ':hover': {
-          backgroundColor: mainStyle.menuBackgroundColor
-        }
+        float: 'right'
     },
-    line : {
-        height: 1,
-        width: 'calc(100%-100px)',
-        marginLeft: 50,
-        marginRight: 50,
-        backgroundColor: '#383846'
-    },
+
     panelVariable : {
         margin:  10
     }
 }
 
 class Device extends React.Component {
+
     constructor(props) {
         super(props);
 
@@ -152,7 +161,6 @@ class Device extends React.Component {
     }
 
     showDetailClick(e) {
-        console.log("CLICKED")
         this.setState({panelVisible : !this.state.panelVisible})
     }
 
@@ -170,7 +178,9 @@ class Device extends React.Component {
             <div style={stl}>
                 <img style={deviceStyle.icon} src={type} alt="devices" width="20" height="20" draggable="false"/>
                 <span style={deviceStyle.name}> {device.homeId}.{device.group}.{device.name}</span>
-                <img style={deviceStyle.menuIcon} src="/admin/static/menu.png" alt="devices" width="20" height="20" draggable="false" onClick={this.showDetailClick}/>
+                <div style={deviceStyle.menuIcon}>
+                    <img style={mainStyle.menuIcon} src="/admin/static/menu.png" alt="devices" width="20" height="20" draggable="false" onClick={this.showDetailClick}/>
+                </div>
                 {this.renderVariables()}
             </div>
         )
@@ -186,7 +196,9 @@ class Device extends React.Component {
             return (
 
                 <div style={deviceStyle.panelVariable}>
-                    <div style={deviceStyle.line}/>
+                    <div style={mainStyle.line}/>
+
+                    <br/>
 
                     {variables.map(function(variable){
                         return (

@@ -31,10 +31,10 @@ services:
 # ##########################
     admin:
         container_name: admin
-        image: thinkfree84/ax5_admin:latest
-        build:
-            context: ../
-            dockerfile: src/guis/admin/Dockerfile
+        image: tianon/true #thinkfree84/ax5_admin:latest
+        #build:
+        #    context: ../
+        #    dockerfile: src/guis/admin/Dockerfile
         environment:
             - AX_BROKER=mosquitto
             - AX_HOST=admin
@@ -73,7 +73,7 @@ services:
             - AX_BROKER=mosquitto
             - AX_HOMEID=home
             - AX_GROUP=server
-            - AX_INSTANCE=main
+            - AX_INSTANCE=time
         depends_on:
             - mosquitto
         volumes:

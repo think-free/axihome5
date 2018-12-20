@@ -23,7 +23,7 @@ func main() {
 
 	homeID := flag.String("homeId", "home", "The home ID")
 	group := flag.String("group", "server", "The group of the message")
-	instanceName := flag.String("instance", "main", "The instance name")
+	instanceName := flag.String("instance", "time", "The instance name")
 	envy.Parse("AX")
 	flag.Parse()
 
@@ -46,7 +46,7 @@ func main() {
 
 		Variables: []types.FieldVariables{
 			types.FieldVariables{
-				Name:        "time",
+				Name:        "unix",
 				Type:        types.Number,
 				StatusTopic: topic + "/" + *instanceName,
 			},
