@@ -50,6 +50,7 @@ func (mq *Mqtt) Run() {
 
 	mq.cli = mqttclient.NewMqttClient("AxihomeCore", mq.server)
 	mq.cli.Connect()
+	mq.cli.SendHB("axihome/5/core/hb")
 
 	mq.MqttSubscribeRequestBroadcastStatus()
 	mq.MqttSubscribeRequestBroadcastDevices()

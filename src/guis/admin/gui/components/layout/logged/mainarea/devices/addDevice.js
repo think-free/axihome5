@@ -1,5 +1,6 @@
 import React from 'react'
 import Radium from 'radium';
+import fetch from 'isomorphic-unfetch';
 import { connect } from 'react-redux'
 import { setValue } from '../../../../redux/store.js'
 
@@ -39,6 +40,9 @@ const devicesStyle = {
     },
     table : {
         marginLeft: 20
+    },
+    tableVariables : {
+        marginLeft: 50
     }
 }
 
@@ -57,37 +61,78 @@ class DeviceAdd extends React.Component {
             deviceType : "switch",
             deviceHomeId : "",
             deviceGroup : "",
-            deviceName : ""
+            deviceName : "",
+
+            variableType : "digital",
+            variableName : "",
+            variableStatusTopic : "",
+            variableCmdTopic : "",
+
+            variables : []
         };
 
         // Buttons handlers
         this.sendNewDevice=this.sendNewDevice.bind(this);
         this.cancel=this.cancel.bind(this);
+        this.addVariable=this.addVariable.bind(this);
 
         this.formDeviceTypeChanged=this.formDeviceTypeChanged.bind(this);
         this.formDeviceHomeIDChanged=this.formDeviceHomeIDChanged.bind(this);
         this.formDeviceGroupChanged=this.formDeviceGroupChanged.bind(this);
         this.formDeviceNameChanged=this.formDeviceNameChanged.bind(this);
+
+        this.formVariableTypeChanged=this.formVariableTypeChanged.bind(this);
+        this.formVariableNameChanged=this.formVariableNameChanged.bind(this);
+        this.formVariableStatusChanged=this.formVariableStatusChanged.bind(this);
+        this.formVariableCmdChanged=this.formVariableCmdChanged.bind(this);
     }
 
     // Button handler
 
+    post (url, json) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: json
+        })
+    }
+
     sendNewDevice(e) {
-        /*this.post("/core/addDeviceConfig", JSON.stringify(
+        this.post("/core/addDeviceConfig", JSON.stringify(
             {
                 id: this.state.deviceHomeId + "." + this.state.deviceGroup + "." + this.state.deviceName,
                 type: this.state.deviceType,
                 name: this.state.deviceName,
                 group: this. state.deviceGroup,
-                homeId: this.state.deviceHomeId
+                homeId: this.state.deviceHomeId,
+                variables : this.state.variables
             }
-        ))*/
+        ))
 
         this.props.dispatch(setValue("addPanelVisible", false))
     }
 
     cancel(e) {
         this.props.dispatch(setValue("addPanelVisible", false))
+    }
+
+    addVariable(e) {
+        let variable = {
+            name : this.state.variableName,
+            type : this.state.variableType,
+            status : this.state.variableStatusTopic,
+            statusTemplate : "",
+            cmd: this.state.variableCmdTopic,
+            cmdTemplate : ""
+        }
+
+        let variables = this.state.variables;
+        variables.push(variable)
+
+        this.setState({ variables: variables })
     }
 
     // Input device handlers
@@ -97,28 +142,50 @@ class DeviceAdd extends React.Component {
         this.state.deviceType = event.target.value
         console.log("Device type " + this.state.deviceType)
     }
-
     formDeviceHomeIDChanged(event) {
 
         this.state.deviceHomeId = event.target.value
         console.log("Home Id " + this.state.deviceHomeId)
     }
-
     formDeviceGroupChanged(event) {
 
         this.state.deviceGroup = event.target.value
         console.log("Group " + this.state.deviceGroup)
     }
-
     formDeviceNameChanged(event) {
 
         this.state.deviceName = event.target.value
         console.log("Name " + this.state.deviceName)
     }
 
+    // Input variables handlers
+
+    formVariableTypeChanged(event) {
+
+        this.state.variableType = event.target.value
+        console.log("Variable type " + this.state.variableType)
+    }
+    formVariableNameChanged(event) {
+
+        this.state.variableName = event.target.value
+        console.log("Variable name " + this.state.variableName)
+    }
+    formVariableStatusChanged(event) {
+
+        this.state.variableStatusTopic = event.target.value
+        console.log("Variable status topic " + this.state.variableStatusTopic)
+    }
+    formVariableCmdChanged(event) {
+
+        this.state.variableCmdTopic = event.target.value
+        console.log("Variable cmd topic " + this.state.variableCmdTopic)
+    }
+
     // Render
 
     render() {
+
+        const variables = this.state.variables
 
         return (
             <div style={devicesStyle.p100}>
@@ -132,6 +199,8 @@ class DeviceAdd extends React.Component {
                     <div style={devicesStyle.title}>Device configuration</div><br />
 
                     <table style={devicesStyle.table}>
+                        <col width="100px" />
+                        <col />
                         <tr>
                             <td style={devicesStyle.item}>Type</td>
                             <td> </td>
@@ -179,17 +248,19 @@ class DeviceAdd extends React.Component {
                     <br/>
 
                     <span style={devicesStyle.toolBar}>
-                        <img key="bt_addVariable" style={mainStyle.menuIcon} src="/admin/static/add.png" width="20" height="20" draggable="false" onClick={this.toggleAddPanelVisible}/>
+                        <img key="bt_addVariable" style={mainStyle.menuIcon} src="/admin/static/add.png" width="20" height="20" draggable="false" onClick={this.addVariable}/>
                     </span>
 
                     <div style={devicesStyle.title}>Add variables</div><br />
 
                     <table style={devicesStyle.table}>
+                        <col width="100px" />
+                        <col />
                         <tr>
                             <td style={devicesStyle.item}>Type</td>
                             <td> </td>
                             <td align="right">
-                                <select key="ip_type" onBlur={this.formDeviceTypeChanged}>
+                                <select key="ip_type" onBlur={this.formVariableTypeChanged}>
 
                                     <option value="digital">Digital</option>
                                     <option value="analog">Analog</option>
@@ -208,18 +279,36 @@ class DeviceAdd extends React.Component {
                         <tr>
                             <td style={devicesStyle.item}>Name</td>
                             <td> </td>
-                            <td><input key="ip_vName" style={mainStyle.inputStyle} type="text" onBlur={this.formDeviceHomeIDChanged}/></td>
+                            <td><input key="ip_vName" style={mainStyle.inputStyle} type="text" onBlur={this.formVariableNameChanged}/></td>
                         </tr>
                         <tr>
                             <td style={devicesStyle.item}>Status topic</td>
                             <td> </td>
-                            <td><input key="ip_vStatus" style={mainStyle.inputStyle} type="text" onBlur={this.formDeviceGroupChanged}/></td>
+                            <td><input key="ip_vStatus" style={mainStyle.inputStyle} type="text" onBlur={this.formVariableStatusChanged}/></td>
                         </tr>
                         <tr>
                             <td style={devicesStyle.item}>Cmd topic</td>
                             <td> </td>
-                            <td><input key="ip_vCmd" style={mainStyle.inputStyle} type="text" onBlur={this.formDeviceNameChanged}/></td>
+                            <td><input key="ip_vCmd" style={mainStyle.inputStyle} type="text" onBlur={this.formVariableCmdChanged}/></td>
                         </tr>
+                    </table>
+
+                    <br />
+
+
+                    <table style={devicesStyle.tableVariables}>
+                        <col width="100px"/>
+                        <col />
+
+                        {variables.map(function(variable){
+                            return (
+                                <tr>
+                                    <td style={devicesStyle.item}>{variable.name}</td>
+                                    <td>({variable.type})</td>
+                                    <td></td>
+                                </tr>
+                            )
+                        })}
                     </table>
                 </div>
             </div>
@@ -227,8 +316,6 @@ class DeviceAdd extends React.Component {
     }
 }
 
-
 /* Export */
-
 DeviceAdd = Radium(DeviceAdd);
 export default connect(mapStateToProps)(DeviceAdd);
