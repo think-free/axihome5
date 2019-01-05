@@ -67,7 +67,7 @@ class Devices extends React.Component {
     }
 
     async getData(url){
-        var url = "/core/getDevices"
+        var url = "/core/getDevicesConfig"
 
         fetch(url)
         .then(response => response.json())
@@ -156,12 +156,27 @@ class Device extends React.Component {
             panelVisible: false,
         };
 
+        this.edit=this.edit.bind(this);
+        this.delete=this.delete.bind(this);
+
         this.showDetailClick=this.showDetailClick.bind(this);
         this.renderVariables=this.renderVariables.bind(this);
+        this.renderButtons=this.renderButtons.bind(this);
     }
 
     showDetailClick(e) {
         this.setState({panelVisible : !this.state.panelVisible})
+    }
+
+    edit(e) {
+        this.props.dispatch(setValue("editVariable", this.props.device))
+        this.props.dispatch(setValue("addPanelVisible", true))
+    }
+
+    delete(e) {
+
+        console.log( this.props.device)
+        fetch("/core/deleteDeviceConfig?id=" + this.props.device.id)
     }
 
     render() {
@@ -179,11 +194,29 @@ class Device extends React.Component {
                 <img style={deviceStyle.icon} src={type} alt="devices" width="20" height="20" draggable="false"/>
                 <span style={deviceStyle.name}> {device.homeId}.{device.group}.{device.name}</span>
                 <div style={deviceStyle.menuIcon}>
+                    {this.renderButtons()}
                     <img style={mainStyle.menuIcon} src="/admin/static/menu.png" alt="devices" width="20" height="20" draggable="false" onClick={this.showDetailClick}/>
                 </div>
                 {this.renderVariables()}
             </div>
         )
+    }
+
+    renderButtons() {
+
+        if (this.state.panelVisible) {
+
+            return (
+                <span>
+                    <img key="bt_edit" style={mainStyle.menuIcon} src="/admin/static/edit.png" width="20" height="20" draggable="false" onClick={this.edit}/>
+                    <img key="bt_delete" style={mainStyle.menuIcon} src="/admin/static/delete.png" width="20" height="20" draggable="false" onClick={this.delete}/>
+                    &nbsp;&nbsp;
+                </span>
+            )
+        } else {
+
+            return (null)
+        }
     }
 
     renderVariables() {
@@ -200,7 +233,7 @@ class Device extends React.Component {
 
                     <br/>
 
-                    {variables.map(function(variable){
+                    {variables && variables.map(function(variable){
                         return (
                             <DeviceVariable device={dev} variable={variable} />
                         )
@@ -209,6 +242,7 @@ class Device extends React.Component {
                     <br/>
                 </div>
             )
+
         } else {
 
             return(null)
@@ -292,4 +326,5 @@ class DeviceVariable extends React.Component {
 
 Devices = Radium(Devices);
 Device = Radium(Device);
+Device = connect()(Device)
 export default connect(mapStateToProps)(Devices);

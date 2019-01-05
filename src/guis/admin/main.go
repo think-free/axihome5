@@ -20,7 +20,7 @@ func main() {
 	host := flag.String("host", "localhost", "The host name for autoregister")
 	port := flag.String("port", "8123", "Port for the webserver")
 
-	dev := flag.Bool("dev", false, "Dev mode : use the folder './src/project/gui/out/' as gui")
+	dev := flag.Bool("dev", false, "Dev mode : use the folder './src/guis/admin/gui/out/' as gui")
 
 	envy.Parse("AX")
 	flag.Parse()

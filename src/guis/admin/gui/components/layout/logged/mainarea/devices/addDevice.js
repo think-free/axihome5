@@ -42,13 +42,22 @@ const devicesStyle = {
         marginLeft: 20
     },
     tableVariables : {
-        marginLeft: 50
+        marginLeft: 10
+    },
+    panel : {
+        color: mainStyle.textColor,
+        marginTop: 10,
+        minHeight: 40,
+        width: "100%",
+        backgroundColor: mainStyle.panelBackgroundColor,
+        cursor: "pointer"
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-        addPanelVisible: state.addPanelVisible
+        addPanelVisible: state.addPanelVisible,
+        editVariable : state.editVariable
     }
 }
 
@@ -58,6 +67,7 @@ class DeviceAdd extends React.Component {
 
         this.state = {
 
+            deviceId : "",
             deviceType : "switch",
             deviceHomeId : "",
             deviceGroup : "",
@@ -74,7 +84,6 @@ class DeviceAdd extends React.Component {
         // Buttons handlers
         this.sendNewDevice=this.sendNewDevice.bind(this);
         this.cancel=this.cancel.bind(this);
-        this.addVariable=this.addVariable.bind(this);
 
         this.formDeviceTypeChanged=this.formDeviceTypeChanged.bind(this);
         this.formDeviceHomeIDChanged=this.formDeviceHomeIDChanged.bind(this);
@@ -85,6 +94,22 @@ class DeviceAdd extends React.Component {
         this.formVariableNameChanged=this.formVariableNameChanged.bind(this);
         this.formVariableStatusChanged=this.formVariableStatusChanged.bind(this);
         this.formVariableCmdChanged=this.formVariableCmdChanged.bind(this);
+
+        this.addVariable=this.addVariable.bind(this);
+        this.deleteVariable=this.deleteVariable.bind(this);
+        this.setCurrentVariable=this.setCurrentVariable.bind(this);
+
+        if (this.props.editVariable != undefined && this.props.editVariable != null){
+
+            const edit = this.props.editVariable;
+
+            this.state.deviceId = edit.id;
+            this.state.deviceType = edit.type;
+            this.state.deviceHomeId = edit.homeId;
+            this.state.deviceGroup = edit.group;
+            this.state.deviceName = edit.name;
+            this.state.variables = edit.variables
+        }
     }
 
     // Button handler
@@ -101,25 +126,113 @@ class DeviceAdd extends React.Component {
     }
 
     sendNewDevice(e) {
-        this.post("/core/addDeviceConfig", JSON.stringify(
-            {
-                id: this.state.deviceHomeId + "." + this.state.deviceGroup + "." + this.state.deviceName,
-                type: this.state.deviceType,
-                name: this.state.deviceName,
-                group: this. state.deviceGroup,
-                homeId: this.state.deviceHomeId,
-                variables : this.state.variables
-            }
-        ))
 
+        if (this.state.deviceId == "") { // Add New
+
+            this.post("/core/addDeviceConfig", JSON.stringify(
+                {
+                    id: this.state.deviceHomeId + "." + this.state.deviceGroup + "." + this.state.deviceName,
+                    type: this.state.deviceType,
+                    name: this.state.deviceName,
+                    group: this.state.deviceGroup,
+                    homeId: this.state.deviceHomeId,
+                    variables : this.state.variables
+                }
+            ))
+
+        } else { // Modify existing device
+
+            this.post("/core/modifyDeviceConfig", JSON.stringify(
+                {
+                    id: this.state.deviceId,
+                    type: this.state.deviceType,
+                    name: this.state.deviceName,
+                    group: this.state.deviceGroup,
+                    homeId: this.state.deviceHomeId,
+                    variables : this.state.variables
+                }
+            ))
+        }
+
+        this.props.dispatch(setValue("editVariable", null))
         this.props.dispatch(setValue("addPanelVisible", false))
     }
 
     cancel(e) {
+        this.props.dispatch(setValue("editVariable", null))
         this.props.dispatch(setValue("addPanelVisible", false))
     }
 
+    // Input device handlers
+
+    formDeviceTypeChanged(event) {
+
+        this.state.deviceType = event.target.value
+        this.setState({ deviceType: event.target.value })
+        console.log("Device type " + this.state.deviceType)
+    }
+    formDeviceHomeIDChanged(event) {
+
+        this.state.deviceHomeId = event.target.value
+        this.setState({ deviceHomeId: event.target.value })
+        console.log("Home Id " + this.state.deviceHomeId)
+    }
+    formDeviceGroupChanged(event) {
+
+        this.state.deviceGroup = event.target.value
+        this.setState({ deviceGroup: event.target.value })
+        console.log("Group " + this.state.deviceGroup)
+    }
+    formDeviceNameChanged(event) {
+
+        //this.state.deviceName = event.target.value
+        this.setState({ deviceName: event.target.value })
+        console.log("Name " + this.state.deviceName)
+    }
+
+    // Input variables handlers
+
+    formVariableTypeChanged(event) {
+
+        //this.state.variableType = event.target.value
+        this.setState({ variableType: event.target.value })
+        console.log("Variable type " + this.state.variableType)
+    }
+    formVariableNameChanged(event) {
+
+        //this.state.variableName = event.target.value
+        this.setState({ variableName: event.target.value })
+        console.log("Variable name " + this.state.variableName)
+    }
+    formVariableStatusChanged(event) {
+
+        //this.state.variableStatusTopic = event.target.value
+        this.setState({ variableStatusTopic: event.target.value })
+        console.log("Variable status topic " + this.state.variableStatusTopic)
+    }
+    formVariableCmdChanged(event) {
+
+        //this.state.variableCmdTopic = event.target.value
+        this.setState({ variableCmdTopic: event.target.value })
+        console.log("Variable cmd topic " + this.state.variableCmdTopic)
+    }
+
     addVariable(e) {
+
+        // Delete variable if already inserted
+        let variablesDelete = this.state.variables;
+        let name = this.state.variableName;
+        var variables = variablesDelete.filter(function(value, index, arr){
+
+            if (value.name != name){
+                console.log("Deleting : " + name)
+                return true;
+            }
+
+            return false;
+        });
+
+        // Add
         let variable = {
             name : this.state.variableName,
             type : this.state.variableType,
@@ -129,63 +242,61 @@ class DeviceAdd extends React.Component {
             cmdTemplate : ""
         }
 
-        let variables = this.state.variables;
+        //let variables = this.state.variables;
         variables.push(variable)
 
+        this.forceUpdate();
         this.setState({ variables: variables })
     }
 
-    // Input device handlers
+    deleteVariable(name) {
 
-    formDeviceTypeChanged(event) {
+        let variables = this.state.variables;
 
-        this.state.deviceType = event.target.value
-        console.log("Device type " + this.state.deviceType)
-    }
-    formDeviceHomeIDChanged(event) {
+        console.log("Delete called " + name)
+        console.log(variables)
 
-        this.state.deviceHomeId = event.target.value
-        console.log("Home Id " + this.state.deviceHomeId)
-    }
-    formDeviceGroupChanged(event) {
+        var filtered = variables.filter(function(value, index, arr){
 
-        this.state.deviceGroup = event.target.value
-        console.log("Group " + this.state.deviceGroup)
-    }
-    formDeviceNameChanged(event) {
+            if (value.name != name){
+                console.log("Deleting : " + name)
+                return true;
+            }
 
-        this.state.deviceName = event.target.value
-        console.log("Name " + this.state.deviceName)
+            return false;
+        });
+
+        this.setState({ variables: filtered });
     }
 
-    // Input variables handlers
+    setCurrentVariable(name) {
 
-    formVariableTypeChanged(event) {
+        console.log(name)
 
-        this.state.variableType = event.target.value
-        console.log("Variable type " + this.state.variableType)
-    }
-    formVariableNameChanged(event) {
+        const v = this.state.variables;
 
-        this.state.variableName = event.target.value
-        console.log("Variable name " + this.state.variableName)
-    }
-    formVariableStatusChanged(event) {
+        for (var i = 0; i < v.length; i++) {
 
-        this.state.variableStatusTopic = event.target.value
-        console.log("Variable status topic " + this.state.variableStatusTopic)
-    }
-    formVariableCmdChanged(event) {
 
-        this.state.variableCmdTopic = event.target.value
-        console.log("Variable cmd topic " + this.state.variableCmdTopic)
+            if (v[i].name === name){
+
+                console.log("Found : " + v[i].name)
+                this.setState({ variableType: v[i].type })
+                this.setState({ variableName: v[i].name })
+                this.setState({ variableStatusTopic: v[i].status })
+                this.setState({ variableCmdTopic: v[i].cmd })
+            }
+        }
     }
 
     // Render
 
     render() {
 
+        console.log(variables)
+
         const variables = this.state.variables
+        const me = this;
 
         return (
             <div style={devicesStyle.p100}>
@@ -205,7 +316,7 @@ class DeviceAdd extends React.Component {
                             <td style={devicesStyle.item}>Type</td>
                             <td> </td>
                             <td align="right">
-                                <select key="ip_type" onBlur={this.formDeviceTypeChanged}>
+                                <select key="ip_type" value={this.state.deviceType} onChange={this.formDeviceTypeChanged} onBlur={this.formDeviceTypeChanged}>
                                     <option value="switch">Switch</option>
                                     <option value="dimmer">Dimmer</option>
                                     <option value="rgb">Rgb</option>
@@ -229,17 +340,17 @@ class DeviceAdd extends React.Component {
                         <tr>
                             <td style={devicesStyle.item}>Home ID</td>
                             <td> </td>
-                            <td><input key="ip_homeId" style={mainStyle.inputStyle} type="text" onBlur={this.formDeviceHomeIDChanged}/></td>
+                            <td><input key="ip_homeId" style={mainStyle.inputStyle} type="text" value={this.state.deviceHomeId} onChange={this.formDeviceHomeIDChanged} onBlur={this.formDeviceHomeIDChanged}/></td>
                         </tr>
                         <tr>
                             <td style={devicesStyle.item}>Group</td>
                             <td> </td>
-                            <td><input key="ip_group" style={mainStyle.inputStyle} type="text" onBlur={this.formDeviceGroupChanged}/></td>
+                            <td><input key="ip_group" style={mainStyle.inputStyle} type="text" value={this.state.deviceGroup} onChange={this.formDeviceGroupChanged} onBlur={this.formDeviceGroupChanged}/></td>
                         </tr>
                         <tr>
                             <td style={devicesStyle.item}>Name</td>
                             <td> </td>
-                            <td><input key="ip_name" style={mainStyle.inputStyle} type="text" onBlur={this.formDeviceNameChanged}/></td>
+                            <td><input key="ip_name" style={mainStyle.inputStyle} type="text" value={this.state.deviceName} onChange={this.formDeviceNameChanged} onBlur={this.formDeviceNameChanged}/></td>
                         </tr>
                     </table>
 
@@ -260,7 +371,7 @@ class DeviceAdd extends React.Component {
                             <td style={devicesStyle.item}>Type</td>
                             <td> </td>
                             <td align="right">
-                                <select key="ip_type" onBlur={this.formVariableTypeChanged}>
+                                <select key="ip_type" onChange={this.formVariableTypeChanged} onBlur={this.formVariableTypeChanged} value={this.state.variableType}>
 
                                     <option value="digital">Digital</option>
                                     <option value="analog">Analog</option>
@@ -279,37 +390,51 @@ class DeviceAdd extends React.Component {
                         <tr>
                             <td style={devicesStyle.item}>Name</td>
                             <td> </td>
-                            <td><input key="ip_vName" style={mainStyle.inputStyle} type="text" onBlur={this.formVariableNameChanged}/></td>
+                            <td><input key="ip_vName" style={mainStyle.inputStyle} type="text" onChange={this.formVariableNameChanged} onBlur={this.formVariableNameChanged} value={this.state.variableName}/></td>
                         </tr>
                         <tr>
                             <td style={devicesStyle.item}>Status topic</td>
                             <td> </td>
-                            <td><input key="ip_vStatus" style={mainStyle.inputStyle} type="text" onBlur={this.formVariableStatusChanged}/></td>
+                            <td><input key="ip_vStatus" style={mainStyle.inputStyle} type="text" onChange={this.formVariableStatusChanged} onBlur={this.formVariableStatusChanged} value={this.state.variableStatusTopic}/></td>
                         </tr>
                         <tr>
                             <td style={devicesStyle.item}>Cmd topic</td>
                             <td> </td>
-                            <td><input key="ip_vCmd" style={mainStyle.inputStyle} type="text" onBlur={this.formVariableCmdChanged}/></td>
+                            <td><input key="ip_vCmd" style={mainStyle.inputStyle} type="text" onChange={this.formVariableCmdChanged} onBlur={this.formVariableCmdChanged} value={this.state.variableCmdTopic}/></td>
                         </tr>
                     </table>
 
                     <br />
 
-
-                    <table style={devicesStyle.tableVariables}>
-                        <col width="100px"/>
-                        <col />
-
                         {variables.map(function(variable){
+
                             return (
-                                <tr>
-                                    <td style={devicesStyle.item}>{variable.name}</td>
-                                    <td>({variable.type})</td>
-                                    <td></td>
-                                </tr>
+                                <div style={devicesStyle.panel} onClick={() => me.setCurrentVariable(variable.name)}>
+                                    <table style={devicesStyle.tableVariables}>
+                                        <col width="60px" align="center"/>
+                                        <col width="80px"/>
+                                        <col width="150px"/>
+                                        <col width="25px" align="center"/>
+                                        <col />
+
+                                        <tr>
+                                            <td><img key={"delete_button_" + variable.name} style={mainStyle.menuIcon} src="/admin/static/delete.png" width="15" height="15" draggable="false" onClick={() => me.deleteVariable(variable.name)}/></td>
+                                            <td>{variable.type}</td>
+                                            <td style={devicesStyle.item}>{variable.name}</td>
+                                            <td><img src="/admin/static/read.png" width="15" height="15" draggable="false" /></td>
+                                            <td>{variable.status}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><img src="/admin/static/write.png" width="15" height="15" draggable="false" /></td>
+                                            <td>{variable.cmd}</td>
+                                        </tr>
+                                    </table>
+                                </div>
                             )
                         })}
-                    </table>
                 </div>
             </div>
         )

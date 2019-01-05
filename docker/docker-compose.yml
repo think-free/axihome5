@@ -31,7 +31,8 @@ services:
 # ##########################
     admin:
         container_name: admin
-        image: tianon/true #thinkfree84/ax5_admin:latest
+        image: tianon/true
+        #image: thinkfree84/ax5_admin:latest
         #build:
         #    context: ../
         #    dockerfile: src/guis/admin/Dockerfile
