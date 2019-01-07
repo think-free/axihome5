@@ -88,6 +88,10 @@ class Menu extends React.Component {
                     <img src="/admin/static/variables.png" alt="variables" width="35" height="35" draggable="false"/>
                   </ElementList>
 
+                  <ElementList section={{"name": "Plugins", "url": "internal"}}>
+                    <img src="/admin/static/plugins.png" alt="plugins" width="35" height="35" draggable="false"/>
+                  </ElementList>
+
                   {sections.map(function(section){
                       let im = "/"+section.url+"/static/icon.png"
 

@@ -45,6 +45,9 @@ services:
         volumes:
             - ./ax5:/etc/ax5
 
+
+### THE FOLLOWING WILL BE REMOVED AND IMPLEMENTED AS PLUGINS WITH A MANAGER
+
 # TASKS
 # ##########################
     alarm:

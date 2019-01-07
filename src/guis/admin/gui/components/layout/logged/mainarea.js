@@ -4,6 +4,7 @@ import { setValue } from '../../redux/store.js'
 import Iframe from 'react-iframe'
 
 import Devices from "./mainarea/devices.js"
+import Variables from "./mainarea/variables.js"
 
 import mainStyle from '../../../styles/global.js'
 
@@ -72,6 +73,12 @@ class MainArea extends React.Component {
                     )
 
                 } else if (currentSection.name == "Variables") {
+                    return (
+                        <div style={layoutStyle}>
+                            <Variables/>
+                        </div>
+                    )
+                } else if (currentSection.name == "Plugins") {
                     return (
                         <div style={layoutStyle}>
 
