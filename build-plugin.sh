@@ -1,8 +1,17 @@
 #!/bin/bash
 
-go get -u github.com/GeertJohan/go.rice
-go get -u github.com/GeertJohan/go.rice/rice
-go get -u github.com/golang/dep/cmd/dep
+echo "Getting rice and dep"
+
+if ! [ -x "$(command -v rice)" ];
+then
+	go get -u github.com/GeertJohan/go.rice
+	go get -u github.com/GeertJohan/go.rice/rice
+fi
+
+if ! [ -x "$(command -v dep)" ];
+then
+	go get -u github.com/golang/dep/cmd/dep
+fi
 
 PT=`pwd`
 
@@ -23,7 +32,9 @@ then
     cd ..
 fi
 
+echo "Running dep ensure"
 dep ensure
 
+echo "Building plugin"
 cd $PT
 go install plugins/$1
