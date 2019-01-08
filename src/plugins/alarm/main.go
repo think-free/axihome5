@@ -9,7 +9,7 @@ import (
 	"github.com/think-free/axihome5/src/core/types"
 	"github.com/think-free/mqttclient"
 
-	"tasks/alarm/webserver"
+	"plugins/alarm/webserver"
 )
 
 func main() {

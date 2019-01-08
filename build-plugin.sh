@@ -6,13 +6,13 @@ go get -u github.com/golang/dep/cmd/dep
 
 PT=`pwd`
 
-echo "Building $1"
+echo "Building plugin $1"
 
-cd src/$1
+cd src/plugins/$1
 
 if [ -d ./gui ];
 then
-    echo "Building gui"
+    echo "Building plugin's gui"
     cd gui
     npm install
     npm run build
@@ -26,4 +26,4 @@ fi
 dep ensure
 
 cd $PT
-go install $1
+go install plugins/$1

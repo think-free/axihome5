@@ -9,7 +9,7 @@ import (
 	"github.com/think-free/axihome5/src/core/types"
 	"github.com/think-free/mqttclient"
 
-	"guis/admin/webserver"
+	"plugins/admin/webserver"
 )
 
 func main() {

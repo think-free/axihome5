@@ -3,3 +3,6 @@ docker/ax5/
 pkg/
 rice-box.go
 /bin
+out
+node_modules
+.next
