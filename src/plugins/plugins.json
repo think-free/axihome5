@@ -1,0 +1,38 @@
+[
+    {
+        "Name" : "time",
+        "Image" : "thinkfree84/ax5_time:latest",
+        "Description" : "Write every seconds the server's time",
+        "Icon" : "https://github.com/think-free/axihome5/raw/master/src/plugins/time/icon.png"
+    },
+    {
+        "Name" : "alarm",
+        "Image" : "thinkfree84/ax5_alarm:latest",
+        "Description" : "Define alarms for your devices",
+        "Icon" : "https://github.com/think-free/axihome5/raw/master/src/plugins/alarm/gui/static/icon.png"
+    },
+    {
+        "Name" : "scheduler",
+        "Image" : "thinkfree84/ax5_scheduler:latest",
+        "Description" : "Run actions on your devices at spefic time",
+        "Icon" : "https://github.com/think-free/axihome5/raw/master/src/plugins/scheduler/icon.png"
+    },
+    {
+        "Name" : "script",
+        "Image" : "thinkfree84/ax5_script:latest",
+        "Description" : "Run actions when your device's state change",
+        "Icon" : "https://github.com/think-free/axihome5/raw/master/src/plugins/script/icon.png"
+    },
+    {
+        "Name" : "gui",
+        "Image" : "thinkfree84/ax5_gui:latest",
+        "Description" : "A simple gui for axihome5",
+        "Icon" : "https://github.com/think-free/axihome5/raw/master/src/plugins/gui/icon.png"
+    },
+    {
+        "Name" : "place",
+        "Image" : "thinkfree84/ax5_place:latest",
+        "Description" : "Organize your devices putting them is different places",
+        "Icon" : "https://github.com/think-free/axihome5/raw/master/src/plugins/places/icon.png"
+    }
+]

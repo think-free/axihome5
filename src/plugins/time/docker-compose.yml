@@ -1,0 +1,21 @@
+version: "3"
+services:
+
+    time:
+        container_name: time
+        image: thinkfree84/ax5_time:latest
+        build:
+            context: ../../
+            dockerfile: src/devices/time/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOMEID=home
+            - AX_GROUP=server
+            - AX_INSTANCE=time
+        volumes:
+            - ../../ax5:/etc/ax5
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true

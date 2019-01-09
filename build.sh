@@ -2,19 +2,9 @@
 
 ./build-core.sh
 
-for task in `ls src/tasks`
+for plugins in `ls src/plugins`
 do
-    ./build-process.sh tasks/$task
-done
-
-for device in `ls src/devices`
-do
-    ./build-process.sh devices/$device
-done
-
-for gui in `ls src/guis`
-do
-    ./build-process.sh guis/$gui
+    ./build-process.sh plugins/$task
 done
 
 ./clean.sh

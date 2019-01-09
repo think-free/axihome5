@@ -15,6 +15,6 @@ rm -rf src/github.com
 
 rm -rf src/core/vendor
 
-clean devices/time
-clean tasks/alarm
-clean guis/admin
+clean plugins/time
+clean plugins/alarm
+clean plugins/admin

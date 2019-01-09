@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/surgemq/message"
 	"github.com/think-free/mqttclient"
@@ -176,6 +177,7 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 
 		var tsk types.Task
 		err := json.Unmarshal(msg.Payload(), &tsk)
+		tsk.LastSeen = int64(time.Now().Unix())
 
 		if err != nil {
 			log.Println("Can't register task, json not valid :", err)

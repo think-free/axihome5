@@ -6,3 +6,6 @@ rice-box.go
 out
 node_modules
 .next
+axihome5/config/
+axihome5/plugins/
+src/github.com/

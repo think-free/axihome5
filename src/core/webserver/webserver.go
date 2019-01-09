@@ -78,7 +78,7 @@ func (s *WebServer) Run() {
 
 func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 
-	// TODO : Solve problem serving react app
+	// TODO : Allow modify route already registered
 
 	log.Println("Registering task http handler :", task.Name)
 	u, _ := url.Parse("http://" + task.Host + ":" + task.Port)
