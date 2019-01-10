@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"sync"
-	"time"
 
 	"github.com/surgemq/message"
 	"github.com/think-free/mqttclient"
@@ -190,7 +189,7 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 			log.Println("Saving new discovered task :", tsk.Name)
 			mq.db.Save(&tsk)
 
-		} else if tskdb.Host != tsk.Host || tskdb.Port != tsk.Port {
+		} else {
 
 			log.Println("Saving task modification :", tsk.Name)
 			mq.db.Remove(&tskdb)
