@@ -35,7 +35,6 @@ func main() {
 		Port: *port,
 		URL:  "alarm",
 		Name: "Alarm",
-		LastSeen: int64(time.Now().Unix()),
 	}
 
 	go func() {
