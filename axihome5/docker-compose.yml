@@ -33,7 +33,7 @@ services:
         image: thinkfree84/ax5_admin:latest
         build:
             context: ../
-            dockerfile: src/guis/admin/Dockerfile
+            dockerfile: src/plugins/admin/Dockerfile
         environment:
             - AX_BROKER=mosquitto
             - AX_HOST=admin

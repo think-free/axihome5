@@ -177,7 +177,6 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 
 		var tsk types.Task
 		err := json.Unmarshal(msg.Payload(), &tsk)
-		tsk.LastSeen = int64(time.Now().Unix())
 
 		if err != nil {
 			log.Println("Can't register task, json not valid :", err)
@@ -187,7 +186,7 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 		errGet := mq.db.Get("URL", tsk.URL, &tskdb)
 		if errGet != nil {
 
-			// Save device to database
+			// Save task to database
 			log.Println("Saving new discovered task :", tsk.Name)
 			mq.db.Save(&tsk)
 

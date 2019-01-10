@@ -9,7 +9,7 @@ import (
 	"github.com/think-free/axihome5/src/core/types"
 	"github.com/think-free/mqttclient"
 
-	"plugins/alarm/webserver"
+	"plugins/plugins/webserver"
 )
 
 func main() {
@@ -26,21 +26,21 @@ func main() {
 	flag.Parse()
 
 	/* Tasks register */
-	cli := mqttclient.NewMqttClient("Task_Alarm", *broker)
+	cli := mqttclient.NewMqttClient("Task_plugins", *broker)
 	cli.Connect()
-	cli.SendHB("axihome/5/tasks/alarm/hb")
+	cli.SendHB("axihome/5/tasks/plugins/hb")
 
 	tsk := types.Task{
 		Host: *host,
 		Port: *port,
-		URL:  "alarm",
-		Name: "Alarm",
+		URL:  "plugins",
+		Name: "Plugins",
 		LastSeen: int64(time.Now().Unix()),
 	}
 
 	go func() {
 		for {
-			cli.PublishMessageNoRetain("axihome/5/tasks/discover/alarm", &tsk)
+			cli.PublishMessageNoRetain("axihome/5/tasks/discover/plugins", &tsk)
 			time.Sleep(time.Second * 30)
 		}
 	}()

@@ -78,16 +78,9 @@ class MainArea extends React.Component {
                             <Variables/>
                         </div>
                     )
-                } else if (currentSection.name == "Plugins") {
-                    return (
-                        <div style={layoutStyle}>
-
-                        </div>
-                    )
                 } else {
                     return (
                         <div style={layoutStyle}>
-
                         </div>
                     )
                 }

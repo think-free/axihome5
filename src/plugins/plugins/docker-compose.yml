@@ -1,0 +1,20 @@
+version: "3"
+services:
+
+    plugins:
+        container_name: plugins
+        image: thinkfree84/ax5_plugins:latest
+        build:
+            context: ../../
+            dockerfile: src/tasks/plugins/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOST=plugins
+            - AX_PORT=8123
+        volumes:
+            - ../../config:/etc/ax5
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true

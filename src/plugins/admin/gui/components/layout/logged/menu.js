@@ -88,18 +88,15 @@ class Menu extends React.Component {
                     <img src="/admin/static/variables.png" alt="variables" width="35" height="35" draggable="false"/>
                   </ElementList>
 
-                  <ElementList section={{"name": "Plugins", "url": "internal"}}>
-                    <img src="/admin/static/plugins.png" alt="plugins" width="35" height="35" draggable="false"/>
-                  </ElementList>
-
                   {sections.map(function(section){
                       let im = "/"+section.url+"/static/icon.png"
+                      let ts = Math.round((new Date()).getTime() / 1000);
 
-                      if (section.url != "admin"){
+                      if (section.url != "admin" && section.lastseen + 90 > ts){
 
                           return (
                               <ElementList section={section}>
-                                <img src={im} alt={section.name} width="36" height="36" draggable="false"/>
+                                <img src={im} alt={section.name} width="35" height="35" draggable="false"/>
                               </ElementList>
                           )
 
