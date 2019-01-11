@@ -23,7 +23,7 @@ func New(dev bool, port, path string) *WebServer {
 	s := &WebServer{
 		dev:  dev,
 		port: port,
-		man: manager.New(path)
+		man: manager.New(path),
 	}
 
 	// Server the web app and the files in the docker compose tree
