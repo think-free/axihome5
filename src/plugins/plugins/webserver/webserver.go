@@ -2,10 +2,10 @@ package webserver
 
 import (
 	"net/http"
+	"encoding/json"
 
 	rice "github.com/GeertJohan/go.rice"
-
-	"plugins/plugins/manager"
+	manager "plugins/plugins/manager"
 )
 
 const projectName = "plugins"
