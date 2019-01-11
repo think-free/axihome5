@@ -53,9 +53,9 @@ class Logged extends React.Component {
                 `}</style>
 
                 <div style={layoutStyle}>
+                    <MainArea />
                     <Menu />
                     <Header />
-                    <MainArea />
                 </div>
             </div>
         )

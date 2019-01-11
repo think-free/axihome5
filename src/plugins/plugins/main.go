@@ -19,6 +19,7 @@ func main() {
 	_ = flag.String("config", "./ax5/", "The path to the configuration")
 	host := flag.String("host", "localhost", "The host name for autoregister")
 	port := flag.String("port", "8123", "Port for the webserver")
+	path := flag.String("path", "/plugins", "Path to plugins folder")
 
 	dev := flag.Bool("dev", false, "Dev mode : use the folder './src/project/gui/out/' as gui")
 
@@ -45,7 +46,7 @@ func main() {
 	}()
 
 	/* Webserver */
-	s := webserver.New(*dev, *port)
+	s := webserver.New(*dev, *port, *path)
 	err := s.Run()
 	if err != nil {
 		log.Println(err)

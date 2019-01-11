@@ -2,8 +2,6 @@ import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
 import { connect } from 'react-redux';
 
-import Header from './logged/header.js'
-import Menu from './logged/menu.js'
 import MainArea from './logged/mainarea.js'
 
 import mainStyle from '../../styles/global.js'
@@ -53,10 +51,7 @@ class Logged extends React.Component {
                 `}</style>
 
                 <div style={layoutStyle}>
-                    <Header />
-                    <Menu />
                     <MainArea />
-                    Test
                 </div>
             </div>
         )
