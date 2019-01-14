@@ -1,11 +1,12 @@
 package webserver
 
 import (
-	"fmt"
     "io/ioutil"
      "log"
 	 "os"
 	 "os/exec"
+	 "os/signal"
+ 	 "syscall"
 )
 
 // Manager manage the plugins
@@ -32,6 +33,17 @@ func New(path string) *Manager {
 func (m *Manager) Run() {
 
 	m.StartAllPlugins()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
+
+	for {
+		select {
+		case _ = <-c:
+			m.StopAllPlugins()
+			os.Exit(0)
+		}
+	}
 }
 
 func (m *Manager) GetPlugins() []Plugin {
@@ -44,7 +56,6 @@ func (m *Manager) GetPlugins() []Plugin {
 	}
 
 	for _, f := range files {
-		fmt.Println(f.Name())
 
 		disabled := false
 		if _, err := os.Stat(m.Path + "/" + f.Name() + "/disabled"); !os.IsNotExist(err) {
@@ -84,11 +95,13 @@ func (m *Manager) StopAllPlugins() {
 
 func (m *Manager) StartPlugin(plugin string) {
 
-	m.run(m.Path + "/" + plugin, "docker-compose", "up", "-d")
+	log.Println("Starting plugin :", plugin)
+	go m.run(m.Path + "/" + plugin, "docker-compose", "up")
 }
 
 func (m *Manager) StopPlugin(plugin string) {
 
+	log.Println("Stopping plugin :", plugin)
 	m.run(m.Path + "/" + plugin, "docker-compose", "down")
 }
 

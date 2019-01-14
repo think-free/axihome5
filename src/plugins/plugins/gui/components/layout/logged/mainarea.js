@@ -30,23 +30,37 @@ const MainAreaStyle = {
         ],
         overflowY: 'auto'
     },
-    panel : {
-        color: mainStyle.textColor,
-        marginTop: 10,
-        minHeight: 40,
-        padding: 10,
-        width: "calc(100% - 30px)",
-        backgroundColor: mainStyle.panelBackgroundColor
+    plugin : {
+        marginTop: 10
     },
-    variable : {
-        color: mainStyle.textItemColor
+    cellStyle : {
+        display: 'block',
+        float: 'left',
+        height: '200px',
+        width: '200px',
+        userSelect:'none'
     },
-    value : {
-        position: 'absolute',
-        paddingLeft: 10,
-        paddingRight: 10,
-        marginTop: 5,
-        backgroundColor: mainStyle.mainBackgroundColor,
+    cellContent : {
+        position: 'relative',
+        display: 'block',
+        height: '110px',
+        width: '110px',
+        bottom:5,
+        top:5,
+        left:5,
+        right:5,
+        margin: 10,
+        padding: 20,
+        backgroundColor: mainStyle.panelBackgroundColor,
+        textAlign: 'center',
+        fontVariant: 'small-caps',
+        textTransform: 'uppercase',
+        fontSize: '0.8em',
+        cursor: 'pointer',
+        userSelect:'none',
+        ':hover': {
+          backgroundColor: mainStyle.menuBackgroundColor
+        }
     }
 }
 
@@ -60,11 +74,11 @@ class MainArea extends React.Component {
         super(props);
 
         this.state = {
-            MainArea: [],
+            plugins: [],
             currentFilter: ""
         };
 
-        this.currentFilterChanged=this.currentFilterChanged.bind(this);
+        this.tooglePluginState=this.tooglePluginState.bind(this);
     }
 
     async componentDidMount() {
@@ -82,43 +96,47 @@ class MainArea extends React.Component {
     }
 
     async getData(url){
-        var url = "/core/getValues"
+        var url = "/plugins/getAll"
 
         fetch(url)
         .then(response => response.json())
-        .then(data => this.setState({ MainArea: data }))
+        .then(data => this.setState({ plugins: data }))
     }
 
-    currentFilterChanged(event) {
+    tooglePluginState(name, disabled) {
 
-        this.setState({ currentFilter: event.target.value })
+        if (disabled) {
+            fetch("/plugins/enablePlugin?plugin=" + name)
+        } else {
+            fetch("/plugins/disablePlugin?plugin=" + name)
+        }
     }
 
     // Render
     render() {
-        const { MainArea } = this.state;
-        let { currentFilter } = this.state;
-        if (currentFilter == "")
-            currentFilter = ".*"
+        const { plugins } = this.state;
+        const me = this;
 
         return (
             <div style={MainAreaStyle.p100}>
+                <span style={MainAreaStyle.toolBar}>
+                    <img key="bt_stopAll" style={mainStyle.menuIcon} src="/plugins/static/stop.png" width="20" height="20" draggable="false" onClick={this.stopAll}/>
+                    <img key="bt_startAll" style={mainStyle.menuIcon} src="/plugins/static/start.png" width="20" height="20" draggable="false" onClick={this.startAll}/>
+                    <img key="bt_add" style={mainStyle.menuIcon} src="/plugins/static/add.png" width="20" height="20" draggable="false" onClick={this.addPlugin}/>
+                </span>
                 <div style={MainAreaStyle.MainAreaList}>
-                    {MainArea.map(function(variable){
+                    {plugins.map(function(plugin){
 
-                        if (variable.key.match("^" + currentFilter)){
-
-                            return (
-                                <div style={MainAreaStyle.panel}>
-                                    <div style={MainAreaStyle.variable}>{variable.key}</div>
-                                    <div style={MainAreaStyle.value}>{variable.value}</div>
+                        let status = plugin.disabled ? "/plugins/static/disabled.png" : "/plugins/static/enabled.png"
+                        return (
+                            <div style={MainAreaStyle.cellStyle}>
+                                <div style={MainAreaStyle.cellContent} key={plugin.name} onClick={() => me.tooglePluginState(plugin.name, plugin.disabled)}>
+                                    <img src={"/plugins/getIcon?plugin=" + plugin.name} alt={plugin.name} width="64" height="64" />
+                                    <div style={MainAreaStyle.plugin}>{plugin.name}</div>
+                                    <img src={status} width="32" height="32" />
                                 </div>
-                            )
-
-                        } else {
-
-                            return(null)
-                        }
+                            </div>
+                        )
                     })}
                 </div>
             </div>

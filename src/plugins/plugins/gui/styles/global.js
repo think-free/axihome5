@@ -18,7 +18,18 @@ let mainStyle = {
     menuWidth: 50,
     headerHeight: 50,
 
-    icon: "#999DAB"
+    icon: "#999DAB",
+
+    menuIcon : {
+        paddingTop: 10,
+        paddingRight: 20,
+        paddingBottom: 10,
+        paddingLeft: 20,
+        cursor: "pointer",
+        ':hover': {
+          backgroundColor: "#40414F"
+        }
+    }
 }
 
 export default mainStyle
