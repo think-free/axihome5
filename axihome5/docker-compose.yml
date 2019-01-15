@@ -1,5 +1,9 @@
 version: "3"
 services:
+
+    # Mqtt broker
+    # #############################
+
     mosquitto:
         container_name: mosquitto
         image: eclipse-mosquitto
@@ -11,16 +15,19 @@ services:
         networks:
             - net
 
+    # Core
+    # #############################
+
     core:
         container_name: core
         image: thinkfree84/ax5_core:latest
+        depends_on:
+            - mosquitto
         build:
             context: ../
             dockerfile: src/core/Dockerfile
         environment:
             - AX_BROKER=mosquitto
-        depends_on:
-            - mosquitto
         ports:
             - "0.0.0.0:8080:8080"
         volumes:
@@ -28,21 +35,42 @@ services:
         networks:
             - net
 
+    # Tasks
+    # #############################
+
     admin:
         container_name: admin
         image: thinkfree84/ax5_admin:latest
+        depends_on:
+            - core
         build:
             context: ../
-            dockerfile: src/plugins/admin/Dockerfile
+            dockerfile: src/tasks/admin/Dockerfile
         environment:
             - AX_BROKER=mosquitto
             - AX_HOST=admin
             - AX_PORT=8123
-        depends_on:
-            - mosquitto
         volumes:
             - ./config:/etc/ax5
-            - ./plugins:/etc/plugins
+        networks:
+            - net
+
+    plugins:
+        container_name: plugins
+        image: thinkfree84/ax5_plugins:latest
+        depends_on:
+            - core
+        build:
+            context: ../
+            dockerfile: src/tasks/plugins/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOST=plugins
+            - AX_PORT=8123
+        volumes:
+            - ./config:/etc/ax5
+            - ./plugins/:/etc/plugins/
+            - /var/run/docker.sock:/var/run/docker.sock
         networks:
             - net
 

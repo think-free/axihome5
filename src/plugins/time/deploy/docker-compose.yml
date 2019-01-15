@@ -5,8 +5,8 @@ services:
         container_name: time
         image: thinkfree84/ax5_time:latest
         build:
-            context: ../../
-            dockerfile: src/devices/time/Dockerfile
+            context: ../../../
+            dockerfile: src/plugins/time/Dockerfile
         environment:
             - AX_BROKER=mosquitto
             - AX_HOMEID=home

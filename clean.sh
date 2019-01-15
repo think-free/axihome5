@@ -18,3 +18,4 @@ rm -rf src/core/vendor
 clean plugins/time
 clean plugins/alarm
 clean plugins/admin
+clean plugins/plugins

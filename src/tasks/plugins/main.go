@@ -9,7 +9,7 @@ import (
 	"github.com/think-free/axihome5/src/core/types"
 	"github.com/think-free/mqttclient"
 
-	"plugins/plugins/webserver"
+	"tasks/plugins/webserver"
 )
 
 func main() {
@@ -19,15 +19,16 @@ func main() {
 	_ = flag.String("config", "./ax5/", "The path to the configuration")
 	host := flag.String("host", "localhost", "The host name for autoregister")
 	port := flag.String("port", "8123", "Port for the webserver")
-	path := flag.String("path", "/plugins", "Path to plugins folder")
+	path := flag.String("path", "/etc/plugins", "Path to plugins folder")
 
 	dev := flag.Bool("dev", false, "Dev mode : use the folder './src/project/gui/out/' as gui")
-
 	envy.Parse("AX")
 	flag.Parse()
 
+	log.Println("Connecting to Mqtt broker :", *broker)
+
 	/* Tasks register */
-	cli := mqttclient.NewMqttClient("Task_plugins", *broker)
+	cli := mqttclient.NewMqttClient("Task_plugins_manager", *broker)
 	cli.Connect()
 	cli.SendHB("axihome/5/tasks/plugins/hb")
 

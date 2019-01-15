@@ -9,7 +9,7 @@ import (
 	"github.com/think-free/axihome5/src/core/types"
 	"github.com/think-free/mqttclient"
 
-	"plugins/admin/webserver"
+	"tasks/admin/webserver"
 )
 
 func main() {
@@ -26,7 +26,7 @@ func main() {
 	flag.Parse()
 
 	/* Tasks register */
-	cli := mqttclient.NewMqttClient("Gui_Admin", *broker)
+	cli := mqttclient.NewMqttClient("Task_admin", *broker)
 	cli.Connect()
 	cli.SendHB("axihome/5/tasks/admin/hb")
 

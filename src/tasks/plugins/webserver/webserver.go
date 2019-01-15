@@ -8,7 +8,7 @@ import (
 	"os"
 
 	rice "github.com/GeertJohan/go.rice"
-	manager "plugins/plugins/manager"
+	manager "tasks/plugins/manager"
 )
 
 const projectName = "plugins"

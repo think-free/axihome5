@@ -1,15 +1,15 @@
 version: "3"
 services:
 
-    plugins:
-        container_name: plugins
-        image: thinkfree84/ax5_plugins:latest
+    alarm:
+        container_name: alarm
+        image: thinkfree84/ax5_alarm:latest
         build:
             context: ../../
-            dockerfile: src/tasks/plugins/Dockerfile
+            dockerfile: src/plugins/alarm/Dockerfile
         environment:
             - AX_BROKER=mosquitto
-            - AX_HOST=plugins
+            - AX_HOST=alarm
             - AX_PORT=8123
         volumes:
             - ../../config:/etc/ax5

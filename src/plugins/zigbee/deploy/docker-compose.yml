@@ -4,9 +4,6 @@ services:
     zigbee2mqtt:
         container_name: zigbee2mqtt
         image: koenkk/zigbee2mqtt
-        build:
-            context: ../../
-            dockerfile: src/tasks/plugins/Dockerfile
         devices:
             - "/dev/ttyACM0:/dev/ttyACM0"
         volumes:
