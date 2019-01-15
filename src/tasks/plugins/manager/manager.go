@@ -96,7 +96,7 @@ func (m *Manager) StopAllPlugins() {
 func (m *Manager) StartPlugin(plugin string) {
 
 	log.Println("Starting plugin :", plugin)
-	go m.run(m.Path + "/" + plugin, "docker-compose", "up")
+	go m.runNoOutput(m.Path + "/" + plugin, "docker-compose", "up")
 }
 
 func (m *Manager) StopPlugin(plugin string) {
@@ -124,6 +124,12 @@ func (m *Manager) DisablePlugin(plugin string) {
 		log.Println(err)
 	}
 	emptyFile.Close()
+}
+
+func (m *Manager) runNoOutput(path, name string, args ...string) {
+
+	cmd := exec.Command(name, args...)
+	cmd.Dir = path
 }
 
 func (m *Manager) run(path, name string, args ...string) string {
