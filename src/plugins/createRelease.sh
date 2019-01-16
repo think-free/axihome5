@@ -1,9 +1,11 @@
 #!/bin/bash
 
-BASEURL="http://localhost:8000"
+BASEURL="https://axihome.think-free.me/plugins"
 
 rm -rf ../../plugins-releases
 mkdir ../../plugins-releases
+mkdir ../../plugins-releases/icons
+mkdir ../../plugins-releases/release
 
 echo "[" > ../../plugins-releases/plugins.json
 
@@ -16,7 +18,8 @@ do
         cd $NAME
         tar cvfz $NAME.plugin deploy --transform="s|deploy|$NAME|"
         popd
-        mv $NAME/$NAME.plugin ../../plugins-releases
+        mv $NAME/$NAME.plugin ../../plugins-releases/release
+	cp $NAME/deploy/icon.png ../../plugins-releases/icons/$NAME.png
 
         DESC=`cat $NAME/deploy/description`
 
@@ -24,8 +27,8 @@ do
     {
         "Name" : "$NAME",
         "Description" : "$DESC",
-        "Icon" : "https://github.com/think-free/axihome5/raw/master/src/plugins/$NAME/icon.png",
-        "Path" : "$BASEURL/$NAME.plugin"
+        "Icon" : "$BASEURL/icons/$NAME.png",
+        "Url" : "$BASEURL/release/$NAME.plugin"
     },
 EOR
     fi

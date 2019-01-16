@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"io"
+	"io/ioutil"
 	"os"
 
 	rice "github.com/GeertJohan/go.rice"
@@ -33,7 +34,7 @@ func New(dev bool, port, path string) *WebServer {
 
 	// Server the web app and the files in the docker compose tree
 	if dev {
-		http.Handle("/"+projectName+"/", http.StripPrefix("/"+projectName+"/", http.FileServer(http.Dir("./src/plugins/"+projectName+"/gui/out/"))))
+		http.Handle("/"+projectName+"/", http.StripPrefix("/"+projectName+"/", http.FileServer(http.Dir("./src/tasks/"+projectName+"/gui/out/"))))
 
 	} else {
 		box := rice.MustFindBox("../gui/out/")
@@ -48,6 +49,9 @@ func New(dev bool, port, path string) *WebServer {
 	http.HandleFunc("/plugins/stopAllPlugins", s.handlerStopAllPlugins)
 	http.HandleFunc("/plugins/restartPlugin", s.handlerRestartPlugin)
 	http.HandleFunc("/plugins/getIcon", s.handlerGetIcon)
+
+	http.HandleFunc("/plugins/getStoreContent", s.handlerGetStoreContent)
+	http.HandleFunc("/plugins/downloadPluginFromStore", s.handlerDownloadPluginFromStore)
 
 	return s
 }
@@ -140,4 +144,30 @@ func (s *WebServer) handlerGetIcon(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "image/png")
 	io.Copy(w, source)
+}
+
+func (s *WebServer) handlerGetStoreContent(w http.ResponseWriter, r *http.Request) {
+
+	response, err := http.Get("https://axihome.think-free.me/plugins/plugins.json")
+	if err != nil {
+		w.Write([]byte("[]"))
+		return
+	}
+
+	contents, _ := ioutil.ReadAll(response.Body)
+
+	w.Write(contents)
+}
+
+func (s *WebServer) handlerDownloadPluginFromStore(w http.ResponseWriter, r *http.Request) {
+
+	plugins, ok := r.URL.Query()["plugin"]
+	if !ok || len(plugins[0]) < 1 {
+		log.Println("Url parameter missing")
+		w.Write([]byte("{\"type\" : \"error\", \"msg\":\"Url parameter missing\"}"))
+		return
+	}
+	plugin := plugins[0]
+
+	log.Println("Downloading plugin :", plugin)
 }

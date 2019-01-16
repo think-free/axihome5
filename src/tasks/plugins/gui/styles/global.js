@@ -25,6 +25,7 @@ let mainStyle = {
         paddingRight: 20,
         paddingBottom: 10,
         paddingLeft: 20,
+        color: "#FE6951",
         cursor: "pointer",
         ':hover': {
           backgroundColor: "#40414F"
