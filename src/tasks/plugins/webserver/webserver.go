@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"log"
 	"io"
-	"io/ioutil"
 	"os"
 
 	rice "github.com/GeertJohan/go.rice"
 	manager "tasks/plugins/manager"
+	store "tasks/plugins/store"
 )
+
+const storeUrl = "https://axihome.think-free.me/plugins/plugins.json"
 
 const projectName = "plugins"
 
@@ -20,6 +22,7 @@ type WebServer struct {
 	dev  bool
 	pluginPath string
 	man *manager.Manager
+	store *store.Store
 }
 
 // New create the webserver
@@ -30,6 +33,7 @@ func New(dev bool, port, path string) *WebServer {
 		port: port,
 		pluginPath: path,
 		man: manager.New(path),
+		store: store.New(storeUrl, path),
 	}
 
 	// Server the web app and the files in the docker compose tree
@@ -59,6 +63,7 @@ func New(dev bool, port, path string) *WebServer {
 // Run start the web server
 func (s *WebServer) Run() error {
 
+	go s.store.Run()
 	go s.man.Run()
 	return http.ListenAndServe(":"+s.port, nil)
 }
@@ -148,13 +153,15 @@ func (s *WebServer) handlerGetIcon(w http.ResponseWriter, r *http.Request) {
 
 func (s *WebServer) handlerGetStoreContent(w http.ResponseWriter, r *http.Request) {
 
-	response, err := http.Get("https://axihome.think-free.me/plugins/plugins.json")
+	/*response, err := http.Get("https://axihome.think-free.me/plugins/plugins.json")
 	if err != nil {
 		w.Write([]byte("[]"))
 		return
 	}
 
-	contents, _ := ioutil.ReadAll(response.Body)
+	contents, _ := ioutil.ReadAll(response.Body)*/
+
+	contents := s.store.GetStoreContent()
 
 	w.Write(contents)
 }
@@ -169,5 +176,7 @@ func (s *WebServer) handlerDownloadPluginFromStore(w http.ResponseWriter, r *htt
 	}
 	plugin := plugins[0]
 
-	log.Println("Downloading plugin :", plugin)
+	s.store.DownloadPluginFromUrl(plugin)
+
+	log.Println("Plugin downloaded :", plugin)
 }

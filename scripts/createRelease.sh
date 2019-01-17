@@ -2,6 +2,9 @@
 
 BASEURL="https://axihome.think-free.me/plugins"
 
+pushd .
+cd src/plugins
+
 rm -rf ../../plugins-releases
 mkdir ../../plugins-releases
 mkdir ../../plugins-releases/icons
@@ -22,13 +25,15 @@ do
 	cp $NAME/deploy/icon.png ../../plugins-releases/icons/$NAME.png
 
         DESC=`cat $NAME/deploy/description`
+        VERSION=`cat $NAME/deploy/version`
 
         cat <<EOR >> ../../plugins-releases/plugins.json
     {
         "Name" : "$NAME",
         "Description" : "$DESC",
         "Icon" : "$BASEURL/icons/$NAME.png",
-        "Url" : "$BASEURL/release/$NAME.plugin"
+        "Url" : "$BASEURL/release/$NAME.plugin",
+	"Version" : "$VERSION"
     },
 EOR
     fi
@@ -37,3 +42,5 @@ done
 truncate -s-2 ../../plugins-releases/plugins.json
 echo "" >> ../../plugins-releases/plugins.json
 echo "]" >> ../../plugins-releases/plugins.json
+
+popd

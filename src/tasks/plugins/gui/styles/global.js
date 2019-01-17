@@ -30,7 +30,20 @@ let mainStyle = {
         ':hover': {
           backgroundColor: "#40414F"
         }
-    }
+    },
+    inputStyle : {
+        borderRadius: 15,
+        backgroundColor: "#40414F",
+        border: "2px solid #383846",
+        outline: "none",
+        padding: 3,
+        color : "#A4A8B6",
+        ':focus' : {
+            outline: "none",
+            backgroundColor: "#383846",
+            color : "#A4A8B6"
+        }
+    },
 }
 
 export default mainStyle

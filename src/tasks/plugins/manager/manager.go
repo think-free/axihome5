@@ -2,11 +2,12 @@ package webserver
 
 import (
     "io/ioutil"
-     "log"
-	 "os"
-	 "os/exec"
-	 "os/signal"
- 	 "syscall"
+    "log"
+    "os"
+    "os/exec"
+    "os/signal"
+    "syscall"
+    "strings"
 )
 
 // Manager manage the plugins
@@ -17,6 +18,7 @@ type Manager struct {
 type Plugin struct {
 	Name string `json:"name"`
 	Disabled bool `json:"disabled"`
+    Version string `json:"version"`
 }
 
 // New create the manager
@@ -62,9 +64,18 @@ func (m *Manager) GetPlugins() []Plugin {
   			disabled = true
 		}
 
+        version := ""
+        b, err := ioutil.ReadFile(m.Path + "/" + f.Name() + "/version")
+        if err != nil {
+            log.Println("Can't find version for plugin ", f.Name())
+        } else {
+            version = strings.TrimSuffix(string(b), "\n")
+        }
+
 		ar = append(ar, Plugin{
 			Name : f.Name(),
 			Disabled: disabled,
+            Version: version,
 		})
 	}
 
