@@ -11,11 +11,10 @@ function clean(){
 }
 
 rm -rf pkg
+rm -rf bin
 rm -rf src/github.com
-
 rm -rf src/core/vendor
 
-clean plugins/time
 clean plugins/alarm
-clean plugins/admin
-clean plugins/plugins
+clean tasks/admin
+clean tasks/plugins

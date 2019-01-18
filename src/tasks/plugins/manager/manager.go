@@ -137,6 +137,20 @@ func (m *Manager) DisablePlugin(plugin string) {
 	emptyFile.Close()
 }
 
+func (m *Manager) DeletePlugin(plugin string) {
+
+    log.Println("Removing plugin :", m.Path + "/" + plugin)
+
+    if _, err := os.Stat(m.Path + "/" + plugin); !os.IsNotExist(err) {
+        m.run(m.Path + "/" + plugin, "docker-compose", "down")
+        m.run(m.Path + "/" + plugin, "docker-compose", "rm")
+        err := os.RemoveAll(m.Path + "/" + plugin)
+        if err != nil {
+            log.Println(err)
+        }
+    }
+}
+
 func (m *Manager) runNoOutput(path, name string, args ...string) {
 
 	cmd := exec.Command(name, args...)

@@ -129,8 +129,8 @@ class MainArea extends React.Component {
         this.addPlugin=this.addPlugin.bind(this);
         this.showPlugins=this.showPlugins.bind(this);
         this.tooglePluginState=this.tooglePluginState.bind(this);
+        this.deletePlugin=this.deletePlugin.bind(this);
         this.downloadPluginFromStore=this.downloadPluginFromStore.bind(this);
-        this.pluginInstalled=this.pluginInstalled.bind(this);
 
         this.currentFilterChanged=this.currentFilterChanged.bind(this);
 
@@ -144,6 +144,7 @@ class MainArea extends React.Component {
         // Periodicaly refresh states
         this.interval = setInterval(() => {
             this.getData();
+            this.getStoreContent();
         }, 1000);
     }
 
@@ -194,15 +195,8 @@ class MainArea extends React.Component {
         }
     }
 
-    pluginInstalled (name) {
-
-        const plugins = this.state.plugins;
-
-        var found = plugins.find(function(plugin) {
-          return plugin.name === name;
-        });
-
-        return found
+    deletePlugin(name) {
+        fetch("/plugins/deletePlugin?plugin=" + name)
     }
 
     currentFilterChanged(event) {
@@ -235,19 +229,21 @@ class MainArea extends React.Component {
 
                             if (plugin.Name.match("^" + currentFilter)){
 
-                                let pinstalled = me.pluginInstalled(plugin.Name)
-                                let installed = pinstalled != undefined
-                                let img = "/plugins/static/download.png"
-                                let fct = function(){me.downloadPluginFromStore(plugin.Url)}
+                                let img = "/plugins/static/download.png";
+                                let fct = function(){me.downloadPluginFromStore(plugin.Url)};
+                                let showActionIcon = true;
+                                let showDeleteIcon = false;
 
-                                let showActionIcon = true
-
-                                if (installed) {
-                                    if (pinstalled.version != plugin.Version){
-                                        img = "/plugins/static/update.png"
-                                        fct = function(){me.downloadPluginFromStore(plugin.Url)}
+                                if (plugin.Installed) {
+                                    if (!plugin.UpToDate){
+                                        img = "/plugins/static/update.png";
+                                        fct = function(){me.downloadPluginFromStore(plugin.Url)};
+                                        showDeleteIcon = true;
                                     } else {
-                                        showActionIcon = false
+                                        img = "/plugins/static/ok.png";
+                                        fct = null;
+                                        showActionIcon = false;
+                                        showDeleteIcon = true;
                                     }
                                 }
 
@@ -256,22 +252,25 @@ class MainArea extends React.Component {
                                         <img style={MainAreaStyle.icon} src={plugin.Icon} alt="devices" width="20" height="20" draggable="false"/>
                                         <span style={MainAreaStyle.name}> {plugin.Name}</span>
                                         <span style={MainAreaStyle.version}> {plugin.Version}</span>
-                                        {(() => {
-                                            if (showActionIcon) {
-                                                return (
-                                                    <div style={MainAreaStyle.menuIcon}>
-                                                        <img key={plugin.Name} style={mainStyle.menuIcon} src={img} alt="devices" width="20" height="20" draggable="false" onClick={fct}/>
-                                                    </div>
-                                                )
-                                            }
-                                            else {
-                                                return (
-                                                    <div style={MainAreaStyle.menuIcon}>
-                                                        <img style={MainAreaStyle.pluginOk} src="/plugins/static/ok.png" alt="devices" width="20" height="20" draggable="false"/>
-                                                    </div>
-                                                )
-                                            }
-                                        })()}
+                                        <div style={MainAreaStyle.menuIcon}>
+                                            {(() => {
+                                                if (showDeleteIcon) {
+                                                    return (<img key={plugin.Name + "_del"} style={mainStyle.menuIcon} src="/plugins/static/delete.png" alt="delete" width="20" height="20" draggable="false" onClick={() => me.deletePlugin(plugin.Name)}/>)
+                                                }
+                                                else {
+                                                    return (null)
+                                                }
+                                            })()}
+
+                                            {(() => {
+                                                if (showActionIcon) {
+                                                    return (<img key={plugin.Name + "_action"} style={mainStyle.menuIcon} src={img} alt="devices" width="20" height="20" draggable="false" onClick={fct}/>)
+                                                }
+                                                else {
+                                                    return (<img style={MainAreaStyle.pluginOk} src={img} alt="devices" width="20" height="20" draggable="false"/>)
+                                                }
+                                            })()}
+                                        </div>
 
                                         <div style={MainAreaStyle.description}> {plugin.Description} </div>
                                     </div>

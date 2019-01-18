@@ -56,6 +56,7 @@ func New(dev bool, port, path string) *WebServer {
 
 	http.HandleFunc("/plugins/getStoreContent", s.handlerGetStoreContent)
 	http.HandleFunc("/plugins/downloadPluginFromStore", s.handlerDownloadPluginFromStore)
+	http.HandleFunc("/plugins/deletePlugin", s.handlerDeletePlugin)
 
 	return s
 }
@@ -153,14 +154,6 @@ func (s *WebServer) handlerGetIcon(w http.ResponseWriter, r *http.Request) {
 
 func (s *WebServer) handlerGetStoreContent(w http.ResponseWriter, r *http.Request) {
 
-	/*response, err := http.Get("https://axihome.think-free.me/plugins/plugins.json")
-	if err != nil {
-		w.Write([]byte("[]"))
-		return
-	}
-
-	contents, _ := ioutil.ReadAll(response.Body)*/
-
 	contents := s.store.GetStoreContent()
 
 	w.Write(contents)
@@ -176,7 +169,25 @@ func (s *WebServer) handlerDownloadPluginFromStore(w http.ResponseWriter, r *htt
 	}
 	plugin := plugins[0]
 
-	s.store.DownloadPluginFromUrl(plugin)
+	err := s.store.DownloadPluginFromUrl(plugin)
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Println("Plugin downloaded :", plugin)
+	}
+}
 
-	log.Println("Plugin downloaded :", plugin)
+func (s *WebServer) handlerDeletePlugin(w http.ResponseWriter, r *http.Request) {
+
+	plugins, ok := r.URL.Query()["plugin"]
+	if !ok || len(plugins[0]) < 1 {
+		log.Println("Url parameter missing")
+		w.Write([]byte("{\"type\" : \"error\", \"msg\":\"Url parameter missing\"}"))
+		return
+	}
+	plugin := plugins[0]
+
+	s.man.DeletePlugin(plugin)
+
+	w.Write([]byte("OK"))
 }

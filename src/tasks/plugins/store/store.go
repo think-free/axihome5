@@ -8,6 +8,7 @@ import (
     "io"
     "encoding/json"
     "strings"
+    "log"
 )
 
 // Manager manage the plugins
@@ -45,7 +46,7 @@ func (s *Store) Run() {
 
 func (s *Store) GetStoreContent() []byte {
 
-    response, err := http.Get(s.url)
+    response, err := http.Get(s.url) // TODO : Cache content
     if err != nil {
 
         return []byte("[]")
@@ -85,17 +86,55 @@ func (s *Store) GetStoreContent() []byte {
     return res
 }
 
-func (s *Store) DownloadPluginFromUrl(pluginUrl string) {
+func (s *Store) DownloadPluginFromUrl(pluginUrl string) error { // FIXME : Handle errors
 
-    out, _ := os.Create("/tmp/downloaded.plugin")
+    log.Println("Starting download of plugin from :", pluginUrl)
+
+    os.RemoveAll("/tmp/plugin_download")
+    err := os.Mkdir("/tmp/plugin_download",0777);
+    if err != nil {
+        return err
+    }
+    out, err := os.Create("/tmp/plugin_download/downloaded.tar.gz")
+    if err != nil {
+        return err
+    }
     defer out.Close()
-    resp, _ := http.Get(pluginUrl)
+    resp, err := http.Get(pluginUrl)
+    if err != nil {
+        return err
+    }
     defer resp.Body.Close()
     io.Copy(out, resp.Body)
+
+    s.run("/tmp/plugin_download", "tar", "xvf", "downloaded.tar.gz")
+    os.Remove("/tmp/plugin_download/downloaded.tar.gz")
+
+    files, err := ioutil.ReadDir("/tmp/plugin_download/")
+	if err != nil {
+		return(err)
+	}
+
+	for _, f := range files {
+
+        if _, err := os.Stat(s.path + "/" + f.Name()); !os.IsNotExist(err) {
+  			s.run(s.path + "/" + f.Name(), "docker-compose", "down")
+            s.run(s.path + "/" + f.Name(), "docker-compose", "rm")
+		}
+
+        os.RemoveAll(s.path + "/" + f.Name())
+        s.run("/tmp/plugin_download/", "mv", f.Name(), s.path + "/")
+    }
+
+    os.RemoveAll("/tmp/plugin_download")
+
+    return nil
 }
 
 func (s *Store) run(path, name string, args ...string) {
 
-	cmd := exec.Command(name, args...)
+    cmd := exec.Command(name, args...)
 	cmd.Dir = path
+	out, _ := cmd.CombinedOutput()
+    log.Println(string(out))
 }
