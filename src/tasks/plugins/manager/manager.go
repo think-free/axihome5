@@ -155,6 +155,8 @@ func (m *Manager) runNoOutput(path, name string, args ...string) {
 
 	cmd := exec.Command(name, args...)
 	cmd.Dir = path
+    cmd.Start()
+    log.Println("Stopped :", name, "in path", path)
 }
 
 func (m *Manager) run(path, name string, args ...string) string {
