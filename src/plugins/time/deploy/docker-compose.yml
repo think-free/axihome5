@@ -13,7 +13,7 @@ services:
             - AX_GROUP=server
             - AX_INSTANCE=time
         volumes:
-            - ../../ax5:/etc/ax5
+            - ../../config:/etc/ax5
         networks:
             - axihome5_net
 networks:

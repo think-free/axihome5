@@ -1,6 +1,24 @@
 version: "3"
 services:
 
+    zigbee:
+        container_name: zigbee
+        image: thinkfree84/ax5_zigbee:latest
+        build:
+            context: ../../../
+            dockerfile: src/plugins/zigbee/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOMEID=home
+            - AX_GROUP=server
+            - AX_INSTANCE=zigbee
+            - AX_HOST=zigbee
+            - AX_PORT=8123
+        volumes:
+            - ../../config:/etc/ax5
+        networks:
+            - axihome5_net
+
     zigbee2mqtt:
         container_name: zigbee2mqtt
         image: koenkk/zigbee2mqtt
