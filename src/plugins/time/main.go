@@ -19,7 +19,7 @@ const (
 func main() {
 
 	broker := flag.String("broker", "localhost", "The broker host")
-	_ = flag.String("config", "./ax5/", "The path to the configuration")
+	_ = flag.String("config", "/etc/ax5/", "The path to the configuration")
 
 	homeID := flag.String("homeId", "home", "The home ID")
 	group := flag.String("group", "server", "The group of the message")

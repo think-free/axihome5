@@ -317,18 +317,19 @@ class DeviceAdd extends React.Component {
                             <td> </td>
                             <td align="right">
                                 <select key="ip_type" value={this.state.deviceType} onChange={this.formDeviceTypeChanged} onBlur={this.formDeviceTypeChanged}>
-                                    <option value="switch">Switch</option>
-                                    <option value="dimmer">Dimmer</option>
-                                    <option value="rgb">Rgb</option>
+                                    <option value="switch">Switch (on/off)</option>
+                                    <option value="dimmer">Dimmer (0-255)</option>
+                                    <option value="rgb">Rgb Light</option>
                                     <option value="shutter">Shutter</option>
                                     <option value="position">Position</option>
+                                    <option value="occupancy">Occupancy</option>
                                     <option value="time">Time</option>
                                     <option value="climate">Climate</option>
-                                    <option value="audio">Audio</option>
-                                    <option value="analog">Analog</option>
-                                    <option value="digital">Digital</option>
+                                    <option value="audio">Audio Controler</option>
+                                    <option value="analog">Analog Sensor (Any number)</option>
+                                    <option value="digital">Digital Sensor (0-1)</option>
                                     <option value="text">Text</option>
-                                    <option value="custom">Custom</option>
+                                    <option value="custom">Custom (None of the above)</option>
                                 </select>
                             </td>
                         </tr>
@@ -373,12 +374,12 @@ class DeviceAdd extends React.Component {
                             <td align="right">
                                 <select key="ip_type" onChange={this.formVariableTypeChanged} onBlur={this.formVariableTypeChanged} value={this.state.variableType}>
 
-                                    <option value="digital">Digital</option>
-                                    <option value="analog">Analog</option>
-                                    <option value="number">Number</option>
+                                    <option value="digital">Digital (0-1)</option>
+                                    <option value="analog">Analog (0-255)</option>
+                                    <option value="number">Number (Any value)</option>
                                     <option value="text">Text</option>
-                                    <option value="position">Position</option>
-                                    <option value="rgb">Rgb</option>
+                                    <option value="position">Position [x,y]</option>
+                                    <option value="rgb">Rgb [r,g,b]</option>
                                 </select>
                             </td>
                         </tr>

@@ -19,6 +19,7 @@ const (
 	AnalogValue  DeviceType = "analog"
 	DigitalValue DeviceType = "digital"
 	TextValue    DeviceType = "text"
+	Occupancy    DeviceType = "occupancy"
 	Custom   	 DeviceType = "custom"
 )
 
@@ -31,7 +32,7 @@ type VariableType string
 // Device type definition
 const (
 	Digital     VariableType = "digital"  // [0-1]
-	Analog      VariableType = "analog"   // [0-100]
+	Analog      VariableType = "analog"   // [0-255]
 	Number      VariableType = "number"   // Any number
 	Text        VariableType = "text"     // (text)
 	Coordinates VariableType = "position" // [x,y]

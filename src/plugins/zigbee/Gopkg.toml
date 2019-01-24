@@ -48,7 +48,19 @@
 
 [[constraint]]
   branch = "master"
+  name = "github.com/surgemq/message"
+
+[[constraint]]
+  branch = "master"
   name = "github.com/think-free/mqttclient"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/think-free/storm-wrapper"
+
+[[override]]
+  branch = "master"
+  name = "github.com/grafov/bcast"
 
 [[constraint]]
   branch = "master"
