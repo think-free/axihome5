@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	CWriteTopic  = "axihome/5/field/variable/"
-	CDeviceTopic = "axihome/5/field/device/discover/"
+	CWriteTopic  = "axihome/5/field/variable"
+	CDeviceTopic = "axihome/5/field/device/discover"
 )
 
 type ZigbeeDevice struct {
@@ -67,9 +67,7 @@ func (w *MqttWrapper) Run() {
 			var jsonMap map[string]interface{}
 			json.Unmarshal(msg.Payload(), &jsonMap)
 
-			log.Println("Processing device :")
-			log.Println(device)
-			log.Println(jsonMap)
+			log.Println("Processing device :", device)
 
 			var devdb ZigbeeDevice
 			err := w.db.Get("ZigbeeID", device, &devdb)
@@ -94,6 +92,8 @@ func (w *MqttWrapper) Run() {
 
 					// Write values to axihome if device has been configured
 					for k, v := range jsonMap {
+
+						log.Println("    |->", CWriteTopic + "/" + devdb.HomeID + "/" + devdb.Group + "/" + devdb.Name + "/" + k, "->", v)
 
 						// TODO : Transform value to match axihome standart
 						w.cli.PublishMessage(CWriteTopic + "/" + devdb.HomeID + "/" + devdb.Group + "/" + devdb.Name + "/" + k, v)
@@ -123,36 +123,39 @@ func (w *MqttWrapper) Run() {
 
 		for _, dev := range devdb {
 
-			var variables []types.FieldVariables
+			if dev.HomeID != "" && dev.Group != "" && dev.Name != "" {
 
-			var devV ZigbeeDeviceValue
-			err := w.db.Get("ZigbeeID", dev.ZigbeeID ,&devV)
-			if err != nil {
-				log.Println("Can't find values for device :", dev.ZigbeeID)
-				continue
+				var variables []types.FieldVariables
+
+				var devV ZigbeeDeviceValue
+				err := w.db.Get("ZigbeeID", dev.ZigbeeID ,&devV)
+				if err != nil {
+					log.Println("Can't find values for device :", dev.ZigbeeID)
+					continue
+				}
+
+				for k, _ := range devV.ValuesMap {
+
+					variables = append(variables, types.FieldVariables{
+						Name:        k,
+						Type:        w.GetVariableType(k),
+						StatusTopic: CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + k,
+					})
+				}
+
+				dev := types.FieldDevice{
+					ID:   dev.ZigbeeID,
+					Type: dev.DeviceType,
+
+					Name:   dev.Name,
+					Group:  dev.Group,
+					HomeID: dev.HomeID,
+
+					Variables: variables,
+				}
+
+				w.cli.PublishMessageNoRetain(CDeviceTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name, &dev)
 			}
-
-			for k, v := range devV.ValuesMap {
-
-				variables = append(variables, types.FieldVariables{
-					Name:        k,
-					Type:        w.GetVariableType(k),
-					StatusTopic: CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + k,
-				})
-			}
-
-			dev := types.FieldDevice{
-				ID:   dev.ZigbeeID,
-				Type: dev.DeviceType,
-
-				Name:   dev.Name,
-				Group:  dev.Group,
-				HomeID: dev.HomeID,
-
-				Variables: variables,
-			}
-
-			w.cli.PublishMessageNoRetain(CDeviceTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name, &dev)
 		}
 
 		time.Sleep(time.Second * 30)
@@ -165,16 +168,21 @@ func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) (ret t
 		switch key {
 
 		case "temperature" :
+			ret = types.Climate
 		case "humidity" :
+			ret = types.Climate
 		case "pressure" :
 			ret = types.Climate
 		case "click":
+			ret = types.Switch
 		case "state":
 			ret = types.Switch
 		case "occupancy" :
 			ret = types.Occupancy
 		case "brightness":
+			ret = types.Light
 		case "color_temp":
+			ret = types.Light
 		case "color":
 			ret = types.Light
 		}
@@ -190,15 +198,19 @@ func (w *MqttWrapper) GetVariableType(value string) (ret types.VariableType) {
 	switch value {
 
 	case "temperature" :
+		ret = types.Number
 	case "humidity" :
+		ret = types.Number
 	case "pressure" :
 		ret = types.Number
 	case "click":
 		ret = types.Text
 	case "occupancy" :
+		ret = types.Digital
 	case "state":
 		ret = types.Digital
 	case "brightness":
+		ret = types.Analog
 	case "color_temp":
 		ret = types.Analog
 	case "color":
