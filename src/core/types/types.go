@@ -8,18 +8,17 @@ type DeviceType string
 
 // Device type definition
 const (
-	Switch       DeviceType = "switch"
-	Dimmer       DeviceType = "dimmer"
-	RGBSwitch    DeviceType = "rgb"
+	Switch       DeviceType = "switch" // Input device
+	Light        DeviceType = "light"
 	Shutter      DeviceType = "shutter"
 	Position     DeviceType = "position"
+	Occupancy    DeviceType = "occupancy"
 	Time         DeviceType = "time"
 	Climate      DeviceType = "climate"
 	AudioPlayer  DeviceType = "audio"
 	AnalogValue  DeviceType = "analog"
 	DigitalValue DeviceType = "digital"
 	TextValue    DeviceType = "text"
-	Occupancy    DeviceType = "occupancy"
 	Custom   	 DeviceType = "custom"
 )
 

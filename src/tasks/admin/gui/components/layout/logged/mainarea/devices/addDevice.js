@@ -317,9 +317,8 @@ class DeviceAdd extends React.Component {
                             <td> </td>
                             <td align="right">
                                 <select key="ip_type" value={this.state.deviceType} onChange={this.formDeviceTypeChanged} onBlur={this.formDeviceTypeChanged}>
-                                    <option value="switch">Switch (on/off)</option>
-                                    <option value="dimmer">Dimmer (0-255)</option>
-                                    <option value="rgb">Rgb Light</option>
+                                    <option value="switch">Switch</option>
+                                    <option value="light">Light</option>
                                     <option value="shutter">Shutter</option>
                                     <option value="position">Position</option>
                                     <option value="occupancy">Occupancy</option>

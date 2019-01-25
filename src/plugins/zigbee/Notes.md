@@ -41,17 +41,20 @@ occupancy :
 
     occupancy bool
 
+light :
+
+    state "ON" | "OFF"
+    brightness int
+    color_temp int
+
+    color obj {
+                r int
+                g int
+                b int}
+
+
 linkquality int
 battery int
-
-state "ON" | "OFF"
-brightness int
-color_temp int
-
-color obj {
-            r int
-            g int
-            b int}
 
 
 
