@@ -221,9 +221,11 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 		mq.Unlock()
 
 		// Subscribe to device status topic
-		log.Println("Subscribing to device topics : ", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name)
+		log.Println("Subscribing for device changes : ", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "with topic", dv.StatusTopic)
 
 		mq.cli.SubscribeTopic(dv.StatusTopic, func(msg *message.PublishMessage) error {
+
+			log.Println("Value received on topic :", dv.StatusTopic)
 
 			var pl interface{}
 			json.Unmarshal(msg.Payload(), &pl)
