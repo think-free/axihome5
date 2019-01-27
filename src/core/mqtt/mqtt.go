@@ -207,56 +207,61 @@ func (mq *Mqtt) MqttSubscribeDeviceTopics(dev types.FieldDevice) {
 
 	for _, dv := range dev.Variables {
 
-		// Check if the device is not registered already
-		mq.Lock()
-		if _, ok := mq.registeredDevices[dev.ID+dv.Name]; ok {
+		mq.MqttSubscribeDeviceTopicsVariable(dev, dv)
+	}
+}
 
-			log.Println("Device already registered : ", dev.HomeID+"."+dev.Group+"."+dev.ID+"."+dv.Name)
-			log.Println("Restart the server if you have changed the device name")
-			mq.Unlock()
-			return
-		}
+func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv types.FieldVariables) {
 
-		mq.registeredDevices[dev.ID+dv.Name] = struct{}{}
+	// Check if the device is not registered already
+	mq.Lock()
+	if _, ok := mq.registeredDevices[dev.ID+dv.Name]; ok {
+
+		log.Println("Device already registered : ", dev.HomeID+"."+dev.Group+"."+dev.ID+"."+dv.Name)
+		log.Println("Restart the server if you have changed the device name")
 		mq.Unlock()
+		return
+	}
 
-		// Subscribe to device status topic
-		log.Println("Subscribing for device changes : ", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "with topic", dv.StatusTopic)
+	mq.registeredDevices[dev.ID+dv.Name] = struct{}{}
+	mq.Unlock()
 
-		mq.cli.SubscribeTopic(dv.StatusTopic, func(msg *message.PublishMessage) error {
+	// Subscribe to device status topic
+	log.Println("Subscribing for device changes : ", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "with topic", dv.StatusTopic)
 
-			log.Println("Value received on topic :", dv.StatusTopic)
+	mq.cli.SubscribeTopic(dv.StatusTopic, func(msg *message.PublishMessage) error {
 
-			var pl interface{}
-			json.Unmarshal(msg.Payload(), &pl)
+		log.Println("Value received on topic :", dv.StatusTopic)
 
-			log.Println("Device", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "sent new status :", pl)
+		var pl interface{}
+		json.Unmarshal(msg.Payload(), &pl)
 
-			// Write the value to the database
-			ds := types.DeviceStatus{
-				Name:  dev.HomeID + "." + dev.Group + "." + dev.Name + "." + dv.Name,
-				Route: dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + dv.Name,
-				Value: pl,
-			}
-			mq.db.Save(&ds)
+		log.Println("Device", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "sent new status :", pl)
+
+		// Write the value to the database
+		ds := types.DeviceStatus{
+			Name:  dev.HomeID + "." + dev.Group + "." + dev.Name + "." + dv.Name,
+			Route: dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + dv.Name,
+			Value: pl,
+		}
+		mq.db.Save(&ds)
+
+		// Send the value to the client status topic
+		mq.cli.PublishMessage(CClientStatus+ds.Route, ds.Value)
+
+		return nil
+	})
+
+	// Subscribe to the client command topic
+	if dv.CmdTopic != "" {
+
+		mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+dv.Name+"/cmd", func(msg *message.PublishMessage) error {
 
 			// Send the value to the client status topic
-			mq.cli.PublishMessage(CClientStatus+ds.Route, ds.Value)
+			log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name)
+			mq.cli.PublishMessage(dv.CmdTopic, msg.Payload())
 
 			return nil
 		})
-
-		// Subscribe to the client command topic
-		if dv.CmdTopic != "" {
-
-			mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+dv.Name+"/cmd", func(msg *message.PublishMessage) error {
-
-				// Send the value to the client status topic
-				log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name)
-				mq.cli.PublishMessage(dv.CmdTopic, msg.Payload())
-
-				return nil
-			})
-		}
 	}
 }

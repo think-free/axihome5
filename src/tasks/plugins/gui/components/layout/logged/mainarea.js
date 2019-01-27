@@ -225,7 +225,7 @@ class MainArea extends React.Component {
                         <img key="bt_add" style={mainStyle.menuIcon} src="/plugins/static/close.png" width="20" height="20" draggable="false" onClick={me.showPlugins}/>
                     </span>
                     <div style={MainAreaStyle.MainAreaList}>
-                        {store.map(function(plugin){
+                        {store && store.map(function(plugin){
 
                             if (plugin.Name.match("^" + currentFilter)){
 
@@ -290,7 +290,7 @@ class MainArea extends React.Component {
                     </span>
 
                     <div style={MainAreaStyle.MainAreaList}>
-                        {plugins.map(function(plugin){
+                        {plugins && plugins.map(function(plugin){
 
                             let status = plugin.disabled ? "/plugins/static/disabled.png" : "/plugins/static/enabled.png"
                             return (
