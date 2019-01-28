@@ -1,0 +1,13 @@
+{
+    "temperature" :  "climate",
+    "humidity" :  "climate",
+    "pressure" :  "climate",
+    "click":  "switch",
+    "state":  "switch",
+    "state_right":  "switch",
+    "state_left":  "switch",
+    "occupancy" : "occupancy",
+    "brightness":  "light",
+    "color_temp":  "light",
+    "color":  "light",
+}

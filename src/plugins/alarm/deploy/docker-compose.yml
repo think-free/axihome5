@@ -12,7 +12,7 @@ services:
             - AX_HOST=alarm
             - AX_PORT=8123
         volumes:
-            - ../../config:/etc/ax5
+            - /etc/ax5:/etc/ax5
         networks:
             - axihome5_net
 networks:

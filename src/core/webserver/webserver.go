@@ -264,8 +264,29 @@ func (s *WebServer) handlerDeleteDeviceConfig(w http.ResponseWriter, r *http.Req
 	}
 	key := keys[0]
 
+	// Getting device
 	var dev types.FieldDevice
 	s.db.Get("ID", string(key), &dev)
+
+	// Removing values for this device
+	for _, v := range dev.Variables {
+
+		key := dev.HomeID + "." + dev.Group + "." + dev.Name + "." + v.Name
+
+		var ds types.DeviceStatus
+		log.Println("Removing device value :", key)
+		err := s.db.Get("Name", key, &ds)
+		if err != nil {
+			log.Println("Can't find value for device :", err)
+		} else {
+			err := s.db.Remove(&ds)
+			if err != nil {
+				log.Println("Can't delete value for device :", err)
+			}
+		}
+	}
+
+	// Removing device
 	s.db.Remove(&dev)
 
 	log.Println("Deleting device :", string(key))
@@ -352,8 +373,13 @@ func (s *WebServer) handlerDeleteValue(w http.ResponseWriter, r *http.Request) {
 
 	var ds types.DeviceStatus
 	s.db.Get("Name", key, &ds)
-	s.db.Remove(&ds)
-
-	log.Println("Deleting value")
-	w.Write([]byte("{\"type\" : \"log\", \"msg\": \"Value deleted\"}"))
+	
+	err := s.db.Remove(&ds)
+	if err != nil{
+		log.Println("Error removing value", err)
+		w.Write([]byte("{\"type\" : \"log\", \"msg\": \""+err.Error()+"\"}"))
+	} else {
+		log.Println("Deleting value")
+		w.Write([]byte("{\"type\" : \"log\", \"msg\": \"Value deleted\"}"))
+	}
 }

@@ -19,8 +19,40 @@ const (
 	AnalogValue  DeviceType = "analog"
 	DigitalValue DeviceType = "digital"
 	TextValue    DeviceType = "text"
-	Custom   	 DeviceType = "custom"
+	CustomDevice  	 DeviceType = "custom"
 )
+
+func GetDeviceTypeFromString(str string) DeviceType {
+
+	switch (str) {
+	case "switch":
+		return Switch
+	case "light":
+		return Light
+	case "shutter":
+		return Shutter
+	case "position":
+		return Position
+	case "occupancy":
+		return Occupancy
+	case "time":
+		return Time
+	case "climate":
+		return Climate
+	case "audio":
+		return AudioPlayer
+	case "analog":
+		return AnalogValue
+	case "digital":
+		return DigitalValue
+	case "text":
+		return TextValue
+	case "custom":
+		return CustomDevice
+	}
+
+	return CustomDevice
+}
 
 /* Variable types */
 /* *************************************** */
@@ -36,7 +68,30 @@ const (
 	Text        VariableType = "text"     // (text)
 	Coordinates VariableType = "position" // [x,y]
 	RGB         VariableType = "rgb"      // [r,g,b]
+	CustomVariable		VariableType = "custom"
 )
+
+func GetVariableTypeFromString (str string) VariableType {
+
+	switch (str) {
+	case "digital":
+		return Digital
+	case "analog":
+		return Analog
+	case "number":
+		return Number
+	case "text":
+		return Text
+	case "position":
+		return Coordinates
+	case "rgb":
+		return RGB
+	case "custom":
+		return CustomVariable
+	}
+
+	return CustomVariable
+}
 
 /* Devices */
 /* *************************************** */
@@ -88,8 +143,8 @@ type FieldVariables struct {
 
 // DeviceStatus is the current value of a device
 type DeviceStatus struct {
+	Route string      `storm:"id" storm:"index"` // json:"-" doesn't work
 	Name  string      `json:"key" storm:"index"` // Device Name (mqtt path -> HomeID + Group + DeviceName + VariableName)
-	Route string      `json:"-" storm:"id"`
 	Value interface{} `json:"value"`
 }
 

@@ -1,0 +1,13 @@
+{
+    "temperature" : "number",
+    "humidity" : "number",
+    "pressure" : "number",
+    "click": "text",
+    "occupancy" : "digital",
+    "state": "digital",
+    "state_right": "digital",
+    "state_left": "digital",
+    "brightness": "analog",
+    "color_temp": "analog",
+    "color": "rgb"
+}

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 	"encoding/json"
+	"io/ioutil"
+	"fmt"
 
 	"github.com/surgemq/message"
     "github.com/think-free/mqttclient"
@@ -162,60 +164,58 @@ func (w *MqttWrapper) Run() {
 	}
 }
 
-func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) (ret types.DeviceType) {
+func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) (types.DeviceType) {
 
+	var mapping map[string]string
+	ok := ReadFile("./zigbee/devices_mapping.json", &mapping)
+	if !ok {
+		log.Println("Can't get mapping file")
+		return types.CustomDevice
+	}
+
+	ret := "custom"
 	for key, _ := range values {
-		switch key {
 
-		case "temperature" :
-			ret = types.Climate
-		case "humidity" :
-			ret = types.Climate
-		case "pressure" :
-			ret = types.Climate
-		case "click":
-			ret = types.Switch
-		case "state":
-			ret = types.Switch
-		case "occupancy" :
-			ret = types.Occupancy
-		case "brightness":
-			ret = types.Light
-		case "color_temp":
-			ret = types.Light
-		case "color":
-			ret = types.Light
+		if val, ok := mapping[key]; ok {
+    		ret = val
 		}
 	}
 
 	log.Println("Detected device type :", ret)
 
-	return ret
+	return types.GetDeviceTypeFromString(ret)
 }
 
-func (w *MqttWrapper) GetVariableType(value string) (ret types.VariableType) {
+func (w *MqttWrapper) GetVariableType(value string) (types.VariableType) {
 
-	switch value {
-
-	case "temperature" :
-		ret = types.Number
-	case "humidity" :
-		ret = types.Number
-	case "pressure" :
-		ret = types.Number
-	case "click":
-		ret = types.Text
-	case "occupancy" :
-		ret = types.Digital
-	case "state":
-		ret = types.Digital
-	case "brightness":
-		ret = types.Analog
-	case "color_temp":
-		ret = types.Analog
-	case "color":
-		ret = types.RGB
+	var mapping map[string]string
+	ok := ReadFile("./zigbee/variables_mapping.json", &mapping)
+	if !ok {
+		log.Println("Can't get mapping file")
+		return types.CustomVariable
 	}
 
-	return ret
+	ret := "custom"
+	for key, _ := range values {
+
+		if val, ok := mapping[key]; ok {
+    		ret = val
+		}
+	}
+
+	log.Println("Detected variable type :", ret)
+
+	return types.GetVariableTypeFromString(ret)
+}
+
+func ReadFile(file string, dest interface{}) bool {
+
+	raw, err := ioutil.ReadFile(file)
+    if err != nil {
+  	   fmt.Println(err.Error())
+         return false
+	}
+
+	json.Unmarshal(raw, dest)
+	return true
 }
