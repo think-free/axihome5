@@ -16,6 +16,7 @@ services:
             - AX_PORT=8123
         volumes:
             - /etc/ax5:/etc/ax5
+            - ./mqtt:/mqtt
         networks:
             - axihome5_net
 

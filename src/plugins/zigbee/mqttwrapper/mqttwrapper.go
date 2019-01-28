@@ -167,7 +167,7 @@ func (w *MqttWrapper) Run() {
 func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) (types.DeviceType) {
 
 	var mapping map[string]string
-	ok := ReadFile("./zigbee/devices_mapping.json", &mapping)
+	ok := ReadFile("./mqtt/devices_mapping.json", &mapping)
 	if !ok {
 		log.Println("Can't get mapping file")
 		return types.CustomDevice
@@ -189,18 +189,15 @@ func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) (types
 func (w *MqttWrapper) GetVariableType(value string) (types.VariableType) {
 
 	var mapping map[string]string
-	ok := ReadFile("./zigbee/variables_mapping.json", &mapping)
+	ok := ReadFile("./mqtt/variables_mapping.json", &mapping)
 	if !ok {
 		log.Println("Can't get mapping file")
 		return types.CustomVariable
 	}
 
 	ret := "custom"
-	for key, _ := range values {
-
-		if val, ok := mapping[key]; ok {
-    		ret = val
-		}
+	if val, ok := mapping[value]; ok {
+		ret = val
 	}
 
 	log.Println("Detected variable type :", ret)
