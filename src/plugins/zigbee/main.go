@@ -53,7 +53,7 @@ func main() {
 	go w.Run()
 
 	/* Webserver */
-	s := webserver.New(*dev, *port)
+	s := webserver.New(*dev, *port, db)
 	err := s.Run()
 	if err != nil {
 		log.Println(err)
