@@ -1,5 +1,6 @@
 import React from 'react'
 import Radium from 'radium';
+import fetch from 'isomorphic-unfetch';
 import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
 
@@ -139,35 +140,7 @@ class MainArea extends React.Component {
                     {zbdevs && zbdevs.map(function(zb){
 
                             return (
-                                <div style={MainAreaStyle.panel}>
-                                    <div style={MainAreaStyle.zbid}> {zb.ZigbeeID}</div>
-
-                                    <table style={MainAreaStyle.table}>
-                                        <col width="100px" />
-                                        <col />
-                                        <col />
-                                        <tr>
-                                            <td style={MainAreaStyle.item}>Type</td>
-                                            <td> </td>
-                                            <td>{zb.DeviceType}</td>
-                                        </tr>
-                                        <tr>
-                                            <td style={MainAreaStyle.item}>Name</td>
-                                            <td> </td>
-                                            <td><input style={mainStyle.inputStyle} type="text" value={zb.Name}/></td>
-                                        </tr>
-                                        <tr>
-                                            <td style={MainAreaStyle.item}>Group</td>
-                                            <td> </td>
-                                            <td><input style={mainStyle.inputStyle} type="text" value={zb.Group}/></td>
-                                        </tr>
-                                        <tr>
-                                            <td style={MainAreaStyle.item}>HomeID</td>
-                                            <td> </td>
-                                            <td><input style={mainStyle.inputStyle} type="text" value={zb.HomeID}/></td>
-                                        </tr>
-                                    </table>
-                                </div>
+                                <ZBDevice zb={zb}/>
                             )
                         }
                     )}
@@ -177,7 +150,138 @@ class MainArea extends React.Component {
     }
 }
 
+class ZBDevice extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+
+            edited : false,
+            name : "",
+            group : "",
+            home : ""
+        };
+
+        const zb = this.props.zb;
+
+        this.state.name = zb.Name;
+        this.formNameChanged=this.formNameChanged.bind(this);
+
+        this.state.group = zb.Group;
+        this.formGroupChanged=this.formGroupChanged.bind(this);
+
+        this.state.home = zb.HomeID;
+        this.formHomeChanged=this.formHomeChanged.bind(this);
+
+        this.sendDevice=this.sendDevice.bind(this);
+        this.renderSendIcon=this.renderSendIcon.bind(this);
+    }
+
+    post (url, json) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: json
+        })
+    }
+
+    formNameChanged(event) {
+
+        this.setState({ edited: true });
+        this.state.name = event.target.value;
+        this.setState({ name: event.target.value });
+        console.log("Device name " + this.state.name);
+    }
+
+    formGroupChanged(event) {
+
+        this.setState({ edited: true });
+        this.state.group = event.target.value;
+        this.setState({ group: event.target.value });
+        console.log("Device group " + this.state.group);
+    }
+
+    formHomeChanged(event) {
+
+        this.setState({ edited: true });
+        this.state.home = event.target.value;
+        this.setState({ home: event.target.value });
+        console.log("Device home " + this.state.home);
+    }
+
+    sendDevice() {
+        this.post("/zigbee/setDeviceConfig", JSON.stringify(
+            {
+                ZigbeeID: this.props.zb.ZigbeeID,
+                Name: this.state.name,
+                Group: this.state.group,
+                HomeID: this.state.home,
+                DeviceType: this.props.zb.DeviceType
+            }
+        ))
+    }
+
+    render () {
+
+        const zb = this.props.zb;
+
+        return (
+
+            <div style={MainAreaStyle.panel}>
+
+                {this.renderSendIcon()}
+
+                <div style={MainAreaStyle.zbid}> {zb.ZigbeeID}</div>
+
+                <table style={MainAreaStyle.table}>
+                    <col width="100px" />
+                    <col />
+                    <col />
+                    <tr>
+                        <td style={MainAreaStyle.item}>Type</td>
+                        <td> </td>
+                        <td>{zb.DeviceType}</td>
+                    </tr>
+                    <tr>
+                        <td style={MainAreaStyle.item}>Name</td>
+                        <td> </td>
+                        <td><input key={zb.ZigbeeID + "Name"} style={mainStyle.inputStyle} type="text" value={this.state.name} onChange={this.formNameChanged} onBlur={this.formNameChanged}/></td>
+                    </tr>
+                    <tr>
+                        <td style={MainAreaStyle.item}>Group</td>
+                        <td> </td>
+                        <td><input key={zb.ZigbeeID + "Group"} style={mainStyle.inputStyle} type="text" value={this.state.group} onChange={this.formGroupChanged} onBlur={this.formGroupChanged}/></td>
+                    </tr>
+                    <tr>
+                        <td style={MainAreaStyle.item}>HomeID</td>
+                        <td> </td>
+                        <td><input key={zb.ZigbeeID + "HomeID"} style={mainStyle.inputStyle} type="text" value={this.state.home} onChange={this.formHomeChanged} onBlur={this.formHomeChanged}/></td>
+                    </tr>
+                </table>
+            </div>
+        )
+    }
+
+    renderSendIcon() {
+
+        if (this.state.edited){
+
+            return (
+                <span style={MainAreaStyle.toolBar}>
+                    <img key={"bt_ok_" + this.props.zb.ZigbeeID} style={mainStyle.menuIcon} src="/admin/static/ok.png" width="20" height="20" draggable="false" onClick={this.sendDevice}/>
+                </span>
+            )
+        } else {
+            return (null)
+        }
+    }
+  }
+
 /* Export */
 
 MainArea = Radium(MainArea);
+ZBDevice = Radium(ZBDevice);
 export default connect(mapStateToProps)(MainArea);

@@ -263,6 +263,7 @@ const deviceVariableStyle = {
     },
     variable : {
         marginLeft: 45,
+        width: 300,
         color: mainStyle.textItemColor
     },
     value : {
