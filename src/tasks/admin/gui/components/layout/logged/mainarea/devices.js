@@ -144,6 +144,11 @@ const deviceStyle = {
 
     panelVariable : {
         margin:  10
+    },
+    table : {
+        borderCollapse: "separate",
+        borderSpacing: "0 10px",
+        marginLeft: 50
     }
 }
 
@@ -182,7 +187,12 @@ class Device extends React.Component {
     render() {
 
         const device = this.props.device;
-        const type = "/admin/static/devicestypes/"+device.type+ ".png"
+        var tp = device.type;
+        if (tp == ""){
+            tp = "unknown"
+        }
+
+        const type = "/admin/static/devicestypes/"+tp+ ".png"
 
         console.log(this.state.panelVisible)
 
@@ -233,11 +243,18 @@ class Device extends React.Component {
 
                     <br/>
 
-                    {variables && variables.map(function(variable){
-                        return (
-                            <DeviceVariable device={dev} variable={variable} />
-                        )
-                    })}
+                    <table style={deviceStyle.table}>
+
+                        <col width="40px" />
+                        <col />
+
+                        {variables && variables.map(function(variable){
+                            return (
+                                <DeviceVariable device={dev} variable={variable} />
+                            )
+                        })}
+
+                    </table>
 
                     <br/>
                 </div>
@@ -315,10 +332,10 @@ class DeviceVariable extends React.Component {
         const { value } = this.state;
 
         return(
-            <div style={deviceVariableStyle.panel}>
-                <span style={deviceVariableStyle.variable}>{this.props.variable.name}</span>
-                <span style={deviceVariableStyle.value}>{this.state.value.value}</span>
-            </div>
+            <tr>
+                <td style={deviceVariableStyle.variable}>{this.props.variable.name}</td>
+                <td style={deviceVariableStyle.value}>{this.state.value.value}</td>
+            </tr>
         )
     }
 }

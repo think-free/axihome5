@@ -139,9 +139,13 @@ class MainArea extends React.Component {
                 <div style={MainAreaStyle.MainAreaList}>
                     {zbdevs && zbdevs.map(function(zb){
 
-                            return (
-                                <ZBDevice zb={zb}/>
-                            )
+                            if (zb.Name == "" || zb.Group == "" || zb.HomeID == "") {
+                                return (
+                                    <ZBDevice zb={zb}/>
+                                )
+                            } else {
+                                return (null)
+                            }
                         }
                     )}
                 </div>

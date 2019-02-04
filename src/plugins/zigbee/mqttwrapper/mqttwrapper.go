@@ -1,18 +1,17 @@
 package mqttwrapper
 
 import (
-
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"strings"
 	"time"
-	"encoding/json"
-	"io/ioutil"
-	"fmt"
 
 	"github.com/surgemq/message"
-    "github.com/think-free/mqttclient"
-	"github.com/think-free/storm-wrapper"
 	"github.com/think-free/axihome5/src/core/types"
+	"github.com/think-free/mqttclient"
+	"github.com/think-free/storm-wrapper"
 )
 
 const (
@@ -21,34 +20,32 @@ const (
 )
 
 type ZigbeeDevice struct {
-
 	ZigbeeID string `storm:"id"`
 
-	Name string
-	Group string
+	Name   string
+	Group  string
 	HomeID string
 
 	DeviceType types.DeviceType
 }
 
 type ZigbeeDeviceValue struct {
-	ZigbeeID string `storm:"id"`
+	ZigbeeID  string `storm:"id"`
 	ValuesMap map[string]interface{}
 }
 
 // MqttWrapper
 type MqttWrapper struct {
-
-    cli *mqttclient.MqttClient
-	db *stormwrapper.Db
+	cli *mqttclient.MqttClient
+	db  *stormwrapper.Db
 }
 
 // New create the mqttwrapper
 func New(cli *mqttclient.MqttClient, db *stormwrapper.Db) *MqttWrapper {
 
 	w := &MqttWrapper{
-        cli: cli,
-		db: db,
+		cli: cli,
+		db:  db,
 	}
 	return w
 }
@@ -62,7 +59,7 @@ func (w *MqttWrapper) Run() {
 
 		topic := string(msg.Topic())
 
-		if !strings.Contains(topic, "zigbee2mqtt/bridge"){
+		if !strings.Contains(topic, "zigbee2mqtt/bridge") {
 
 			device := strings.TrimPrefix(topic, "zigbee2mqtt/")
 
@@ -83,7 +80,7 @@ func (w *MqttWrapper) Run() {
 				devdb.Name = ""
 				devdb.DeviceType = w.GetDeviceTypeFromMap(jsonMap)
 				err := w.db.Save(&devdb)
-				if err != nil{
+				if err != nil {
 					log.Println("Error saving zigbee device :", err)
 				}
 			} else {
@@ -95,10 +92,10 @@ func (w *MqttWrapper) Run() {
 					// Write values to axihome if device has been configured
 					for k, v := range jsonMap {
 
-						log.Println("    |->", CWriteTopic + "/" + devdb.HomeID + "/" + devdb.Group + "/" + devdb.Name + "/" + k, "->", v)
+						log.Println("    |->", CWriteTopic+"/"+devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+k, "->", v)
 
 						// TODO : Transform value to match axihome standart
-						w.cli.PublishMessage(CWriteTopic + "/" + devdb.HomeID + "/" + devdb.Group + "/" + devdb.Name + "/" + k, v)
+						w.cli.PublishMessage(CWriteTopic+"/"+devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+k, v)
 					}
 				}
 			}
@@ -108,7 +105,7 @@ func (w *MqttWrapper) Run() {
 			deviceValue.ZigbeeID = device
 			deviceValue.ValuesMap = jsonMap
 			errVal := w.db.Save(&deviceValue)
-			if errVal != nil{
+			if errVal != nil {
 				log.Println("Error saving zigbee device value :", errVal)
 			}
 		}
@@ -130,7 +127,7 @@ func (w *MqttWrapper) Run() {
 				var variables []types.FieldVariables
 
 				var devV ZigbeeDeviceValue
-				err := w.db.Get("ZigbeeID", dev.ZigbeeID ,&devV)
+				err := w.db.Get("ZigbeeID", dev.ZigbeeID, &devV)
 				if err != nil {
 					log.Println("Can't find values for device :", dev.ZigbeeID)
 					continue
@@ -156,7 +153,7 @@ func (w *MqttWrapper) Run() {
 					Variables: variables,
 				}
 
-				w.cli.PublishMessageNoRetain(CDeviceTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name, &dev)
+				w.cli.PublishMessageNoRetain(CDeviceTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name, &dev)
 			}
 		}
 
@@ -164,7 +161,7 @@ func (w *MqttWrapper) Run() {
 	}
 }
 
-func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) (types.DeviceType) {
+func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) types.DeviceType {
 
 	var mapping map[string]string
 	ok := ReadFile("./mqtt/devices_mapping.json", &mapping)
@@ -174,19 +171,20 @@ func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) (types
 	}
 
 	ret := "custom"
-	for key, _ := range values {
+	for key := range values {
 
 		if val, ok := mapping[key]; ok {
-    		ret = val
+			ret = val
+			log.Println("Detected device type :", ret)
+			return types.GetDeviceTypeFromString(ret)
 		}
 	}
 
-	log.Println("Detected device type :", ret)
-
+	log.Println("Can't detect device type from map file, setting as :", ret)
 	return types.GetDeviceTypeFromString(ret)
 }
 
-func (w *MqttWrapper) GetVariableType(value string) (types.VariableType) {
+func (w *MqttWrapper) GetVariableType(value string) types.VariableType {
 
 	var mapping map[string]string
 	ok := ReadFile("./mqtt/variables_mapping.json", &mapping)
@@ -200,17 +198,15 @@ func (w *MqttWrapper) GetVariableType(value string) (types.VariableType) {
 		ret = val
 	}
 
-	log.Println("Detected variable type :", ret)
-
 	return types.GetVariableTypeFromString(ret)
 }
 
 func ReadFile(file string, dest interface{}) bool {
 
 	raw, err := ioutil.ReadFile(file)
-    if err != nil {
-  	   fmt.Println(err.Error())
-         return false
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
 	}
 
 	json.Unmarshal(raw, dest)

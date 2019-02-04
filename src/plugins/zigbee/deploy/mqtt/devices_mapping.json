@@ -9,5 +9,5 @@
     "occupancy" : "occupancy",
     "brightness":  "light",
     "color_temp":  "light",
-    "color":  "light",
+    "color":  "light"
 }
