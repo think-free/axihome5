@@ -21,19 +21,21 @@ type WebServer struct {
 	port string
 	dev  bool
 	pluginPath string
+	configPath string
 	man *manager.Manager
 	store *store.Store
 }
 
 // New create the webserver
-func New(dev bool, port, path string) *WebServer {
+func New(dev bool, port, plugins, config string) *WebServer {
 
 	s := &WebServer{
 		dev:  dev,
 		port: port,
-		pluginPath: path,
-		man: manager.New(path),
-		store: store.New(storeUrl, path),
+		pluginPath: plugins,
+		configPath: config,
+		man: manager.New(plugins, config),
+		store: store.New(storeUrl, plugins),
 	}
 
 	// Server the web app and the files in the docker compose tree

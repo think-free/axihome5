@@ -13,6 +13,7 @@ import (
 // Manager manage the plugins
 type Manager struct {
 	Path string
+    Config string
 }
 
 type Plugin struct {
@@ -22,10 +23,11 @@ type Plugin struct {
 }
 
 // New create the manager
-func New(path string) *Manager {
+func New(path, config string) *Manager {
 
 	m := &Manager{
 		Path:  path,
+        Config: config,
 	}
 
 	return m
@@ -107,6 +109,30 @@ func (m *Manager) StopAllPlugins() {
 func (m *Manager) StartPlugin(plugin string) {
 
 	log.Println("Starting plugin :", plugin)
+
+    // Replace AXPATH in compose file with the current path
+    path, err := ioutil.ReadFile(m.Config + "/path")
+    if err != nil {
+        log.Println("Can't start plugin, can't read path file from config")
+        log.Println(err)
+        return
+    }
+
+    read, err := ioutil.ReadFile(m.Path + "/" + plugin + "/docker-compose.yml")
+    if err != nil {
+        log.Println("Can't start plugin, can't read compose file :", plugin)
+        log.Println(err)
+        return
+    }
+    newContents := strings.Replace(string(read), "AXPATH", strings.TrimSuffix(string(path), "\n"), -1)
+    err = ioutil.WriteFile(m.Path + "/" + plugin + "/docker-compose.yml", []byte(newContents), 0)
+    if err != nil {
+        log.Println("Can't start plugin, can't write compose file :", plugin)
+        log.Println(err)
+        return
+    }
+
+    // Start !
 	go m.runNoOutput(m.Path + "/" + plugin, "docker-compose", "up")
 }
 

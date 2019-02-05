@@ -286,7 +286,7 @@ class MainArea extends React.Component {
             return (
                 <div style={MainAreaStyle.p100}>
                     <span style={MainAreaStyle.toolBar}>
-                        <img key="bt_add" style={mainStyle.menuIcon} src="/plugins/static/add.png" width="20" height="20" draggable="false" onClick={me.addPlugin}/>
+                        <img key="bt_add" style={mainStyle.menuIcon} src="/plugins/static/store.png" width="20" height="20" draggable="false" onClick={me.addPlugin}/>
                     </span>
 
                     <div style={MainAreaStyle.MainAreaList}>

@@ -1,15 +1,23 @@
 version: '3'
+
+# SERVICES
+# #####################################################################
+
 services:
+
+# MOSQUITTO
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto
     ports:
-      - '0.0.0.0:1883:1883'
-      - '0.0.0.0:9001:9001'
+      - 0.0.0.0:1883:1883
+      - 0.0.0.0:9001:9001
     volumes:
-      - './mosquitto:/mosquitto'
+      - ./mosquitto:/mosquitto
     networks:
       - net
+
+# CORE
   core:
     container_name: core
     image: 'thinkfree84/ax5_core:latest'
@@ -21,11 +29,13 @@ services:
     environment:
       - AX_BROKER=mosquitto
     ports:
-      - '0.0.0.0:8080:8080'
+      - 0.0.0.0:8080:8080
     volumes:
-      - './config:/etc/ax5'
+      - ./config:/etc/ax5
     networks:
       - net
+
+# ADMIN
   admin:
     container_name: admin
     image: 'thinkfree84/ax5_admin:latest'
@@ -39,9 +49,11 @@ services:
       - AX_HOST=admin
       - AX_PORT=8123
     volumes:
-      - './config:/etc/ax5'
+      - ./config:/etc/ax5
     networks:
       - net
+
+# PLUGINS
   plugins:
     container_name: plugins
     image: 'thinkfree84/ax5_plugins:latest'
@@ -55,11 +67,15 @@ services:
       - AX_HOST=plugins
       - AX_PORT=8123
     volumes:
-      - './config:/etc/ax5'
-      - './plugins/:/etc/plugins/'
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      - ./config:/etc/ax5
+      - ./plugins/:/etc/plugins/
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - net
+
+# NETWORKS
+# #####################################################################
+
 networks:
   net:
     driver: bridge

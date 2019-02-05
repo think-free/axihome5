@@ -15,8 +15,8 @@ services:
             - AX_HOST=zigbee
             - AX_PORT=8123
         volumes:
-            - /etc/ax5:/etc/ax5
-            - ./mqtt:/mqtt
+            - AXPATH/config:/etc/ax5
+            - AXPATH/plugins/zigbee/config/mqtt:/mqtt
         networks:
             - axihome5_net
 
@@ -26,7 +26,7 @@ services:
         devices:
             - "/dev/ttyACM0:/dev/ttyACM0"
         volumes:
-            - ./zigbee2mqtt:/app/data
+            - AXPATH/plugins/zigbee/config/zigbee2mqtt:/app/data
         networks:
             - axihome5_net
 networks:
