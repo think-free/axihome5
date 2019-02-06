@@ -5,7 +5,19 @@ version: '3'
 
 services:
 
-# MOSQUITTO
+# MOSQUITTO Frontend
+#  mosquitto:
+#    container_name: mosquittofront
+#    image: eclipse-mosquitto
+#    ports:
+#      - 0.0.0.0:1883:1883
+#      - 0.0.0.0:9001:9001
+#    volumes:
+#      - ./mosquitto_frontend:/mosquitto
+#    networks:
+#      - net
+
+# MOSQUITTO Backend
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto
@@ -13,7 +25,7 @@ services:
       - 0.0.0.0:1883:1883
       - 0.0.0.0:9001:9001
     volumes:
-      - ./mosquitto:/mosquitto
+      - ./mosquitto_backend:/mosquitto
     networks:
       - net
 

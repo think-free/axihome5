@@ -94,7 +94,34 @@ func (w *MqttWrapper) Run() {
 
 						log.Println("    |->", CWriteTopic+"/"+devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+k, "->", v)
 
-						// TODO : Transform value to match axihome standart
+						var sendValue interface{}
+
+						// Transform value to match axihome standard
+						switch v.(type) {
+						case int:
+							sendValue = v
+						case float64:
+						    sendValue = v
+						case string:
+						    sendValue = v.(string)
+						    if sendValue == "ON" || sendValue == "on" || sendValue == "On" {
+								sendValue = 1
+							} else if sendValue == "OFF" || sendValue == "off" || sendValue == "Off" {
+								sendValue = 0
+							} else {
+								sendValue = v
+							}
+						case bool:
+							if v.(bool) == true {
+								sendValue = 1
+							} else {
+								sendValue = 0
+							}
+						default:
+						    sendValue = v
+						}
+
+						// Publish message
 						w.cli.PublishMessage(CWriteTopic+"/"+devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+k, v)
 					}
 				}

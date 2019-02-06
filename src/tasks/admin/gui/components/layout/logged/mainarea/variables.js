@@ -47,6 +47,9 @@ const variablesStyle = {
         paddingRight: 10,
         marginTop: 5,
         backgroundColor: mainStyle.mainBackgroundColor,
+    },
+    menuIcon : {
+        float: 'right'
     }
 }
 
@@ -94,12 +97,18 @@ class Variables extends React.Component {
         this.setState({ currentFilter: event.target.value })
     }
 
+    deleteVariable (key) {
+        fetch("/core/deleteValue?key=" + key)
+    }
+
     // Render
     render() {
         const { variables } = this.state;
         let { currentFilter } = this.state;
         if (currentFilter == "")
             currentFilter = ".*"
+
+        const me = this;
 
         return (
             <div style={variablesStyle.p100}>
@@ -113,6 +122,9 @@ class Variables extends React.Component {
 
                             return (
                                 <div style={variablesStyle.panel}>
+                                    <span style={variablesStyle.menuIcon}>
+                                        <img key={"bt_delete_" + variable.key} style={mainStyle.menuIcon} src="/admin/static/delete.png" alt="devices" width="20" height="20" draggable="false" onClick={() => me.deleteVariable(variable.key)}/>
+                                    </span>
                                     <div style={variablesStyle.variable}>{variable.key}</div>
                                     <div style={variablesStyle.value}>{variable.value}</div>
                                 </div>
