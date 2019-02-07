@@ -10,8 +10,8 @@ services:
     container_name: mosquittofront
     image: eclipse-mosquitto
     ports:
-      - 0.0.0.0:1883:1883
-      - 0.0.0.0:9001:9001
+        - 0.0.0.0:1883:1883
+        - 0.0.0.0:9001:9001
     volumes:
       - ./mosquitto_frontend:/mosquitto
     networks:

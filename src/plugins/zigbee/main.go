@@ -29,6 +29,7 @@ func main() {
 
 	/* Tasks register */
 	cli := mqttclient.NewMqttClient("Plugin_Zigbee", *broker)
+	cli.SetUserPass("backend","axihome5homeautomation")
 	cli.Connect()
 	cli.SendHB("axihome/5/tasks/zigbee/hb")
 

@@ -27,6 +27,7 @@ func main() {
 
 	/* Tasks register */
 	cli := mqttclient.NewMqttClient("Task_admin", *broker)
+	cli.SetUserPass("backend","axihome5homeautomation")
 	cli.Connect()
 	cli.SendHB("axihome/5/tasks/admin/hb")
 

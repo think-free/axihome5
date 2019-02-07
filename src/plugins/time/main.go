@@ -32,6 +32,7 @@ func main() {
 
 	// Mqtt client
 	cli := mqttclient.NewMqttClient("Device_"+*instanceName, *broker)
+	cli.SetUserPass("backend","axihome5homeautomation")
 	cli.Connect()
 	cli.SendHB(topic + "/hb")
 

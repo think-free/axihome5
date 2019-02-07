@@ -50,6 +50,7 @@ func New(db *stormwrapper.Db, server string) *Mqtt {
 func (mq *Mqtt) Run() {
 
 	mq.cli = mqttclient.NewMqttClient("AxihomeCore", mq.server)
+	mq.cli.SetUserPass("backend","axihome5homeautomation")
 	mq.cli.Connect()
 	mq.cli.SendHB("axihome/5/core/hb")
 
