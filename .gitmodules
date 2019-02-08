@@ -1,0 +1,4 @@
+[submodule "axihome5"]
+	path = axihome5
+	url = https://github.com/think-free/axihome5-main.git
+	branch = master
