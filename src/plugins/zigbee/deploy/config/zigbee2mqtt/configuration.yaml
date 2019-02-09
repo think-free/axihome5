@@ -11,8 +11,8 @@ mqtt:
   # MQTT server URL
   server: 'mqtt://mosquitto'
   # MQTT server authentication, uncomment if required:
-  # user: my_user
-  # password: my_password
+  user: backend
+  password: axihome5homeautomation
 
 # Serial settings
 serial:
