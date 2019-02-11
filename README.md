@@ -9,7 +9,7 @@ Mainly written in Go for backend; Frontend is Web based on react.js (and will be
 
 User and Developers documentation is on the road (look at the doc folder but it's probably not up to date). If you are interested to use or hack it, please contact me !
 
-##Current state :
+## Current state :
 - Compiled only for x86 (no docker image for arm) but as it's written in Go, it would be easy to build arm docker images.
 - Core is working.
 - Basic plugin managment with plugin store working.
@@ -17,7 +17,7 @@ User and Developers documentation is on the road (look at the doc folder but it'
 - Currentlty working on plugin dev (zigbee, zwave, alarm, place managment, ...)
 - Frontend has to be done
 
-##Some screenshoots :
+## Some screenshoots :
 
 *Devices*
 ![Devices](https://github.com/think-free/axihome5/raw/master/doc/1.png)
