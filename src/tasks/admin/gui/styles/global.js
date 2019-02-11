@@ -5,6 +5,9 @@ let mainStyle = {
     menuBackgroundColor : "#40414F",
     headerBackgroundColor : "#111111",
 
+    header : "#30303b",
+    headerBorder : "1px solid #999dab",
+
     border : "2px solid #383846",
     borderAlternative : "1px solid #22ADF6",
     borderOrange : "1px solid #FE6951",

@@ -1,0 +1,22 @@
+version: "3"
+services:
+
+    zwavemqttbridge:
+        container_name: zwave-mqtt-bridge
+        image: thinkfree84/zwave-mqtt-bridge:latest
+        environment:
+            - USER=backend
+            - PASSWORD=axihome5homeautomation
+            - CONFIGPATH=/etc/zwave
+            - DEVICE=/dev/ttyACM0
+            - TOPIC=zwave
+            - MQTTHOST=mosquitto
+        devices:
+            - "/dev/ttyACM0:/dev/ttyACM0"
+        volumes:
+            - AXPATH/config:/etc/zwave
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true

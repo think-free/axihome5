@@ -133,6 +133,7 @@ func (m *Manager) StartPlugin(plugin string) {
     }
 
     // Start !
+    m.runNoOutput(m.Path + "/" + plugin, "docker-compose", "pull")
 	go m.runNoOutput(m.Path + "/" + plugin, "docker-compose", "up")
 }
 

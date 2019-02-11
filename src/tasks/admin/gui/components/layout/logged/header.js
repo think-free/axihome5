@@ -13,8 +13,8 @@ const layoutStyle = {
     left:0,
     right:0,
     color: mainStyle.textColor,
-    backgroundColor: mainStyle.headerBackgroundColor,
-    borderBottom: mainStyle.borderAlternative
+    backgroundColor: mainStyle.header,
+    borderBottom: mainStyle.headerBorder //Alternative
 }
 
 const logoStyle = {
