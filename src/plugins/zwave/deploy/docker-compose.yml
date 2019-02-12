@@ -1,6 +1,27 @@
 version: "3"
 services:
 
+    zwave:
+        container_name: zwave
+        image: thinkfree84/ax5_zwave:latest
+        depends_on:
+          - zwavemqttbridge
+        build:
+            context: ../../../
+            dockerfile: src/plugins/zwave/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOMEID=home
+            - AX_GROUP=server
+            - AX_INSTANCE=zwave
+            - AX_HOST=zwave
+            - AX_PORT=8123
+        volumes:
+            - AXPATH/config:/etc/ax5
+            - AXPATH/plugins/zwave/config/mqtt:/mqtt
+        networks:
+            - axihome5_net
+
     zwavemqttbridge:
         container_name: zwave-mqtt-bridge
         image: thinkfree84/zwave-mqtt-bridge:latest
