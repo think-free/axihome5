@@ -219,7 +219,7 @@ class ZWDevice extends React.Component {
     sendDevice() {
         this.post("/zwave/setDeviceConfig", JSON.stringify(
             {
-                ZigbeeID: this.props.zb.ZigbeeID,
+                ZwaveID: this.props.zb.ZwaveID,
                 Name: this.state.name,
                 Group: this.state.group,
                 HomeID: this.state.home,

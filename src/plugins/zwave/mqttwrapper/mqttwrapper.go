@@ -98,13 +98,13 @@ func (w *MqttWrapper) Run() {
 					// Transform value to match axihome standard
 					switch v.(type) {
 					case int:
-                                                log.Println("Setting integer :", v)
+                        log.Println("Setting integer :", v)
 						sendValue = v
 					case float64:
-                                                log.Println("Setting float64 :", v)
+                        log.Println("Setting float64 :", v)
 					    sendValue = v
 					case string:
-                                                log.Println("Setting string :", v)
+                        log.Println("Setting string :", v)
 					    sendValue = v.(string)
 					    if sendValue == "ON" || sendValue == "on" || sendValue == "On" {
 							sendValue = 1
@@ -114,14 +114,14 @@ func (w *MqttWrapper) Run() {
 							sendValue = v
 						}
 					case bool:
-                                                log.Println("Setting boolean :", v)
+                        log.Println("Setting boolean :", v)
 						if v.(bool) == true {
 							sendValue = 1
 						} else {
 							sendValue = 0
 						}
 					default:
-                                                log.Println("Setting default :", v)
+                        log.Println("Setting default :", v)
 					    sendValue = v
 					}
 
