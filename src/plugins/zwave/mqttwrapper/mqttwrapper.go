@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 
 	"github.com/surgemq/message"
 	"github.com/think-free/axihome5/src/core/types"
 	"github.com/think-free/mqttclient"
-	"github.com/think-free/storm-wrapper"
+	stormwrapper "github.com/think-free/storm-wrapper"
 )
 
 const (
@@ -31,8 +31,11 @@ type ZwaveDevice struct {
 }
 
 type ZwaveDeviceValue struct {
-	ZwaveID  string `storm:"id"`
-	ValuesMap map[string]interface{}
+	ZwaveIDVariable string `storm:"id"`
+	ZwaveID         string `storm:"index"`
+	ZwaveVariable   string
+	LocalVariable   string
+	Value           interface{}
 }
 
 // MqttWrapper
@@ -77,7 +80,7 @@ func (w *MqttWrapper) Run() {
 			devdb.HomeID = ""
 			devdb.Group = ""
 			devdb.Name = ""
-			devdb.DeviceType = w.GetDeviceTypeFromMap(jsonMap)
+			devdb.DeviceType = "custom"
 			err := w.db.Save(&devdb)
 			if err != nil {
 				log.Println("Error saving zwave device :", err)
@@ -86,27 +89,29 @@ func (w *MqttWrapper) Run() {
 
 			if devdb.HomeID != "" && devdb.Group != "" && devdb.Name != "" {
 
-				log.Println("Writting values to axihome topic")
+				log.Println("Device is configured, writting values to axihome topic")
 
 				// Write values to axihome if device has been configured
 				for k, v := range jsonMap {
 
-					log.Println("    |->", CWriteTopic+"/"+devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+k, "->", v)
+					id := strings.ToLower(k)
+
+					log.Println("    |->", CWriteTopic+"/"+devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+id, "->", v)
 
 					var sendValue interface{}
 
 					// Transform value to match axihome standard
 					switch v.(type) {
 					case int:
-                        log.Println("Setting integer :", v)
+						log.Println("Setting integer :", v)
 						sendValue = v
 					case float64:
-                        log.Println("Setting float64 :", v)
-					    sendValue = v
+						log.Println("Setting float64 :", v)
+						sendValue = v
 					case string:
-                        log.Println("Setting string :", v)
-					    sendValue = v.(string)
-					    if sendValue == "ON" || sendValue == "on" || sendValue == "On" {
+						log.Println("Setting string :", v)
+						sendValue = v.(string)
+						if sendValue == "ON" || sendValue == "on" || sendValue == "On" {
 							sendValue = 1
 						} else if sendValue == "OFF" || sendValue == "off" || sendValue == "Off" {
 							sendValue = 0
@@ -114,30 +119,38 @@ func (w *MqttWrapper) Run() {
 							sendValue = v
 						}
 					case bool:
-                        log.Println("Setting boolean :", v)
+						log.Println("Setting boolean :", v)
 						if v.(bool) == true {
 							sendValue = 1
 						} else {
 							sendValue = 0
 						}
 					default:
-                        log.Println("Setting default :", v)
-					    sendValue = v
+						log.Println("Setting default :", v)
+						sendValue = v
 					}
 
 					// Publish message
-					w.cli.PublishMessage(CWriteTopic+"/"+devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+k, sendValue)
+					w.cli.PublishMessage(CWriteTopic+"/"+devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+id, sendValue)
 				}
 			}
 		}
 
 		// Save device - values to database
-		var deviceValue ZwaveDeviceValue
-		deviceValue.ZwaveID = device
-		deviceValue.ValuesMap = jsonMap
-		errVal := w.db.Save(&deviceValue)
-		if errVal != nil {
-			log.Println("Error saving zwave device value :", errVal)
+		for k, v := range jsonMap {
+
+			id := strings.ToLower(k)
+
+			var deviceValue ZwaveDeviceValue
+			deviceValue.ZwaveIDVariable = device + "." + id
+			deviceValue.ZwaveID = device
+			deviceValue.ZwaveVariable = k
+			deviceValue.LocalVariable = id
+			deviceValue.Value = v
+			errVal := w.db.Save(&deviceValue)
+			if errVal != nil {
+				log.Println("Error saving zwave device value :", errVal)
+			}
 		}
 
 		return nil
@@ -145,10 +158,10 @@ func (w *MqttWrapper) Run() {
 
 	// Refresh devices
 
-	for i := 2; i< 100; i++{
+	for i := 2; i < 100; i++ {
 
 		is := strconv.Itoa(i)
-		w.cli.PublishMessage("zwave/refresh/" + is, "")
+		w.cli.PublishMessage("zwave/refresh/"+is, "")
 	}
 
 	// Device autoregister
@@ -162,27 +175,40 @@ func (w *MqttWrapper) Run() {
 
 			if dev.HomeID != "" && dev.Group != "" && dev.Name != "" {
 
+				log.Println("Generating autoregister message for", dev.HomeID+"."+dev.Group+"."+dev.Name)
+
 				var variables []types.FieldVariables
 
-				var devV ZwaveDeviceValue
-				err := w.db.Get("ZwaveID", dev.ZwaveID, &devV)
+				var devV []ZwaveDeviceValue
+				err := w.db.GetFilter("ZwaveID", dev.ZwaveID, &devV)
 				if err != nil {
 					log.Println("Can't find values for device :", dev.ZwaveID)
 					continue
 				}
 
-				for k, _ := range devV.ValuesMap {
+				devType := types.CustomDevice
 
-					variables = append(variables, types.FieldVariables{
-						Name:        k,
-						Type:        w.GetVariableType(k),
-						StatusTopic: CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + k,
-					})
+				for _, v := range devV {
+
+					log.Println("    > Adding variable :", v.LocalVariable, "to device")
+
+					if devType == types.CustomDevice {
+						devType = w.GetDeviceTypeFromVariable(v.LocalVariable)
+					}
+
+					variable := types.FieldVariables{
+						Name:        v.LocalVariable,
+						Type:        w.GetVariableType(v.LocalVariable),
+						StatusTopic: CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable,
+						CmdTopic:    CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable + "/set",
+					}
+
+					variables = append(variables, variable)
 				}
 
 				dev := types.FieldDevice{
 					ID:   dev.ZwaveID,
-					Type: dev.DeviceType,
+					Type: devType,
 
 					Name:   dev.Name,
 					Group:  dev.Group,
@@ -199,7 +225,7 @@ func (w *MqttWrapper) Run() {
 	}
 }
 
-func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) types.DeviceType {
+func (w *MqttWrapper) GetDeviceTypeFromVariable(val string) types.DeviceType {
 
 	var mapping map[string]string
 	ok := ReadFile("./zwave/devices_mapping.json", &mapping)
@@ -209,13 +235,10 @@ func (w *MqttWrapper) GetDeviceTypeFromMap(values map[string]interface{}) types.
 	}
 
 	ret := "custom"
-	for key := range values {
-
-		if val, ok := mapping[key]; ok {
-			ret = val
-			log.Println("Detected device type :", ret)
-			return types.GetDeviceTypeFromString(ret)
-		}
+	if val, ok := mapping[val]; ok {
+		ret = val
+		log.Println("Detected device type :", ret)
+		return types.GetDeviceTypeFromString(ret)
 	}
 
 	log.Println("Can't detect device type from map file, setting as :", ret)
