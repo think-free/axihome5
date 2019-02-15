@@ -219,6 +219,7 @@ func (w *MqttWrapper) Run() {
 					if w.GetVariableWrittable(variable.Name) {
 
 						log.Println("Variable writtable :", variable.Name)
+						variable.CmdTopic = CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable + "/set"
 						w.SubscribeWriteTopic(dev, v)
 
 					} else {
