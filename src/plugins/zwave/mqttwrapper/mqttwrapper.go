@@ -40,8 +40,13 @@ type ZwaveDeviceValue struct {
 
 // MqttWrapper
 type MqttWrapper struct {
-	cli *mqttclient.MqttClient
-	db  *stormwrapper.Db
+	cli             *mqttclient.MqttClient
+	db              *stormwrapper.Db
+	subscribedWrite map[string]struct{}
+
+	deviceMapping      map[string]string
+	variableMapping    map[string]string
+	variablesWrittable map[string]bool
 }
 
 // New create the mqttwrapper
@@ -56,6 +61,23 @@ func New(cli *mqttclient.MqttClient, db *stormwrapper.Db) *MqttWrapper {
 
 // Run start the wrapper
 func (w *MqttWrapper) Run() {
+
+	// Loading config files
+
+	ok1 := ReadFile("./zwave/devices_mapping.json", &w.deviceMapping)
+	if !ok1 {
+		log.Println("Can't get mapping file devices_mapping")
+	}
+
+	ok2 := ReadFile("./zwave/variables_mapping.json", &w.variableMapping)
+	if !ok2 {
+		log.Println("Can't get mapping file variables_mapping")
+	}
+
+	ok3 := ReadFile("./zwave/variables_writtable.json", &w.variablesWrittable)
+	if !ok3 {
+		log.Println("Can't get mapping file variables_writtable")
+	}
 
 	// Subscribe to zwave topic
 
@@ -158,10 +180,12 @@ func (w *MqttWrapper) Run() {
 
 	// Refresh devices
 
+	mp := make(map[string]interface{})
+
 	for i := 2; i < 100; i++ {
 
 		is := strconv.Itoa(i)
-		w.cli.PublishMessage("zwave/refresh/"+is, "")
+		w.cli.PublishMessage("zwave/refresh/"+is, &mp)
 	}
 
 	// Device autoregister
@@ -200,7 +224,12 @@ func (w *MqttWrapper) Run() {
 						Name:        v.LocalVariable,
 						Type:        w.GetVariableType(v.LocalVariable),
 						StatusTopic: CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable,
-						CmdTopic:    CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable + "/set",
+					}
+
+					if w.GetVariableWrittable(variable.Name) {
+
+						variable.CmdTopic = CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable + "/set"
+						w.SubscribeWriteTopic(dev, v)
 					}
 
 					variables = append(variables, variable)
@@ -225,17 +254,31 @@ func (w *MqttWrapper) Run() {
 	}
 }
 
-func (w *MqttWrapper) GetDeviceTypeFromVariable(val string) types.DeviceType {
+func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceValue) {
 
-	var mapping map[string]string
-	ok := ReadFile("./zwave/devices_mapping.json", &mapping)
-	if !ok {
-		log.Println("Can't get mapping file")
-		return types.CustomDevice
+	if _, ok := w.subscribedWrite[variable.ZwaveIDVariable]; ok {
+		return
 	}
 
+	log.Println("Registering ")
+
+	w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set", func(msg *message.PublishMessage) error {
+
+		v := make(map[string]interface{})
+		v[variable.ZwaveVariable] = msg.Payload
+
+		log.Println("Writting to zwave device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+variable.LocalVariable, "->", v)
+
+		w.cli.PublishMessageNoRetain("zwave/set/"+dev.ZwaveID, &v)
+
+		return nil
+	})
+}
+
+func (w *MqttWrapper) GetDeviceTypeFromVariable(val string) types.DeviceType {
+
 	ret := "custom"
-	if val, ok := mapping[val]; ok {
+	if val, ok := w.deviceMapping[val]; ok {
 		ret = val
 		log.Println("Detected device type :", ret)
 		return types.GetDeviceTypeFromString(ret)
@@ -247,19 +290,22 @@ func (w *MqttWrapper) GetDeviceTypeFromVariable(val string) types.DeviceType {
 
 func (w *MqttWrapper) GetVariableType(value string) types.VariableType {
 
-	var mapping map[string]string
-	ok := ReadFile("./zwave/variables_mapping.json", &mapping)
-	if !ok {
-		log.Println("Can't get mapping file")
-		return types.CustomVariable
-	}
-
 	ret := "custom"
-	if val, ok := mapping[value]; ok {
+	if val, ok := w.variableMapping[value]; ok {
 		ret = val
 	}
 
 	return types.GetVariableTypeFromString(ret)
+}
+
+func (w *MqttWrapper) GetVariableWrittable(value string) bool {
+
+	ret := false
+	if val, ok := w.variablesWrittable[value]; ok {
+		ret = val
+	}
+
+	return ret
 }
 
 func ReadFile(file string, dest interface{}) bool {
