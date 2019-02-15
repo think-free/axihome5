@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 
@@ -55,6 +54,7 @@ func New(cli *mqttclient.MqttClient, db *stormwrapper.Db) *MqttWrapper {
 	w := &MqttWrapper{
 		cli: cli,
 		db:  db,
+                subscribedWrite: make(map[string]struct{}),
 	}
 	return w
 }
@@ -64,17 +64,17 @@ func (w *MqttWrapper) Run() {
 
 	// Loading config files
 
-	ok1 := ReadFile("./zwave/devices_mapping.json", &w.deviceMapping)
+	ok1 := ReadFile("./config/zwave/devices_mapping.json", &w.deviceMapping)
 	if !ok1 {
 		log.Println("Can't get mapping file devices_mapping")
 	}
 
-	ok2 := ReadFile("./zwave/variables_mapping.json", &w.variableMapping)
+	ok2 := ReadFile("./config/zwave/variables_mapping.json", &w.variableMapping)
 	if !ok2 {
 		log.Println("Can't get mapping file variables_mapping")
 	}
 
-	ok3 := ReadFile("./zwave/variables_writtable.json", &w.variablesWrittable)
+	ok3 := ReadFile("./config/zwave/variables_writtable.json", &w.variablesWrittable)
 	if !ok3 {
 		log.Println("Can't get mapping file variables_writtable")
 	}
@@ -178,16 +178,6 @@ func (w *MqttWrapper) Run() {
 		return nil
 	})
 
-	// Refresh devices
-
-	mp := make(map[string]interface{})
-
-	for i := 2; i < 100; i++ {
-
-		is := strconv.Itoa(i)
-		w.cli.PublishMessage("zwave/refresh/"+is, &mp)
-	}
-
 	// Device autoregister
 
 	for {
@@ -228,9 +218,13 @@ func (w *MqttWrapper) Run() {
 
 					if w.GetVariableWrittable(variable.Name) {
 
-						variable.CmdTopic = CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable + "/set"
+                                                log.Println("Variable writtable :", variable.Name)
 						w.SubscribeWriteTopic(dev, v)
-					}
+
+					} else {
+
+                                                log.Println("Variable not writtable :", variable.Name)
+                                        }
 
 					variables = append(variables, variable)
 				}
@@ -256,11 +250,15 @@ func (w *MqttWrapper) Run() {
 
 func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceValue) {
 
-	if _, ok := w.subscribedWrite[variable.ZwaveIDVariable]; ok {
-		return
+	if _, ok := w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set"]; ok {
+		
+                log.Println("Already registered")
+                return
 	}
 
-	log.Println("Registering ")
+        w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set"] = struct{}{}
+
+	log.Println("Registering :", CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set")
 
 	w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set", func(msg *message.PublishMessage) error {
 

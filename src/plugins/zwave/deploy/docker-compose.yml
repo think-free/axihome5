@@ -17,8 +17,8 @@ services:
             - AX_HOST=zwave
             - AX_PORT=8123
         volumes:
-            - AXPATH/config:/etc/ax5
-            - AXPATH/plugins/zwave/config/mqtt:/mqtt
+            - /media/docker/axihome5/config:/etc/ax5
+            - /media/docker/axihome5/plugins/zwave/config/:/config
         networks:
             - axihome5_net
 
@@ -35,7 +35,7 @@ services:
         devices:
             - "/dev/ttyACM0:/dev/ttyACM0"
         volumes:
-            - AXPATH/config:/etc/zwave
+            - /media/docker/axihome5/config/zwave:/etc/zwave
         networks:
             - axihome5_net
 networks:
