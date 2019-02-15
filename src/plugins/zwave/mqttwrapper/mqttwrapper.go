@@ -52,9 +52,9 @@ type MqttWrapper struct {
 func New(cli *mqttclient.MqttClient, db *stormwrapper.Db) *MqttWrapper {
 
 	w := &MqttWrapper{
-		cli: cli,
-		db:  db,
-                subscribedWrite: make(map[string]struct{}),
+		cli:             cli,
+		db:              db,
+		subscribedWrite: make(map[string]struct{}),
 	}
 	return w
 }
@@ -218,13 +218,13 @@ func (w *MqttWrapper) Run() {
 
 					if w.GetVariableWrittable(variable.Name) {
 
-                                                log.Println("Variable writtable :", variable.Name)
+						log.Println("Variable writtable :", variable.Name)
 						w.SubscribeWriteTopic(dev, v)
 
 					} else {
 
-                                                log.Println("Variable not writtable :", variable.Name)
-                                        }
+						log.Println("Variable not writtable :", variable.Name)
+					}
 
 					variables = append(variables, variable)
 				}
@@ -251,16 +251,16 @@ func (w *MqttWrapper) Run() {
 func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceValue) {
 
 	if _, ok := w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set"]; ok {
-		
-                log.Println("Already registered")
-                return
+
+		log.Println("Already registered")
+		return
 	}
 
-        w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set"] = struct{}{}
+	w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set"] = struct{}{}
 
 	log.Println("Registering :", CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set")
 
-	w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set", func(msg *message.PublishMessage) error {
+	err := w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set", func(msg *message.PublishMessage) error {
 
 		v := make(map[string]interface{})
 		v[variable.ZwaveVariable] = msg.Payload
@@ -271,6 +271,10 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 
 		return nil
 	})
+
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func (w *MqttWrapper) GetDeviceTypeFromVariable(val string) types.DeviceType {
