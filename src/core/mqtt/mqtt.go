@@ -50,7 +50,7 @@ func New(db *stormwrapper.Db, server string) *Mqtt {
 func (mq *Mqtt) Run() {
 
 	mq.cli = mqttclient.NewMqttClient("AxihomeCore", mq.server)
-	mq.cli.SetUserPass("backend","axihome5homeautomation")
+	mq.cli.SetUserPass("backend", "axihome5homeautomation")
 	mq.cli.Connect()
 	mq.cli.SendHB("axihome/5/core/hb")
 
@@ -138,34 +138,32 @@ func (mq *Mqtt) MqttSubscribeDeviceAutoRegister() {
 		json.Unmarshal(msg.Payload(), &dev)
 
 		var devdb types.FieldDevice
-		err := mq.db.Get("ID", dev.ID, &devdb)
+		mq.db.Get("ID", dev.ID, &devdb)
+
+		// Save device to database
+		log.Println("Saving discovered device :", dev.HomeID+"."+dev.Group+"."+dev.ID)
+		err := mq.db.Save(&dev)
+
 		if err != nil {
-
-			// Save device to database
-			log.Println("Saving new discovered device :", dev.HomeID+"."+dev.Group+"."+dev.ID)
-			err := mq.db.Save(&dev)
-
-			if err != nil {
-				log.Println(err)
-			}
-
-			// Send the new device to the client topic
-			cd := types.ClientDevice{
-				Name:   dev.Name,
-				Group:  dev.Group,
-				HomeID: dev.HomeID,
-				Type:   dev.Type,
-			}
-
-			for _, va := range dev.Variables {
-				v := types.ClientVariable{
-					Type: va.Type,
-				}
-				cd.Variables = append(cd.Variables, v)
-			}
-
-			mq.cli.PublishMessage(CClientDevices, cd)
+			log.Println(err)
 		}
+
+		// Send the new device to the client topic
+		cd := types.ClientDevice{
+			Name:   dev.Name,
+			Group:  dev.Group,
+			HomeID: dev.HomeID,
+			Type:   dev.Type,
+		}
+
+		for _, va := range dev.Variables {
+			v := types.ClientVariable{
+				Type: va.Type,
+			}
+			cd.Variables = append(cd.Variables, v)
+		}
+
+		mq.cli.PublishMessage(CClientDevices, cd)
 
 		return nil
 	})
