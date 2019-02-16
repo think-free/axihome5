@@ -251,7 +251,7 @@ func (w *MqttWrapper) Run() {
 
 func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceValue) {
 
-	if _, ok := w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set"]; ok {
+	if _, ok := w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd"]; ok {
 
 		log.Println("Already registered")
 		return
@@ -266,8 +266,8 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 	err := w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd", func(msg *message.PublishMessage) error {
 
 		var inter interface{}
-		v := make(map[string]interface{})
 		json.Unmarshal(msg.Payload(), &inter)
+		v := make(map[string]interface{})
 		v[variable.ZwaveVariable] = 0.0
 
 		log.Println("Writting to zwave device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+variable.LocalVariable, "->", v)
