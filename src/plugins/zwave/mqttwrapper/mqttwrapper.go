@@ -265,8 +265,10 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 
 	err := w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd", func(msg *message.PublishMessage) error {
 
+		var inter interface{}
 		v := make(map[string]interface{})
-		json.Unmarshal(msg.Payload(), v[variable.ZwaveVariable])
+		json.Unmarshal(msg.Payload(), &inter)
+		v[variable.ZwaveVariable] = inter
 
 		log.Println("Writting to zwave device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+variable.LocalVariable, "->", v)
 
