@@ -260,7 +260,7 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 
 			// Send the value to the client status topic
 			log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name)
-			mq.cli.PublishMessage(dv.CmdTopic, msg.Payload())
+			mq.cli.PublishMessageNoRetain(dv.CmdTopic, msg.Payload())
 
 			return nil
 		})
