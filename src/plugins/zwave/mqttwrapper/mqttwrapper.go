@@ -219,7 +219,7 @@ func (w *MqttWrapper) Run() {
 					if w.GetVariableWrittable(variable.Name) {
 
 						log.Println("Variable writtable :", variable.Name)
-						variable.CmdTopic = CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable + "/set"
+						variable.CmdTopic = CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + v.LocalVariable + "/cmd"
 						w.SubscribeWriteTopic(dev, v)
 
 					} else {
@@ -257,11 +257,13 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 		return
 	}
 
-	w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set"] = struct{}{}
+	// Registering subscription
+	w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd"] = struct{}{}
 
-	log.Println("Registering :", CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set")
+	// Subscribing
+	log.Println("Registering :", CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd")
 
-	err := w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/set", func(msg *message.PublishMessage) error {
+	err := w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd", func(msg *message.PublishMessage) error {
 
 		v := make(map[string]interface{})
 		v[variable.ZwaveVariable] = msg.Payload
