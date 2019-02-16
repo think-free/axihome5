@@ -264,5 +264,7 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 
 			return nil
 		})
+	} else {
+		log.Println("Any command topic defined for :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name)
 	}
 }
