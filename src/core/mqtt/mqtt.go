@@ -254,6 +254,8 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 	// Subscribe to the client command topic
 	if dv.CmdTopic != "" {
 
+		log.Println("Subscribing command topic :", CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+dv.Name+"/cmd")
+
 		mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+dv.Name+"/cmd", func(msg *message.PublishMessage) error {
 
 			// Send the value to the client status topic
