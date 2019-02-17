@@ -10,6 +10,7 @@ type DeviceType string
 const (
 	Switch       DeviceType = "switch" // Input device
 	Light        DeviceType = "light"
+	Dimmer       DeviceType = "dimmer"
 	Shutter      DeviceType = "shutter"
 	Position     DeviceType = "position"
 	Occupancy    DeviceType = "occupancy"
@@ -19,16 +20,18 @@ const (
 	AnalogValue  DeviceType = "analog"
 	DigitalValue DeviceType = "digital"
 	TextValue    DeviceType = "text"
-	CustomDevice  	 DeviceType = "custom"
+	CustomDevice DeviceType = "custom"
 )
 
 func GetDeviceTypeFromString(str string) DeviceType {
 
-	switch (str) {
+	switch str {
 	case "switch":
 		return Switch
 	case "light":
 		return Light
+	case "dimmer":
+		return Dimmer
 	case "shutter":
 		return Shutter
 	case "position":
@@ -62,18 +65,18 @@ type VariableType string
 
 // Device type definition
 const (
-	Digital     VariableType = "digital"  // [0-1]
-	Analog      VariableType = "analog"   // [0-255]
-	Number      VariableType = "number"   // Any number
-	Text        VariableType = "text"     // (text)
-	Coordinates VariableType = "position" // [x,y]
-	RGB         VariableType = "rgb"      // [r,g,b]
-	CustomVariable		VariableType = "custom"
+	Digital        VariableType = "digital"  // [0-1]
+	Analog         VariableType = "analog"   // [0-255]
+	Number         VariableType = "number"   // Any number
+	Text           VariableType = "text"     // (text)
+	Coordinates    VariableType = "position" // [x,y]
+	RGB            VariableType = "rgb"      // [r,g,b]
+	CustomVariable VariableType = "custom"
 )
 
-func GetVariableTypeFromString (str string) VariableType {
+func GetVariableTypeFromString(str string) VariableType {
 
-	switch (str) {
+	switch str {
 	case "digital":
 		return Digital
 	case "analog":
@@ -153,11 +156,11 @@ type DeviceStatus struct {
 
 // Task define a task that autoregister his interface on the core
 type Task struct {
-	Name 	 string `json:"name" storm:"index" storm:"unique"`
-	URL  	 string `json:"url" storm:"id"`
-	Host 	 string `json:"host"`
-	Port 	 string `json:"port"`
-	LastSeen int64 `json:"lastseen"`
+	Name     string `json:"name" storm:"index" storm:"unique"`
+	URL      string `json:"url" storm:"id"`
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	LastSeen int64  `json:"lastseen"`
 }
 
 /* Config */
