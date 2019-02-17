@@ -267,7 +267,10 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 
 		var inter interface{}
 		json.Unmarshal(msg.Payload(), &inter)
+		log.Println("-------------------------------------")
+		log.Println(msg.Payload())
 		log.Println(inter)
+		log.Println("-------------------------------------")
 		v := make(map[string]interface{})
 		v[variable.ZwaveVariable] = 0.0
 
