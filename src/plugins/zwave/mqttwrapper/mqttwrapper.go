@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"reflect"
 	"strings"
 	"time"
 
@@ -269,8 +268,6 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 		var inter interface{}
 		json.Unmarshal(msg.Payload(), &inter)
 		log.Println("-------------------------------------")
-		t := reflect.TypeOf(inter).Elem()
-		log.Println(t)
 		log.Println(msg.Payload())
 		log.Println(inter)
 		log.Println("-------------------------------------")
