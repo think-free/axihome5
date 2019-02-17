@@ -259,7 +259,7 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 		mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+dv.Name+"/cmd", func(msg *message.PublishMessage) error {
 
 			// Send the value to the client status topic
-			log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name)
+			log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "->", msg.Payload())
 			mq.cli.PublishMessageNoRetain(dv.CmdTopic, msg.Payload())
 
 			return nil
