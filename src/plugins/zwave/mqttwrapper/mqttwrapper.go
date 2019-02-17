@@ -272,7 +272,7 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 		log.Println(inter)
 		log.Println("-------------------------------------")
 		v := make(map[string]interface{})
-		v[variable.ZwaveVariable] = 0.0
+		v[variable.ZwaveVariable] = inter
 
 		log.Println("Writting to zwave device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+variable.LocalVariable, "->", v)
 
