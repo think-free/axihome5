@@ -60,7 +60,8 @@ class MainArea extends React.Component {
                         className="myClassname"
                         display="initial"
                         position="relative"
-                        allowFullScreen/>
+                        allowFullScreen
+                        name="mainAreaFrame"/>
                   </div>
                 );
             } else {
