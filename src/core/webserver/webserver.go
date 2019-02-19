@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"time"
 
 	stormwrapper "github.com/think-free/storm-wrapper"
 
@@ -21,6 +22,8 @@ type WebServer struct {
 
 // New create a new http server instance
 func New(db *stormwrapper.Db) *WebServer {
+
+	// Create webserver
 
 	return &WebServer{
 		db:               db,
@@ -44,6 +47,14 @@ func (s *WebServer) Run() {
 	for _, task := range tasks {
 		s.addTaskRouteHandler(&task)
 	}
+
+	// Login
+	http.HandleFunc("/core/login", s.handlerLogin)
+	http.HandleFunc("/core/logout", s.handlerLogout)
+	http.HandleFunc("/core/getLoginInfo", s.handlerGetLoginInfo)
+	http.HandleFunc("/core/renewLoginToken", s.handlerRenewLoginToken)
+	http.HandleFunc("/core/addUser", s.handlerAddUser)
+	http.HandleFunc("/core/delUser", s.handlerDelUser)
 
 	// Config
 	http.HandleFunc("/core/setConfig", s.handlerSetConfig) // POST : types.Config
@@ -86,10 +97,110 @@ func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 	if _, ok := s.registeredRoutes[task.URL]; !ok {
 
 		s.registeredRoutes[task.URL] = struct{}{}
-		http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
-
+		if task.URL == "admin" {
+			http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
+		} else {
+			http.Handle("/"+task.URL+"/", s.checkLoggedHandler(httputil.NewSingleHostReverseProxy(u)))
+		}
 	} else {
 		log.Println("Already registered route, skipping")
+	}
+}
+
+/* Login managment */
+
+func (s *WebServer) handlerLogin(w http.ResponseWriter, r *http.Request) {
+
+	// Reading post body
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("Error getting default UI :", err)
+		w.Write([]byte("{\"type\" : \"error\", \"msg\": \"" + err.Error() + "\"}"))
+		return
+	}
+
+	// Parsing json
+	var c types.User
+	errUnmarshall := json.Unmarshal(body, &c)
+	if errUnmarshall != nil {
+		log.Println("Error parsing json :", errUnmarshall)
+		w.Write([]byte("{\"type\" : \"error\", \"msg\": \"" + errUnmarshall.Error() + "\"}"))
+		return
+	}
+
+	/*	var dbUser types.User
+		s.db.Get("Name", c.Name, &dbUser)
+		if c.Password == dbUser.Password {
+	*/
+	session := &types.Session{
+		UserName: c.Name,
+		SSID:     "test-ssid",
+		ClientID: "test-client",
+		Time:     time.Now(),
+	}
+
+	clientIDFound := false
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == "client" {
+			clientIDFound = true
+		}
+	}
+
+	if !clientIDFound {
+		log.Println("Setting client id for", r.Host)
+		http.SetCookie(w, &http.Cookie{
+			Name:     "client",
+			Value:    "test-client",
+			MaxAge:   0,
+			Secure:   false,
+			HttpOnly: false,
+		})
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "ssid",
+		Value:    "test-ssid",
+		MaxAge:   3600,
+		Secure:   false,
+		HttpOnly: false,
+	})
+
+	w.Write([]byte("{\"type\" : \"login\", \"ssid\": \"" + session.SSID + "\" , \"client\": \"" + session.ClientID + "\"}"))
+	/*	} else {
+
+		w.Write([]byte("{\"type\" : \"error\", \"msg\": \"Bad credential\"}"))
+	}*/
+}
+
+func (s *WebServer) handlerLogout(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *WebServer) handlerGetLoginInfo(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *WebServer) handlerRenewLoginToken(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *WebServer) handlerAddUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *WebServer) handlerDelUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *WebServer) checkLoggedHandlerFunc(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *WebServer) checkLoggedHandler(next http.Handler) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Logged connection from %s to %s", r.RemoteAddr, r.URL.Path)
+		next.ServeHTTP(w, r)
 	}
 }
 
@@ -373,11 +484,11 @@ func (s *WebServer) handlerDeleteValue(w http.ResponseWriter, r *http.Request) {
 
 	var ds types.DeviceStatus
 	s.db.Get("Name", key, &ds)
-	
+
 	err := s.db.Remove(&ds)
-	if err != nil{
+	if err != nil {
 		log.Println("Error removing value", err)
-		w.Write([]byte("{\"type\" : \"log\", \"msg\": \""+err.Error()+"\"}"))
+		w.Write([]byte("{\"type\" : \"log\", \"msg\": \"" + err.Error() + "\"}"))
 	} else {
 		log.Println("Deleting value")
 		w.Write([]byte("{\"type\" : \"log\", \"msg\": \"Value deleted\"}"))

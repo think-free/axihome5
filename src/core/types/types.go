@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 /* Device types */
 /* *************************************** */
 
@@ -172,4 +174,21 @@ type Config struct {
 	Key     string `json:"key"`
 	Value   string `json:"value" storm:"index"`
 	Task    string `json:"task"`
+}
+
+/* User */
+/* *************************************** */
+
+// User represent a user in the core
+type User struct {
+	Name     string `json:"user" storm:"id"`
+	Password string `json:"password"`
+}
+
+// Session represent a user login
+type Session struct {
+	SSID     string    `json:"ssid" storm:"id"`
+	UserName string    `json:"user" storm:"index"`
+	ClientID string    `json:"cid" storm:"index"`
+	Time     time.Time `json:"time" storm:"index"`
 }
