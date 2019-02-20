@@ -37,6 +37,10 @@
   branch = "master"
   name = "github.com/think-free/storm-wrapper"
 
+[[constraint]]
+  branch = "master"
+  name = "github.com/satori/go.uuid"
+
 [[override]]
   branch = "master"
   name = "github.com/grafov/bcast"

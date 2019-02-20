@@ -325,6 +325,7 @@ class DeviceAdd extends React.Component {
                                     <option value="occupancy">Occupancy</option>
                                     <option value="time">Time</option>
                                     <option value="climate">Climate</option>
+                                    <option value="power">Power</option>
                                     <option value="audio">Audio Controler</option>
                                     <option value="analog">Analog Sensor (Any number)</option>
                                     <option value="digital">Digital Sensor (0-1)</option>

@@ -18,6 +18,7 @@ const (
 	Occupancy    DeviceType = "occupancy"
 	Time         DeviceType = "time"
 	Climate      DeviceType = "climate"
+	Power        DeviceType = "power"
 	AudioPlayer  DeviceType = "audio"
 	AnalogValue  DeviceType = "analog"
 	DigitalValue DeviceType = "digital"
@@ -44,6 +45,8 @@ func GetDeviceTypeFromString(str string) DeviceType {
 		return Time
 	case "climate":
 		return Climate
+	case "power":
+		return Power
 	case "audio":
 		return AudioPlayer
 	case "analog":

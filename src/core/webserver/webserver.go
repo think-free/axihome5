@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"time"
 
+	uuid "github.com/satori/go.uuid"
 	stormwrapper "github.com/think-free/storm-wrapper"
 
 	"core/types"
@@ -78,6 +79,8 @@ func (s *WebServer) Run() {
 	http.HandleFunc("/core/forceValue", s.handlerForceValue)    // TODO
 	http.HandleFunc("/core/deleteValue", s.handlerDeleteValue)  // GET : key
 
+	http.HandleFunc("/test", s.checkLoggedHandlerFunc(s.handlerTest))
+
 	// UI
 	http.HandleFunc("/", s.handlerDefaultUI)
 
@@ -128,60 +131,142 @@ func (s *WebServer) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*	var dbUser types.User
-		s.db.Get("Name", c.Name, &dbUser)
-		if c.Password == dbUser.Password {
-	*/
-	session := &types.Session{
-		UserName: c.Name,
-		SSID:     "test-ssid",
-		ClientID: "test-client",
-		Time:     time.Now(),
-	}
+	// Checking login
+	noUser := false
+	var dbUser types.User
+	err2 := s.db.Get("Name", c.Name, &dbUser)
+	if err2 != nil {
 
-	clientIDFound := false
-	for _, cookie := range r.Cookies() {
-		if cookie.Name == "client" {
-			clientIDFound = true
+		var dbUsers []types.User
+		s.db.GetAll(&dbUsers)
+		if len(dbUsers) == 0 {
+			log.Println("Please register a user ! We are allowing access to everybody !")
+			noUser = true
+		} else {
+			log.Println("Invalid login name :", c.Name)
 		}
 	}
+	if noUser || c.Password == dbUser.Password {
 
-	if !clientIDFound {
-		log.Println("Setting client id for", r.Host)
-		http.SetCookie(w, &http.Cookie{
-			Name:     "client",
-			Value:    "test-client",
-			MaxAge:   0,
-			Secure:   false,
-			HttpOnly: false,
-		})
-	}
+		// Creating session
+		id1, _ := uuid.NewV4()
+		id2, _ := uuid.NewV4()
+		session := &types.Session{
+			UserName: c.Name,
+			SSID:     id1.String(),
+			ClientID: id2.String(),
+			Time:     time.Now(),
+		}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "ssid",
-		Value:    "test-ssid",
-		MaxAge:   3600,
-		Secure:   false,
-		HttpOnly: false,
-	})
+		// Creating client id
+		clientCookie, err := r.Cookie("client")
+		if err != nil {
+			log.Println("Setting client id for", r.Host)
 
-	w.Write([]byte("{\"type\" : \"login\", \"ssid\": \"" + session.SSID + "\" , \"client\": \"" + session.ClientID + "\"}"))
-	/*	} else {
+			ck1 := http.Cookie{
+				Name:    "client",
+				Value:   session.ClientID,
+				Expires: time.Now().Add(600 * time.Second),
+				Path:    "/",
+			}
+
+			http.SetCookie(w, &ck1)
+
+		} else {
+			session.ClientID = clientCookie.Value
+		}
+
+		// Setting SSID
+		ck2 := http.Cookie{
+			Name:    "ssid",
+			Value:   session.SSID,
+			Expires: time.Now().Add(600 * time.Second),
+			Path:    "/",
+		}
+
+		http.SetCookie(w, &ck2)
+		s.db.Save(session)
+
+		// Writting info to client
+		w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + session.UserName + "\" , \"ssid\": \"" + session.SSID + "\" , \"client\": \"" + session.ClientID + "\"}"))
+
+	} else {
 
 		w.Write([]byte("{\"type\" : \"error\", \"msg\": \"Bad credential\"}"))
-	}*/
+	}
 }
 
 func (s *WebServer) handlerLogout(w http.ResponseWriter, r *http.Request) {
 
+	ssid, err := r.Cookie("ssid")
+	if err == nil {
+
+		var session types.Session
+		s.db.Get("SSID", ssid, &session)
+		s.db.Remove(&session)
+	}
+
+	w.Write([]byte("{\"type\" : \"logout\"}"))
 }
 
 func (s *WebServer) handlerGetLoginInfo(w http.ResponseWriter, r *http.Request) {
 
+	client, err1 := r.Cookie("client")
+	if err1 == nil {
+
+		ssid, err2 := r.Cookie("ssid")
+		if err2 == nil {
+
+			var session types.Session
+			s.db.Get("SSID", ssid.Value, &session)
+			if session.ClientID == client.Value && session.Time.Unix()+600 < time.Now().Unix() {
+
+				w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + session.UserName + "\" , \"ssid\": \"" + session.SSID + "\" , \"client\": \"" + session.ClientID + "\"}"))
+				return
+			}
+		}
+	}
+
+	w.Write([]byte("{\"type\" : \"logout\"}"))
 }
 
 func (s *WebServer) handlerRenewLoginToken(w http.ResponseWriter, r *http.Request) {
 
+	client, err1 := r.Cookie("client")
+	if err1 == nil {
+
+		ssid, err2 := r.Cookie("ssid")
+		if err2 == nil {
+
+			var session types.Session
+			s.db.Get("SSID", ssid.Value, &session)
+			if session.ClientID == client.Value && session.Time.Unix()+600 < time.Now().Unix() {
+
+				id, _ := uuid.NewV4()
+				newsession := &types.Session{
+					UserName: session.UserName,
+					SSID:     id.String(),
+					ClientID: session.ClientID,
+					Time:     time.Now(),
+				}
+
+				ck := http.Cookie{
+					Name:    "ssid",
+					Value:   newsession.SSID,
+					Expires: time.Now().Add(600 * time.Second),
+					Path:    "/",
+				}
+
+				http.SetCookie(w, &ck)
+				s.db.Save(session)
+
+				w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + newsession.UserName + "\" , \"ssid\": \"" + newsession.SSID + "\" , \"client\": \"" + newsession.ClientID + "\"}"))
+				return
+			}
+		}
+	}
+
+	w.Write([]byte("{\"type\" : \"logout\"}"))
 }
 
 func (s *WebServer) handlerAddUser(w http.ResponseWriter, r *http.Request) {
@@ -192,15 +277,56 @@ func (s *WebServer) handlerDelUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *WebServer) checkLoggedHandlerFunc(w http.ResponseWriter, r *http.Request) {
+func (s *WebServer) checkLoggedHandlerFunc(authFct func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		client, err1 := r.Cookie("client")
+		if err1 == nil {
+
+			ssid, err2 := r.Cookie("ssid")
+			if err2 == nil {
+
+				var session types.Session
+				s.db.Get("SSID", ssid.Value, &session)
+				log.Println(session.ClientID, client.Value)
+				if session.ClientID == client.Value && session.Time.Unix()+600 > time.Now().Unix() {
+
+					authFct(w, r)
+					return
+				}
+			}
+		}
+
+		w.Write([]byte("{\"type\" : \"logout\"}"))
+	}
+}
+
+func (s *WebServer) handlerTest(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("ok"))
 }
 
 func (s *WebServer) checkLoggedHandler(next http.Handler) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Logged connection from %s to %s", r.RemoteAddr, r.URL.Path)
-		next.ServeHTTP(w, r)
+
+		client, err1 := r.Cookie("client")
+		if err1 == nil {
+
+			ssid, err2 := r.Cookie("ssid")
+			if err2 == nil {
+
+				var session types.Session
+				s.db.Get("SSID", ssid.Value, &session)
+				if session.ClientID == client.Value && session.Time.Unix()+600 > time.Now().Unix() {
+
+					next.ServeHTTP(w, r)
+					return
+				}
+			}
+		}
+
+		w.Write([]byte("{\"type\" : \"logout\"}"))
 	}
 }
 
