@@ -92,7 +92,7 @@ class Menu extends React.Component {
                       let im = "/"+section.url+"/static/icon.png"
                       let ts = Math.round((new Date()).getTime() / 1000);
 
-                      if (section.url != "admin" && section.lastseen + 90 > ts){
+                      if (section.url != "admin" && section.url != "login" && section.lastseen + 90 > ts){
 
                           return (
                               <ElementList section={section}>

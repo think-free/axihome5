@@ -100,7 +100,7 @@ func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 	if _, ok := s.registeredRoutes[task.URL]; !ok {
 
 		s.registeredRoutes[task.URL] = struct{}{}
-		if task.URL == "admin" {
+		if task.URL == "login" || task.URL == "admin" {
 			http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
 		} else {
 			http.Handle("/"+task.URL+"/", s.checkLoggedHandler(httputil.NewSingleHostReverseProxy(u)))
