@@ -97,7 +97,19 @@ class MainArea extends React.Component {
 
     keyPressed(e) {
         if (e.key === 'Enter') {
-          console.log(this.state.user + " " + this.state.password);
+            console.log(this.state.user + " " + this.state.password);
+
+            fetch("/core/login", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user : this.state.user,
+                    password : this.state.password
+                })
+            })
         }
     }
 
@@ -114,7 +126,7 @@ class MainArea extends React.Component {
                         <br />
                         <img src="/login/static/ax5.png" width="75" height="75" draggable="false"/><br /><br /><br />
                         <input key="user" style={mainStyle.inputStyle} type="text" value={this.state.user} onChange={this.userChanged} onBlur={this.userChanged}/> <br /><br />
-                        <input key="password" style={mainStyle.inputStyle} type="text" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged} onKeyPress={this.keyPressed}/>
+                        <input key="password" style={mainStyle.inputStyle} type="password" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged} onKeyPress={this.keyPressed}/>
                     </div>
                 </div>
             </div>
