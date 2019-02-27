@@ -214,8 +214,12 @@ func (s *WebServer) handlerGetLoginInfo(w http.ResponseWriter, r *http.Request) 
 	client, err1 := r.Cookie("client")
 	if err1 == nil {
 
+		log.Println("Client cookie :", client.Value)
+
 		ssid, err2 := r.Cookie("ssid")
 		if err2 == nil {
+
+			log.Println("SSID cookie :", ssid.Value)
 
 			var session types.Session
 			s.db.Get("SSID", ssid.Value, &session)
@@ -223,6 +227,9 @@ func (s *WebServer) handlerGetLoginInfo(w http.ResponseWriter, r *http.Request) 
 
 				w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + session.UserName + "\" , \"ssid\": \"" + session.SSID + "\" , \"client\": \"" + session.ClientID + "\"}"))
 				return
+			} else {
+
+				log.Println(session)
 			}
 		}
 	}
