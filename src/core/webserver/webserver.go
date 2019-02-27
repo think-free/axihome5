@@ -51,33 +51,34 @@ func (s *WebServer) Run() {
 
 	// Login
 	http.HandleFunc("/core/login", s.handlerLogin)
-	http.HandleFunc("/core/logout", s.handlerLogout)
 	http.HandleFunc("/core/getLoginInfo", s.handlerGetLoginInfo)
-	http.HandleFunc("/core/renewLoginToken", s.handlerRenewLoginToken)
-	http.HandleFunc("/core/addUser", s.handlerAddUser)
-	http.HandleFunc("/core/delUser", s.handlerDelUser)
+
+	http.HandleFunc("/core/logout", s.checkLoggedHandlerFunc(s.handlerLogout))
+	http.HandleFunc("/core/renewLoginToken", s.checkLoggedHandlerFunc(s.handlerRenewLoginToken))
+	http.HandleFunc("/core/addUser", s.checkLoggedHandlerFunc(s.handlerAddUser))
+	http.HandleFunc("/core/delUser", s.checkLoggedHandlerFunc(s.handlerDelUser))
 
 	// Config
-	http.HandleFunc("/core/setConfig", s.handlerSetConfig) // POST : types.Config
-	http.HandleFunc("/core/getConfig", s.handlerGetConfig) // GET : key, task
+	http.HandleFunc("/core/setConfig", s.checkLoggedHandlerFunc(s.handlerSetConfig)) // POST : types.Config
+	http.HandleFunc("/core/getConfig", s.checkLoggedHandlerFunc(s.handlerGetConfig)) // GET : key, task
 
 	// Tasks
-	http.HandleFunc("/core/getTasks", s.handlerGetTasks)      // GET
-	http.HandleFunc("/core/deleteTask", s.handlerDeleteTasks) // GET : name
+	http.HandleFunc("/core/getTasks", s.checkLoggedHandlerFunc(s.handlerGetTasks))      // GET
+	http.HandleFunc("/core/deleteTask", s.checkLoggedHandlerFunc(s.handlerDeleteTasks)) // GET : name
 
 	// Devices Config
-	http.HandleFunc("/core/getDevicesConfig", s.handlerGetDeviceConfig)      // GET
-	http.HandleFunc("/core/modifyDeviceConfig", s.handlerModifyDeviceConfig) // POST : types.FieldDevice
-	http.HandleFunc("/core/addDeviceConfig", s.handlerAddDeviceConfig)       // POST : types.FieldDevice
-	http.HandleFunc("/core/deleteDeviceConfig", s.handlerDeleteDeviceConfig) // GET : id
+	http.HandleFunc("/core/getDevicesConfig", s.checkLoggedHandlerFunc(s.handlerGetDeviceConfig))      // GET
+	http.HandleFunc("/core/modifyDeviceConfig", s.checkLoggedHandlerFunc(s.handlerModifyDeviceConfig)) // POST : types.FieldDevice
+	http.HandleFunc("/core/addDeviceConfig", s.checkLoggedHandlerFunc(s.handlerAddDeviceConfig))       // POST : types.FieldDevice
+	http.HandleFunc("/core/deleteDeviceConfig", s.checkLoggedHandlerFunc(s.handlerDeleteDeviceConfig)) // GET : id
 
 	// Devices values
-	http.HandleFunc("/core/getDevices", s.handlerGetDevices)    // GET
-	http.HandleFunc("/core/getValues", s.handlerGetAllValues)   // GET
-	http.HandleFunc("/core/getValue", s.handlerGetSingleValues) // GET : key
-	http.HandleFunc("/core/writeValue", s.handlerWriteValue)    // TODO
-	http.HandleFunc("/core/forceValue", s.handlerForceValue)    // TODO
-	http.HandleFunc("/core/deleteValue", s.handlerDeleteValue)  // GET : key
+	http.HandleFunc("/core/getDevices", s.checkLoggedHandlerFunc(s.handlerGetDevices))    // GET
+	http.HandleFunc("/core/getValues", s.checkLoggedHandlerFunc(s.handlerGetAllValues))   // GET
+	http.HandleFunc("/core/getValue", s.checkLoggedHandlerFunc(s.handlerGetSingleValues)) // GET : key
+	http.HandleFunc("/core/writeValue", s.checkLoggedHandlerFunc(s.handlerWriteValue))    // TODO
+	http.HandleFunc("/core/forceValue", s.checkLoggedHandlerFunc(s.handlerForceValue))    // TODO
+	http.HandleFunc("/core/deleteValue", s.checkLoggedHandlerFunc(s.handlerDeleteValue))  // GET : key
 
 	http.HandleFunc("/test", s.checkLoggedHandlerFunc(s.handlerTest))
 
@@ -100,7 +101,7 @@ func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 	if _, ok := s.registeredRoutes[task.URL]; !ok {
 
 		s.registeredRoutes[task.URL] = struct{}{}
-		if task.URL == "login" || task.URL == "admin" {
+		if task.URL == "login"{
 			http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
 		} else {
 			http.Handle("/"+task.URL+"/", s.checkLoggedHandler(httputil.NewSingleHostReverseProxy(u)))
