@@ -18,7 +18,8 @@ class Index extends React.Component {
         super(props);
 
         this.state = {
-            logged: true
+            logged: true,
+            loginInfo: {}
         };
 
         store.subscribe(() =>
@@ -27,7 +28,33 @@ class Index extends React.Component {
     }
 
     async componentDidMount() {
+
         document.title = "Administration";
+
+        this.getData();
+
+        // Periodicaly refresh states
+        this.interval = setInterval(() => {
+            this.getData();
+        }, 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
+    async getData(url){
+        var url = "/core/getLoginInfo"
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => this.setState({ loginInfo: data }))
+
+        if (this.state.loginInfo.type === "login") {
+            this.setState({ logged : true });
+        } else {
+            this.setState({ logged : false });
+        }
     }
 
     render() {

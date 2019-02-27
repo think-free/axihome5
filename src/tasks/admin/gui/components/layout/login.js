@@ -5,9 +5,15 @@ class Login extends React.Component {
 
     render() {
 
-        return ( <div>
-                    Not logged
-                </div>
+        var currentUrl = window.location.href;
+        var arr = currentUrl.split("/");
+        var url = arr[0] + "//" + arr[2] + "/login?redirect=admin"
+        window.location.href = url;
+
+        return ( 
+            <div>
+                Redirecting ...
+            </div>
 	)
     }
 }
