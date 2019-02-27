@@ -52,7 +52,7 @@ func (s *WebServer) Run() {
 	// Login
 	http.HandleFunc("/core/login", s.handlerLogin)
 	http.HandleFunc("/core/getLoginInfo", s.handlerGetLoginInfo)
-
+	
 	http.HandleFunc("/core/logout", s.checkLoggedHandlerFunc(s.handlerLogout))
 	http.HandleFunc("/core/renewLoginToken", s.checkLoggedHandlerFunc(s.handlerRenewLoginToken))
 	http.HandleFunc("/core/addUser", s.checkLoggedHandlerFunc(s.handlerAddUser))
@@ -101,7 +101,7 @@ func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 	if _, ok := s.registeredRoutes[task.URL]; !ok {
 
 		s.registeredRoutes[task.URL] = struct{}{}
-		if task.URL == "login"{
+		if task.URL == "login" || task.URL == "admin" {
 			http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
 		} else {
 			http.Handle("/"+task.URL+"/", s.checkLoggedHandler(httputil.NewSingleHostReverseProxy(u)))
