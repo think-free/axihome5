@@ -48,10 +48,10 @@ class Index extends React.Component {
         .then(response => response.json())
         .then(data => this.setState({ loginInfo: data }))
 
-        if (this.state.loginInfo.type == "logout") {
-            this.setState({ logged : false });
-        } else {
+        if (this.state.loginInfo.type === "login") {
             this.setState({ logged : true });
+        } else {
+            this.setState({ logged : false });
         }
     }
 
