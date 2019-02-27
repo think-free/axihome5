@@ -61,28 +61,6 @@ class MainArea extends React.Component {
         this.keyPressed=this.keyPressed.bind(this);
     }
 
-    async componentDidMount() {
-
-        this.getData();
-
-        // Periodicaly refresh states
-        this.interval = setInterval(() => {
-            this.getData();
-        }, 1000);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.interval);
-    }
-
-    async getData(url){
-        var url = "/core/getLoginInfo"
-
-        fetch(url)
-        .then(response => response.json())
-        .then(data => this.setState({ loginInfo: data }))
-    }
-
     userChanged(event) {
 
         this.state.user = event.target.value
