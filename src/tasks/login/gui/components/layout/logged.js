@@ -8,6 +8,7 @@ class Logged extends React.Component {
         var currentUrl = window.location.href;
         var arr = currentUrl.split("/");
         var url = arr[0] + "//" + arr[2] + "/admin"
+        window.location.href = url;
 
         return ( <div>
                     Redirecting ...
