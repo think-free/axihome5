@@ -202,7 +202,7 @@ func (s *WebServer) handlerLogout(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 
 		var session types.Session
-		s.db.Get("SSID", ssid, &session)
+		s.db.Get("SSID", ssid.Value, &session)
 		s.db.Remove(&session)
 	}
 
