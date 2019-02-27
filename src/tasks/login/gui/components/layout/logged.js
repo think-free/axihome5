@@ -70,7 +70,7 @@ class Logged extends React.Component {
 
     render() {
 
-        var redirect = getAllUrlParams().redirect
+        var redirect = this.getAllUrlParams().redirect
 
         var currentUrl = window.location.href;
         var arr = currentUrl.split("/");
