@@ -223,7 +223,7 @@ func (s *WebServer) handlerGetLoginInfo(w http.ResponseWriter, r *http.Request) 
 
 			var session types.Session
 			s.db.Get("SSID", ssid.Value, &session)
-			if session.ClientID == client.Value && session.Time.Unix()+600 < time.Now().Unix() {
+			if session.ClientID == client.Value && session.Time.Unix()+600 > time.Now().Unix() {
 
 				w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + session.UserName + "\" , \"ssid\": \"" + session.SSID + "\" , \"client\": \"" + session.ClientID + "\"}"))
 				return
@@ -247,7 +247,7 @@ func (s *WebServer) handlerRenewLoginToken(w http.ResponseWriter, r *http.Reques
 
 			var session types.Session
 			s.db.Get("SSID", ssid.Value, &session)
-			if session.ClientID == client.Value && session.Time.Unix()+600 < time.Now().Unix() {
+			if session.ClientID == client.Value && session.Time.Unix()+600 > time.Now().Unix() {
 
 				id, _ := uuid.NewV4()
 				newsession := &types.Session{
