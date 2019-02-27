@@ -88,7 +88,7 @@ class Menu extends React.Component {
                     <img src="/admin/static/variables.png" alt="variables" width="35" height="35" draggable="false"/>
                   </ElementList>
 
-                  {sections.map(function(section){
+                  {sections && sections.map(function(section){
                       let im = "/"+section.url+"/static/icon.png"
                       let ts = Math.round((new Date()).getTime() / 1000);
 
