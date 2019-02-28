@@ -224,6 +224,9 @@ func (s *WebServer) handlerGetLoginInfo(w http.ResponseWriter, r *http.Request) 
 
 				w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + session.UserName + "\" , \"ssid\": \"" + session.SSID + "\" , \"client\": \"" + session.ClientID + "\"}"))
 				return
+				
+			} else if session.Time.Unix()+600 < time.Now().Unix() {
+				s.db.Remove(&session)
 			}
 		}
 	}
