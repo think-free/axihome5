@@ -88,24 +88,31 @@ class Menu extends React.Component {
                     <img src="/admin/static/variables.png" alt="variables" width="35" height="35" draggable="false"/>
                   </ElementList>
 
-                  {sections && sections.map(function(section){
-                      let im = "/"+section.url+"/static/icon.png"
-                      let ts = Math.round((new Date()).getTime() / 1000);
+                  if (sections.type === "logout") {
+                      
+                      console.log("Not logged")
+                  } else {
+                      
+                        {sections && sections.map(function(section){
+                            let im = "/"+section.url+"/static/icon.png"
+                            let ts = Math.round((new Date()).getTime() / 1000);
+    
+                            if (section.url != "admin" && section.url != "login" && section.lastseen + 90 > ts){
+    
+                                return (
+                                    <ElementList section={section}>
+                                    <img src={im} alt={section.name} width="35" height="35" draggable="false"/>
+                                    </ElementList>
+                                )
+    
+                            } else {
+    
+                                return (null);
+                            }
+    
+                        })}
+                  }
 
-                      if (section.url != "admin" && section.url != "login" && section.lastseen + 90 > ts){
-
-                          return (
-                              <ElementList section={section}>
-                                <img src={im} alt={section.name} width="35" height="35" draggable="false"/>
-                              </ElementList>
-                          )
-
-                      } else {
-
-                          return (null);
-                      }
-
-                  })}
               </ul>
           </div>
         );
