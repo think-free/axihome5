@@ -107,7 +107,7 @@ class MainArea extends React.Component {
                         <br />
                         <img src="/login/static/ax5.png" width="75" height="75" draggable="false"/><br /><br /><br />
                         <span><img style={MainAreaStyle.image} src="/login/static/user.png" width="18" height="18" draggable="false"/> <input key="user" style={mainStyle.inputStyle} type="text" value={this.state.user} onChange={this.userChanged} onBlur={this.userChanged}/></span> <br /><br />
-                        <span><img style={MainAreaStyle.image} src="/login/static/password.png" width="20" height="20" draggable="false"/> <input key="password" style={mainStyle.inputStyle} type="password" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged} onKeyPress={this.keyPressed}/></span>
+                        <span><img style={MainAreaStyle.image} src="/login/static/password.png" width="18" height="18" draggable="false"/> <input key="password" style={mainStyle.inputStyle} type="password" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged} onKeyPress={this.keyPressed}/></span>
                     </div>
                 </div>
             </div>
