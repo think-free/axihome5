@@ -35,6 +35,14 @@ const pageTitleStyle = {
     right: 0
 }
 
+const style = {
+
+    toolBar : {
+        position: 'relative',
+        float: 'right'
+    }
+}
+
 const mapStateToProps = (state) => {
     return {
         currentTab: state.currentTab
@@ -48,11 +56,11 @@ class Header extends React.Component {
         this.state = {
         };
 
-        this.buttonClick=this.buttonClick.bind(this);
+        this.logout=this.logout.bind(this);
     }
 
-    buttonClick(e) {
-        this.props.dispatch(setValue("Header", "clicked"));
+    logout(e) {
+        fetch("/core/logout")
     }
 
     render() {
@@ -65,6 +73,9 @@ class Header extends React.Component {
             <div style={pageTitleStyle}>
                 {currentTab}
             </div>
+            <span style={style.toolBar}>
+                <img key="bt_exit" style={mainStyle.menuIcon} src="/admin/static/logout.png" width="20" height="20" draggable="false" onClick={this.logout}/>
+            </span>
           </div>
         );
     }
