@@ -93,7 +93,7 @@ class Devices extends React.Component {
                         <img key="bt_add" style={mainStyle.menuIcon} src="/admin/static/add.png" width="20" height="20" draggable="false" onClick={this.toggleAddPanelVisible}/>
                     </span>
                     <div style={devicesStyle.deviceList}>
-                        {devices.map(function(device){
+                        {devices && devices.map(function(device){
 
                             return (
                                 <Device device={device}/>
