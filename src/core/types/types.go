@@ -185,7 +185,7 @@ type Config struct {
 // User represent a user in the core
 type User struct {
 	Name     string `json:"user" storm:"id"`
-	Password string `json:"-"`
+	Password string `json:"password"`
 }
 
 // Session represent a user login
