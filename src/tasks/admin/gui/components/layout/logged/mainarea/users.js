@@ -145,14 +145,14 @@ class Users extends React.Component {
                     <input key="filter" style={mainStyle.inputStyle} type="text" value={this.state.currentFilter} onChange={this.currentFilterChanged} onBlur={this.currentFilterChanged}/>
                 </span>
                 <div style={variablesStyle.variablesList}>
-                    {/*users && users.map(function(user){
+                    {users && users.map(function(user){
 
                         if (user.user.match("^" + currentFilter)){
 
                             return (
                                 <div style={variablesStyle.panel}>
                                     <span style={variablesStyle.menuIcon}>
-                                        <img key={"bt_delete_" + variable.key} style={mainStyle.menuIcon} src="/admin/static/delete.png" alt="devices" width="20" height="20" draggable="false" onClick={() => me.deleteUser(user.user)}/>
+                                        <img key={"bt_delete_" + user.user} style={mainStyle.menuIcon} src="/admin/static/delete.png" alt="devices" width="20" height="20" draggable="false" onClick={() => me.deleteUser(user.user)}/>
                                     </span>
                                     <div style={variablesStyle.variable}>{user.user}</div>
                                 </div>
@@ -162,12 +162,13 @@ class Users extends React.Component {
 
                             return(null)
                         }
-                    })*/}
+                    })}
                 </div>
 
                 <div>
-                    <input key="user" style={mainStyle.inputStyle} type="text" value={this.state.user} onChange={this.userChanged} onBlur={this.userChanged}/>
-                    <input key="password" style={mainStyle.inputStyle} type="text" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged}/>
+                    User : <input key="user" style={mainStyle.inputStyle} type="text" value={this.state.user} onChange={this.userChanged} onBlur={this.userChanged}/>&nbsp;
+                    Password : <input key="password" style={mainStyle.inputStyle} type="text" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged}/>&nbsp;
+                    <img key={"bt_add_" + variable.key} style={mainStyle.menuIcon} src="/admin/static/add.png" alt="add" width="20" height="20" draggable="false" onClick={() => me.addUser()}/>
                 </div>
             </div>
         )

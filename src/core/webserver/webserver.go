@@ -276,7 +276,7 @@ func (s *WebServer) handlerRenewLoginToken(w http.ResponseWriter, r *http.Reques
 
 func (s *WebServer) handlerGetUsers(w http.ResponseWriter, r *http.Request) {
 
-	var users types.User
+	var users []types.User
 	s.db.GetAll(&users)
 	json, _ := json.Marshal(&users)
 	w.Write(json)
