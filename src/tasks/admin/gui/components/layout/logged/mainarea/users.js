@@ -7,7 +7,7 @@ import mainStyle from '../../../../styles/global.js'
 
 /* Devices */
 
-const variablesStyle = {
+const usersStyle = {
 
     p100 : {
         height: '100%',
@@ -17,11 +17,11 @@ const variablesStyle = {
         position: 'relative',
         float: 'right'
     },
-    variablesList : {
+    usersList : {
         display:'block',
         position: 'relative',
         marginTop: 50,
-        height: 'calc(100% - 50px)',
+        height: 'calc(100% - 100px)',
         width: '100%',
         fallbacks: [
             { height: '-moz-calc(100% - 50px)' },
@@ -38,7 +38,7 @@ const variablesStyle = {
         width: "calc(100% - 30px)",
         backgroundColor: mainStyle.panelBackgroundColor
     },
-    variable : {
+    user : {
         color: mainStyle.textItemColor
     },
     value : {
@@ -140,21 +140,21 @@ class Users extends React.Component {
         const me = this;
 
         return (
-            <div style={variablesStyle.p100}>
-                <span style={variablesStyle.toolBar}>
+            <div style={usersStyle.p100}>
+                <span style={usersStyle.toolBar}>
                     <input key="filter" style={mainStyle.inputStyle} type="text" value={this.state.currentFilter} onChange={this.currentFilterChanged} onBlur={this.currentFilterChanged}/>
                 </span>
-                <div style={variablesStyle.variablesList}>
+                <div style={usersStyle.usersList}>
                     {users && users.map(function(user){
 
                         if (user.user.match("^" + currentFilter)){
 
                             return (
-                                <div style={variablesStyle.panel}>
-                                    <span style={variablesStyle.menuIcon}>
+                                <div style={usersStyle.panel}>
+                                    <span style={usersStyle.menuIcon}>
                                         <img key={"bt_delete_" + user.user} style={mainStyle.menuIcon} src="/admin/static/delete.png" alt="devices" width="20" height="20" draggable="false" onClick={() => me.deleteUser(user.user)}/>
                                     </span>
-                                    <div style={variablesStyle.variable}>{user.user}</div>
+                                    <div style={usersStyle.user}>{user.user}</div>
                                 </div>
                             )
 
@@ -168,7 +168,7 @@ class Users extends React.Component {
                 <div>
                     User : <input key="user" style={mainStyle.inputStyle} type="text" value={this.state.user} onChange={this.userChanged} onBlur={this.userChanged}/>&nbsp;
                     Password : <input key="password" style={mainStyle.inputStyle} type="text" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged}/>&nbsp;
-                    <img key={"bt_add"} style={mainStyle.menuIcon} src="/admin/static/add.png" alt="add" width="20" height="20" draggable="false" onClick={() => me.addUser()}/>
+                    <img key={"bt_add"} style={mainStyle.menuIcon} src="/admin/static/add.png" alt="add" width="15" height="15" draggable="false" onClick={() => me.addUser()}/>
                 </div>
             </div>
         )
