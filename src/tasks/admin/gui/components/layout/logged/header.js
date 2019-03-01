@@ -86,10 +86,10 @@ class Header extends React.Component {
           <div style={layoutStyle}>
             <img style={logoStyle} src="/admin/static/ax5.png" width="75" height="75" draggable="false"/>
             <div style={pageTitleStyle}>
-                <span>{currentTab}</span>
+                {currentTab}
             </div>
             <span style={style.toolBar}>
-                {user}
+                <span style={userStyle}>{user}</span>
                 <img key="bt_exit" style={mainStyle.menuIcon} src="/admin/static/logout.png" width="20" height="20" draggable="false" onClick={this.logout}/>
             </span>
           </div>
