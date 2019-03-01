@@ -168,7 +168,7 @@ class Users extends React.Component {
                 <div>
                     User : <input key="user" style={mainStyle.inputStyle} type="text" value={this.state.user} onChange={this.userChanged} onBlur={this.userChanged}/>&nbsp;
                     Password : <input key="password" style={mainStyle.inputStyle} type="text" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged}/>&nbsp;
-                    <img key={"bt_add_" + variable.key} style={mainStyle.menuIcon} src="/admin/static/add.png" alt="add" width="20" height="20" draggable="false" onClick={() => me.addUser()}/>
+                    <img key={"bt_add"} style={mainStyle.menuIcon} src="/admin/static/add.png" alt="add" width="20" height="20" draggable="false" onClick={() => me.addUser()}/>
                 </div>
             </div>
         )
