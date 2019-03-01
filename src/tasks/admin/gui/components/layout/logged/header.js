@@ -47,7 +47,7 @@ const style = {
 const mapStateToProps = (state) => {
     return {
         currentTab: state.currentTab,
-        loginInfo: state.loginInfo
+        user: state.user
     }
 }
 
@@ -56,7 +56,7 @@ class Header extends React.Component {
         super(props);
 
         this.state = {
-            loginInfo : {}
+            user : ""
         };
 
         this.logout=this.logout.bind(this);
@@ -68,7 +68,7 @@ class Header extends React.Component {
 
     render() {
 
-        const currentTab = this.props.currentTab
+        const user = this.props.user
         const loginInfo = this.state
 
         return (
@@ -78,7 +78,7 @@ class Header extends React.Component {
                 {currentTab}
             </div>
             <span style={style.toolBar}>
-                {loginInfo.user}
+                {user}
                 <img key="bt_exit" style={mainStyle.menuIcon} src="/admin/static/logout.png" width="20" height="20" draggable="false" onClick={this.logout}/>
             </span>
           </div>
