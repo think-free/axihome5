@@ -46,7 +46,6 @@ const style = {
 
 const mapStateToProps = (state) => {
     return {
-        currentTab: state.currentTab,
         user: state.user
     }
 }
@@ -75,7 +74,7 @@ class Header extends React.Component {
           <div style={layoutStyle}>
             <img style={logoStyle} src="/admin/static/ax5.png" width="75" height="75" draggable="false"/>
             <div style={pageTitleStyle}>
-                {currentTab}
+                {user}
             </div>
             <span style={style.toolBar}>
                 {user}
