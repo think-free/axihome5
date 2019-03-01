@@ -36,6 +36,17 @@ const pageTitleStyle = {
     right: 0
 }
 
+const userStyle = {
+    color: mainStyle.textDarkerColor,
+    fontSize: 20,
+    margin: "auto",
+    position: "absolute",
+    top: 15,
+    right: 100,
+    bottom: 0,
+    right: 0
+}
+
 const style = {
 
     toolBar : {
@@ -56,7 +67,8 @@ class Header extends React.Component {
         super(props);
 
         this.state = {
-            user : ""
+            user : "",
+            currentTab: ""
         };
 
         this.logout=this.logout.bind(this);
@@ -68,8 +80,8 @@ class Header extends React.Component {
 
     render() {
 
-        const currentTab = this.props.user
-        const user = this.state
+        const currentTab = this.state;
+        const user = this.state;
 
         return (
           <div style={layoutStyle}>
@@ -78,7 +90,7 @@ class Header extends React.Component {
                 {currentTab}
             </div>
             <span style={style.toolBar}>
-                {user}
+                <span style={userStyle}>{user}</span>
                 <img key="bt_exit" style={mainStyle.menuIcon} src="/admin/static/logout.png" width="20" height="20" draggable="false" onClick={this.logout}/>
             </span>
           </div>
