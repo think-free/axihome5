@@ -127,7 +127,7 @@ class Users extends React.Component {
     }
 
     deleteUser (key) {
-        fetch("/core/deleteUser?name=" + key)
+        fetch("/core/delUser?name=" + key)
     }
 
     // Render

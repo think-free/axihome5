@@ -81,8 +81,6 @@ func (s *WebServer) Run() {
 	http.HandleFunc("/core/forceValue", s.checkLoggedHandlerFunc(s.handlerForceValue))    // TODO
 	http.HandleFunc("/core/deleteValue", s.checkLoggedHandlerFunc(s.handlerDeleteValue))  // GET : key
 
-	http.HandleFunc("/test", s.checkLoggedHandlerFunc(s.handlerTest))
-
 	// UI
 	http.HandleFunc("/", s.handlerDefaultUI)
 
@@ -345,7 +343,6 @@ func (s *WebServer) checkLoggedHandlerFunc(authFct func(http.ResponseWriter, *ht
 
 				var session types.Session
 				s.db.Get("SSID", ssid.Value, &session)
-				log.Println(session.ClientID, client.Value)
 				if session.ClientID == client.Value && session.Time.Unix()+600 > time.Now().Unix() {
 
 					authFct(w, r)
@@ -356,10 +353,6 @@ func (s *WebServer) checkLoggedHandlerFunc(authFct func(http.ResponseWriter, *ht
 
 		w.Write([]byte("{\"type\" : \"logout\"}"))
 	}
-}
-
-func (s *WebServer) handlerTest(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("ok"))
 }
 
 func (s *WebServer) checkLoggedHandler(next http.Handler) http.HandlerFunc {
