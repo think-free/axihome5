@@ -56,7 +56,7 @@ class Index extends React.Component {
             this.setState({ logged : true });
         }
 
-        store.setValue("loginInfo", this.state.loginInfo);
+        this.props.dispatch(setValue("loginInfo", this.state.loginInfo))
     }
 
     render() {
