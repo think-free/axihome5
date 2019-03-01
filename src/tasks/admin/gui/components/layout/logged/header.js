@@ -67,7 +67,8 @@ class Header extends React.Component {
         super(props);
 
         this.state = {
-            user : ""
+            user : "",
+            currentTab: ""
         };
 
         this.logout=this.logout.bind(this);
@@ -79,7 +80,7 @@ class Header extends React.Component {
 
     render() {
 
-        const currentTab = this.props.user
+        const currentTab = this.state
         const user = this.state
 
         return (
