@@ -148,7 +148,9 @@ func (s *WebServer) handlerLogin(w http.ResponseWriter, r *http.Request) {
             return
 		}
 	}
-	if noUser || c.Password == dbUser.Password {
+	if noUser == true || c.Password == dbUser.Password {
+
+        log.Println(c.Password, " - ", dbUser.Password)
 
 		// Creating session
 		id1, _ := uuid.NewV4()
