@@ -21,7 +21,7 @@ const usersStyle = {
         display:'block',
         position: 'relative',
         marginTop: 50,
-        height: 'calc(100% - 50px)',
+        height: 'calc(100% - 80px)',
         width: '100%',
         fallbacks: [
             { height: '-moz-calc(100% - 50px)' },
