@@ -124,6 +124,9 @@ class Users extends React.Component {
                 password : this.state.password
             })
         })
+
+        this.setState({ user:"" })
+        this.setState({ password:"" })
     }
 
     deleteUser (key) {

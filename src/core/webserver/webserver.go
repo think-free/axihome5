@@ -143,7 +143,9 @@ func (s *WebServer) handlerLogin(w http.ResponseWriter, r *http.Request) {
 			log.Println("Please register a user ! We are allowing access to everybody !")
 			noUser = true
 		} else {
-			log.Println("Invalid login name :", c.Name)
+            log.Println("Invalid login name :", c.Name)
+            w.Write([]byte("{\"type\" : \"error\", \"msg\": \"Bad credential\"}"))
+            return
 		}
 	}
 	if noUser || c.Password == dbUser.Password {
