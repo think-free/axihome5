@@ -55,6 +55,7 @@ func (s *WebServer) Run() {
 	
 	http.HandleFunc("/core/logout", s.checkLoggedHandlerFunc(s.handlerLogout))
 	http.HandleFunc("/core/renewLoginToken", s.checkLoggedHandlerFunc(s.handlerRenewLoginToken))
+	http.HandleFunc("/core/getUsers", s.checkLoggedHandlerFunc(s.handlerGetUsers))
 	http.HandleFunc("/core/addUser", s.checkLoggedHandlerFunc(s.handlerAddUser))
 	http.HandleFunc("/core/delUser", s.checkLoggedHandlerFunc(s.handlerDelUser))
 
@@ -118,7 +119,7 @@ func (s *WebServer) handlerLogin(w http.ResponseWriter, r *http.Request) {
 	// Reading post body
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Println("Error getting default UI :", err)
+		log.Println("Error getting post body :", err)
 		w.Write([]byte("{\"type\" : \"error\", \"msg\": \"" + err.Error() + "\"}"))
 		return
 	}
@@ -224,7 +225,7 @@ func (s *WebServer) handlerGetLoginInfo(w http.ResponseWriter, r *http.Request) 
 
 				w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + session.UserName + "\" , \"ssid\": \"" + session.SSID + "\" , \"client\": \"" + session.ClientID + "\"}"))
 				return
-				
+
 			} else if session.Time.Unix()+600 < time.Now().Unix() {
 				s.db.Remove(&session)
 			}
@@ -273,12 +274,63 @@ func (s *WebServer) handlerRenewLoginToken(w http.ResponseWriter, r *http.Reques
 	w.Write([]byte("{\"type\" : \"logout\"}"))
 }
 
+func (s *WebServer) handlerGetUsers(w http.ResponseWriter, r *http.Request) {
+
+	var users types.User
+	s.db.GetAll(&users)
+	json, _ := json.Marshal(&users)
+	w.Write(json)
+}
+
 func (s *WebServer) handlerAddUser(w http.ResponseWriter, r *http.Request) {
 
+	// Reading post body
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("Error getting default UI :", err)
+		w.Write([]byte("{\"type\" : \"error\", \"msg\": \"" + err.Error() + "\"}"))
+		return
+	}
+
+	// Parsing json
+	var c types.User
+	errUnmarshall := json.Unmarshal(body, &c)
+	if errUnmarshall != nil {
+		log.Println("Error parsing json :", errUnmarshall)
+		w.Write([]byte("{\"type\" : \"error\", \"msg\": \"" + errUnmarshall.Error() + "\"}"))
+		return
+	}
+
+	// Checking if user is already registered
+	var dbUser types.User
+	err2 := s.db.Get("Name", c.Name, &dbUser)
+
+	if err2 == nil {
+
+		w.Write([]byte("{\"type\" : \"error\", \"msg\": \"User already registered\"}"))
+
+	} else {
+
+		s.db.Save(&c)
+	}
 }
 
 func (s *WebServer) handlerDelUser(w http.ResponseWriter, r *http.Request) {
 
+	keys, ok := r.URL.Query()["name"]
+	if !ok || len(keys[0]) < 1 {
+		log.Println("Url parameter missing")
+		w.Write([]byte("{\"type\" : \"error\", \"msg\":\"Url parameter missing\"}"))
+		return
+	}
+	key := keys[0]
+
+	var user types.User
+	s.db.Get("Name", string(key), &user)
+	s.db.Remove(&user)
+
+	log.Println("Deleting user :", string(key))
+	w.Write([]byte("{\"type\" : \"log\", \"msg\": \"User deleted\"}"))
 }
 
 func (s *WebServer) checkLoggedHandlerFunc(authFct func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
@@ -421,7 +473,7 @@ func (s *WebServer) handlerDeleteTasks(w http.ResponseWriter, r *http.Request) {
 	s.db.Get("Name", string(key), &tsk)
 	s.db.Remove(&tsk)
 
-	log.Println("Deleting device :", string(key))
+	log.Println("Deleting task :", string(key))
 	w.Write([]byte("{\"type\" : \"log\", \"msg\": \"Task deleted\"}"))
 }
 

@@ -5,6 +5,7 @@ import Iframe from 'react-iframe'
 
 import Devices from "./mainarea/devices.js"
 import Variables from "./mainarea/variables.js"
+import Users from "./mainarea/users.js"
 
 import mainStyle from '../../../styles/global.js'
 
@@ -77,6 +78,12 @@ class MainArea extends React.Component {
                     return (
                         <div style={layoutStyle}>
                             <Variables/>
+                        </div>
+                    )
+                } else if (currentSection.name == "Users") {
+                    return (
+                        <div style={layoutStyle}>
+                            <Users/>
                         </div>
                     )
                 } else {

@@ -91,6 +91,10 @@ class Menu extends React.Component {
                         <ElementList section={{"name": "Variables", "url": "internal"}}>
                           <img src="/admin/static/variables.png" alt="variables" width="35" height="35" draggable="false"/>
                         </ElementList>
+
+                        <ElementList section={{"name": "Users", "url": "internal"}}>
+                          <img src="/admin/static/users.png" alt="variables" width="35" height="35" draggable="false"/>
+                        </ElementList>
       
                             
                               {sections && sections.map(function(section){
