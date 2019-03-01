@@ -145,7 +145,7 @@ class Users extends React.Component {
                     <input key="filter" style={mainStyle.inputStyle} type="text" value={this.state.currentFilter} onChange={this.currentFilterChanged} onBlur={this.currentFilterChanged}/>
                 </span>
                 <div style={variablesStyle.variablesList}>
-                    {users && users.map(function(user){
+                    {/*users && users.map(function(user){
 
                         if (user.user.match("^" + currentFilter)){
 
@@ -162,7 +162,7 @@ class Users extends React.Component {
 
                             return(null)
                         }
-                    })}
+                    })*/}
                 </div>
 
                 <div>

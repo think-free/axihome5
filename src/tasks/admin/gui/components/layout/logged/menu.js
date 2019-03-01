@@ -93,7 +93,7 @@ class Menu extends React.Component {
                         </ElementList>
 
                         <ElementList section={{"name": "Users", "url": "internal"}}>
-                          <img src="/admin/static/users.png" alt="variables" width="35" height="35" draggable="false"/>
+                          <img src="/admin/static/users.png" alt="users" width="35" height="35" draggable="false"/>
                         </ElementList>
       
                             
