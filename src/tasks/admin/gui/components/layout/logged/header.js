@@ -36,6 +36,17 @@ const pageTitleStyle = {
     right: 0
 }
 
+const userStyle = {
+    color: mainStyle.textDarkerColor,
+    fontSize: 20,
+    margin: "auto",
+    position: "absolute",
+    top: 15,
+    right: 100,
+    bottom: 0,
+    right: 0
+}
+
 const style = {
 
     toolBar : {
@@ -46,6 +57,7 @@ const style = {
 
 const mapStateToProps = (state) => {
     return {
+        currentTab: state.currentTab,
         user: state.user
     }
 }
@@ -67,14 +79,14 @@ class Header extends React.Component {
 
     render() {
 
-        const user = this.props.user
-        const loginInfo = this.state
+        const currentTab = this.props.user
+        const user = this.state
 
         return (
           <div style={layoutStyle}>
             <img style={logoStyle} src="/admin/static/ax5.png" width="75" height="75" draggable="false"/>
             <div style={pageTitleStyle}>
-                {user}
+                <span>{currentTab}</span>
             </div>
             <span style={style.toolBar}>
                 {user}
