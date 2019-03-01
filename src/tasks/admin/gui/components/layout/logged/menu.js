@@ -97,7 +97,7 @@ class Menu extends React.Component {
                         </ElementList>
       
                             
-                              {sections && sections.map(function(section){
+                              {sections && sections.type === undefined && sections.map(function(section){
                                   let im = "/"+section.url+"/static/icon.png"
                                   let ts = Math.round((new Date()).getTime() / 1000);
           
