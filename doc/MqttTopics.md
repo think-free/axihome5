@@ -1,6 +1,6 @@
 
 Mqtt topics for special requests
--------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
 
 **Request broadcast status**
 
@@ -17,7 +17,7 @@ Should publish every 30 seconds
     axihome/5/tasks/discover/{name} - task json
 
 Mqtt topics for client communication
--------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
 
 **Read (client subscribe)**
 
@@ -32,7 +32,7 @@ Mqtt topics for client communication
     axihome/5/device/discover - client device json
 
 Mqtt topics for field communication (device auto discover)
--------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
 
 **Devices auto discover**
 
@@ -47,3 +47,10 @@ Should publish every 30 seconds
 **Status Write (device subscribe)**
 
     axihome/5/field/status/{homeid}/{group}/{name}/cmd - value
+
+Mqtt topics for external field devices (device communicating from outside the core)
+-----------------------------------------------------------------------------------------
+
+**Write and read root topic** 
+
+    axihome/5/external/#
