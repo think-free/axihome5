@@ -80,8 +80,8 @@ class Header extends React.Component {
 
     render() {
 
-        const currentTab = this.state;
-        const user = this.state;
+        const currentTab = this.state.currentTab;
+        const user = this.state.user;
 
         return (
           <div style={layoutStyle}>
