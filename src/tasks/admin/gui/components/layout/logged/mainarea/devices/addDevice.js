@@ -408,7 +408,7 @@ class DeviceAdd extends React.Component {
 
                     <br />
 
-                        {variables && variables.map(function(variable){
+                        {variables && Array.isArray(variables) && variables.map(function(variable){
 
                             return (
                                 <div style={devicesStyle.panel} onClick={() => me.setCurrentVariable(variable.name)}>

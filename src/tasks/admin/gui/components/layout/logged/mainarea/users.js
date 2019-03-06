@@ -155,7 +155,7 @@ class Users extends React.Component {
                 </span>
 
                 <div style={usersStyle.usersList}>
-                    {users && users.map(function(user){
+                    {users && Array.isArray(users) && users.map(function(user){
 
                         if (user.user.match("^" + currentFilter)){
 

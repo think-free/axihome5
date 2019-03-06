@@ -93,7 +93,7 @@ class Devices extends React.Component {
                         <img key="bt_add" style={mainStyle.menuIcon} src="/admin/static/add.png" width="20" height="20" draggable="false" onClick={this.toggleAddPanelVisible}/>
                     </span>
                     <div style={devicesStyle.deviceList}>
-                        {devices && devices.map(function(device){
+                        {devices && Array.isArray(devices) && devices.map(function(device){
 
                             return (
                                 <Device device={device}/>
@@ -248,7 +248,7 @@ class Device extends React.Component {
                         <col width="40px" />
                         <col />
 
-                        {variables && variables.map(function(variable){
+                        {variables && Array.isArray(variables) && variables.map(function(variable){
                             return (
                                 <DeviceVariable device={dev} variable={variable} />
                             )

@@ -116,7 +116,7 @@ class Variables extends React.Component {
                     <input key="filter" style={mainStyle.inputStyle} type="text" value={this.state.currentFilter} onChange={this.currentFilterChanged} onBlur={this.currentFilterChanged}/>
                 </span>
                 <div style={variablesStyle.variablesList}>
-                    {variables && variables.map(function(variable){
+                    {variables && Array.isArray(variables) && variables.map(function(variable){
 
                         if (variable.key.match("^" + currentFilter)){
 
