@@ -21,10 +21,12 @@ let mainStyle = {
     icon: "#999DAB",
 
     menuIcon : {
+        marginTop: 10,
         paddingTop: 10,
-        paddingRight: 20,
+        paddingRight: 10,
         paddingBottom: 10,
-        paddingLeft: 20,
+        paddingLeft: 10,
+        borderRadius: "50%",
         cursor: "pointer",
         ':hover': {
           backgroundColor: "#40414F"

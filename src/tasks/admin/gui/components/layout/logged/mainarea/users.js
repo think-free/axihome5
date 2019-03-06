@@ -20,7 +20,7 @@ const usersStyle = {
     usersList : {
         display:'block',
         position: 'relative',
-        marginTop: 50,
+        marginTop: 10,
         height: 'calc(100% - 80px)',
         width: '100%',
         fallbacks: [
@@ -144,9 +144,16 @@ class Users extends React.Component {
 
         return (
             <div style={usersStyle.p100}>
+                <div>
+                    User : <input key="user" style={mainStyle.inputStyle} type="text" value={this.state.user} onChange={this.userChanged} onBlur={this.userChanged}/>&nbsp;
+                    Password : <input key="password" style={mainStyle.inputStyle} type="text" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged}/>&nbsp;
+                    <img key={"bt_add"} style={mainStyle.menuIcon} src="/admin/static/add.png" alt="add" width="15" height="15" draggable="false" onClick={() => me.addUser()}/>
+                </div>
+
                 <span style={usersStyle.toolBar}>
                     <input key="filter" style={mainStyle.inputStyle} type="text" value={this.state.currentFilter} onChange={this.currentFilterChanged} onBlur={this.currentFilterChanged}/>
                 </span>
+
                 <div style={usersStyle.usersList}>
                     {users && users.map(function(user){
 
@@ -166,12 +173,6 @@ class Users extends React.Component {
                             return(null)
                         }
                     })}
-                </div>
-
-                <div>
-                    User : <input key="user" style={mainStyle.inputStyle} type="text" value={this.state.user} onChange={this.userChanged} onBlur={this.userChanged}/>&nbsp;
-                    Password : <input key="password" style={mainStyle.inputStyle} type="text" value={this.state.password} onChange={this.passwordChanged} onBlur={this.passwordChanged}/>&nbsp;
-                    <img key={"bt_add"} style={mainStyle.menuIcon} src="/admin/static/add.png" alt="add" width="15" height="15" draggable="false" onClick={() => me.addUser()}/>
                 </div>
             </div>
         )
