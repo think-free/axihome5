@@ -52,7 +52,7 @@ func (s *WebServer) Run() {
 	// Login
 	http.HandleFunc("/core/login", s.handlerLogin)
 	http.HandleFunc("/core/getLoginInfo", s.handlerGetLoginInfo)
-	
+
 	http.HandleFunc("/core/logout", s.checkLoggedHandlerFunc(s.handlerLogout))
 	http.HandleFunc("/core/renewLoginToken", s.checkLoggedHandlerFunc(s.handlerRenewLoginToken))
 	http.HandleFunc("/core/getUsers", s.checkLoggedHandlerFunc(s.handlerGetUsers))
@@ -143,9 +143,9 @@ func (s *WebServer) handlerLogin(w http.ResponseWriter, r *http.Request) {
 			log.Println("Please register a user ! We are allowing access to everybody !")
 			noUser = true
 		} else {
-            log.Println("Invalid login name :", c.Name)
-            w.Write([]byte("{\"type\" : \"error\", \"msg\": \"Bad credential\"}"))
-            return
+			log.Println("Invalid login name :", c.Name)
+			w.Write([]byte("{\"type\" : \"error\", \"msg\": \"Bad credential\"}"))
+			return
 		}
 	}
 	if noUser == true || c.Password == dbUser.Password {

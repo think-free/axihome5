@@ -198,10 +198,12 @@ class MainArea extends React.Component {
     }
 
     goToPluginPage(name) {
-        // var currentUrl = window.location.href;
-        // var arr = currentUrl.split("/");
-        // var url = arr[0] + "//" + arr[2] + "/" + name
-        // window.location=url
+        /*var currentUrl = window.location.href;
+        var arr = currentUrl.split("/");
+        var url = arr[0] + "//" + arr[2] + "/" + name
+        location.href=url
+        console.log(name + " -> " + url)*/
+        window.parent.postMessage(name,window.location.href);
     }
 
     deletePlugin(name) {
@@ -305,7 +307,7 @@ class MainArea extends React.Component {
                             return (
 
                                     <div style={MainAreaStyle.cellStyle}>
-                                        <div style={MainAreaStyle.cellContent} key={plugin.name} onClick={() => me.goToPluginPage(plugin.name)}>
+                                        <div style={MainAreaStyle.cellContent} key={plugin.name} onClick={() => me.goToPluginPage(plugin.name)} >
                                             <img src={"/plugins/getIcon?plugin=" + plugin.name} alt={plugin.name} width="64" height="64" />
                                             <div style={MainAreaStyle.plugin}>{plugin.name}</div>
                                             <img src={status} width="32" height="32" onClick={() => me.tooglePluginState(plugin.name, plugin.disabled)} />

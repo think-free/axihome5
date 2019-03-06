@@ -45,6 +45,7 @@ class Menu extends React.Component {
         };
 
         this.buttonClick=this.buttonClick.bind(this);
+
     }
 
     async componentDidMount() {
@@ -55,6 +56,10 @@ class Menu extends React.Component {
         this.interval = setInterval(() => {
             this.getData();
         }, 20000);
+
+        window.addEventListener("message",function(e) {
+            console.log('Parent received message!:  ', e.data);
+        },false);
     }
 
     componentWillUnmount() {
