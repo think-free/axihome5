@@ -37,14 +37,37 @@ class Index extends React.Component {
         this.interval = setInterval(() => {
             this.getData();
         }, 1000);
+
+        this.interval2 = setInterval(() => {
+            this.renewToken();
+        }, 300000);
     }
 
     componentWillUnmount() {
         clearInterval(this.interval);
+        clearInterval(this.interval2);
     }
 
-    async getData(url){
+    async getData(){
         var url = "/core/getLoginInfo"
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => this.setState({ loginInfo: data }))
+
+        if (this.state.loginInfo.type === "logout") {
+            this.setState({ logged : false });
+        } else {
+            this.setState({ logged : true });
+        }
+
+        if (this.state.loginInfo.user != undefined){
+            store.dispatch(setValue("user", this.state.loginInfo.user))
+        }
+    }
+
+    async renewToken(){
+        var url = "/core/renewLoginToken"
 
         fetch(url)
         .then(response => response.json())
