@@ -214,7 +214,7 @@ class MainArea extends React.Component {
     }
 
     toogleBookmark (name) {
-        fetch("/plugins/toogleTaskBookmark?plugin=" + name)
+        fetch("/core/toogleTaskBookmark?name=" + name)
     }
 
     deletePlugin(name) {

@@ -193,6 +193,7 @@ func (mq *Mqtt) MqttSubscribeTasksAutoRegister() {
 		} else {
 
 			log.Println("Saving task modification :", tsk.Name)
+			tsk.Bookmarked = tskdb.Bookmarked
 			mq.db.Remove(&tskdb)
 			mq.db.Save(&tsk)
 		}
