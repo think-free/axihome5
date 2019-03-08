@@ -315,7 +315,7 @@ class MainArea extends React.Component {
                         {plugins && plugins.map(function(plugin){
 
                             let status = plugin.disabled ? "/plugins/static/disabled.png" : "/plugins/static/enabled.png"
-                            let bookmarkImage = plugin.bookmarked ? "/plugins/bookmark.png" : "/plugins/bookmark-disabled.png"
+                            let bookmarkImage = plugin.bookmarked ? "/plugins/static/bookmark.png" : "/plugins/static/bookmark-disabled.png"
                             return (
 
                                     <div style={MainAreaStyle.cellStyle}>
