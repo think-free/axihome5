@@ -64,7 +64,9 @@ func (s *WebServer) Run() {
 	http.HandleFunc("/core/getConfig", s.checkLoggedHandlerFunc(s.handlerGetConfig)) // GET : key, task
 
 	// Tasks
-	http.HandleFunc("/core/getTasks", s.checkLoggedHandlerFunc(s.handlerGetTasks))      // GET
+	http.HandleFunc("/core/getTasks", s.checkLoggedHandlerFunc(s.handlerGetTasks))                      // GET
+	http.HandleFunc("/core/toogleTaskBookmark", s.checkLoggedHandlerFunc(s.handlerToogleBookmarkTasks)) // GET
+
 	http.HandleFunc("/core/deleteTask", s.checkLoggedHandlerFunc(s.handlerDeleteTasks)) // GET : name
 
 	// Devices Config
@@ -452,6 +454,31 @@ func (s *WebServer) handlerGetTasks(w http.ResponseWriter, r *http.Request) {
 	tsksJSON, _ := json.Marshal(tsks)
 
 	w.Write(tsksJSON)
+}
+
+func (s *WebServer) handlerToogleBookmarkTasks(w http.ResponseWriter, r *http.Request) {
+
+	keys, ok := r.URL.Query()["name"]
+	if !ok || len(keys[0]) < 1 {
+		log.Println("Url parameter missing")
+		w.Write([]byte("{\"type\" : \"error\", \"msg\":\"Url parameter missing\"}"))
+		return
+	}
+	key := keys[0]
+
+	var tsk types.Task
+	s.db.Get("Name", string(key), &tsk)
+	s.db.Remove(&tsk)
+	tsk.Bookmarked = !tsk.Bookmarked
+	s.db.Save(&tsk)
+
+	if tsk.Bookmarked {
+		log.Println("Bookmarking task :", string(key))
+		w.Write([]byte("{\"type\" : \"log\", \"msg\": \"Task bookmarked\"}"))
+	} else {
+		log.Println("Removing bookmark for task :", string(key))
+		w.Write([]byte("{\"type\" : \"log\", \"msg\": \"Task removed bookmark\"}"))
+	}
 }
 
 func (s *WebServer) handlerDeleteTasks(w http.ResponseWriter, r *http.Request) {

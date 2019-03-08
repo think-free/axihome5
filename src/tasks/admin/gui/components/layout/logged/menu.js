@@ -45,7 +45,7 @@ class Menu extends React.Component {
         };
 
         this.buttonClick=this.buttonClick.bind(this);
-
+        this.childEvent=this.childEvent.bind(this);
     }
 
     async componentDidMount() {
@@ -57,9 +57,7 @@ class Menu extends React.Component {
             this.getData();
         }, 20000);
 
-        window.addEventListener("message",function(e) {
-            console.log('Parent received message!:  ', e.data);
-        },false);
+        window.addEventListener("message", this.childEvent,false);
     }
 
     componentWillUnmount() {
@@ -76,6 +74,23 @@ class Menu extends React.Component {
 
     buttonClick(e) {
         this.props.dispatch(setValue("Menu", "clicked"));
+    }
+
+    childEvent(e) {
+        console.log('Parent received message!:  ', e.data);
+
+        let ts = Math.round((new Date()).getTime() / 1000);
+        let me = this;
+
+        this.state.sections.map(function(section){
+
+            if (section.url === e.data && section.lastseen + 90 > ts) {
+
+                console.log("Openning section : " + e.data)
+                me.props.dispatch(setValue("currentTab", section.name ));
+                me.props.dispatch(setValue("currentSection", section ));
+            }
+        })
     }
 
     render() {
@@ -99,14 +114,13 @@ class Menu extends React.Component {
 
                         <ElementList section={{"name": "Users", "url": "internal"}}>
                           <img src="/admin/static/users.png" alt="users" width="35" height="35" draggable="false"/>
-                        </ElementList>
-      
+                        </ElementList>      
                             
                               {sections && sections.type === undefined && sections.map(function(section){
                                   let im = "/"+section.url+"/static/icon.png"
                                   let ts = Math.round((new Date()).getTime() / 1000);
           
-                                  if (section.url != "admin" && section.url != "login" && section.lastseen + 90 > ts){
+                                  if ( ((section.url != "admin" && section.url != "login" && section.bookmarked ) || section.url == "plugins") && section.lastseen + 90 > ts){
           
                                       return (
                                           <ElementList section={section}>

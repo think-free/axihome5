@@ -106,6 +106,11 @@ const MainAreaStyle = {
         paddingRight: 20,
         paddingBottom: 10,
         paddingLeft: 20
+    },
+    bookmark : {
+        float: 'right',
+        paddingTop: 5,
+        paddingRight: 5,
     }
 }
 
@@ -129,6 +134,8 @@ class MainArea extends React.Component {
         this.addPlugin=this.addPlugin.bind(this);
         this.showPlugins=this.showPlugins.bind(this);
         this.tooglePluginState=this.tooglePluginState.bind(this);
+        this.toogleBookmark=this.toogleBookmark.bind(this);
+        
         this.goToPluginPage=this.goToPluginPage.bind(this);
         
         this.deletePlugin=this.deletePlugin.bind(this);
@@ -204,6 +211,10 @@ class MainArea extends React.Component {
         location.href=url
         console.log(name + " -> " + url)*/
         window.parent.postMessage(name,window.location.href);
+    }
+
+    toogleBookmark (name) {
+        fetch("/plugins/toogleTaskBookmark?plugin=" + name)
     }
 
     deletePlugin(name) {
@@ -304,11 +315,13 @@ class MainArea extends React.Component {
                         {plugins && plugins.map(function(plugin){
 
                             let status = plugin.disabled ? "/plugins/static/disabled.png" : "/plugins/static/enabled.png"
+                            let bookmarkImage = plugin.bookmarked ? "/plugins/bookmark.png" : "/plugins/bookmark-disabled.png"
                             return (
 
                                     <div style={MainAreaStyle.cellStyle}>
-                                        <div style={MainAreaStyle.cellContent} key={plugin.name} onClick={() => me.goToPluginPage(plugin.name)} >
-                                            <img src={"/plugins/getIcon?plugin=" + plugin.name} alt={plugin.name} width="64" height="64" />
+                                        <div style={MainAreaStyle.cellContent} key={plugin.name} >
+                                            <img src={bookmarkImage} style={MainAreaStyle.bookmark} width="15" height="15" onClick={() => me.toogleBookmark(plugin.name)} />
+                                            <img src={"/plugins/getIcon?plugin=" + plugin.name} alt={plugin.name} width="64" height="64" onClick={() => me.goToPluginPage(plugin.name)} />
                                             <div style={MainAreaStyle.plugin}>{plugin.name}</div>
                                             <img src={status} width="32" height="32" onClick={() => me.tooglePluginState(plugin.name, plugin.disabled)} />
                                         </div>
