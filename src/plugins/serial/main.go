@@ -49,7 +49,7 @@ func main() {
 
 	serialOptions := serial.OpenOptions{
 		PortName:        "/dev/ttyUSB0",
-		BaudRate:        57600,
+		BaudRate:        9600,
 		DataBits:        8,
 		StopBits:        1,
 		MinimumReadSize: 4,
