@@ -467,10 +467,18 @@ func (s *WebServer) handlerToogleBookmarkTasks(w http.ResponseWriter, r *http.Re
 	key := keys[0]
 
 	var tsk types.Task
-	s.db.Get("Name", string(key), &tsk)
-	s.db.Remove(&tsk)
+	s.db.Get("URL", string(key), &tsk)
+	err := s.db.Remove(&tsk)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("Previous bookmark state :", tsk.Bookmarked)
 	tsk.Bookmarked = !tsk.Bookmarked
-	s.db.Save(&tsk)
+	err2 := s.db.Save(&tsk)
+	if err2 != nil {
+		log.Println(err)
+	}
+	log.Println("Current bookmark state :", tsk.Bookmarked)
 
 	if tsk.Bookmarked {
 		log.Println("Bookmarking task :", string(key))

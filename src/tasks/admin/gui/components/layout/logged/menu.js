@@ -55,7 +55,7 @@ class Menu extends React.Component {
         // Periodicaly refresh states
         this.interval = setInterval(() => {
             this.getData();
-        }, 20000);
+        }, 1000);
 
         window.addEventListener("message", this.childEvent,false);
     }
