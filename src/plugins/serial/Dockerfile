@@ -1,17 +1,18 @@
 # First stage, building gui
 FROM node:alpine AS node-env
 
-ARG app="login"
+ARG app="serial"
 
-ADD ./src/tasks/$app/gui /src
+ADD ./src/plugins/$app/gui /src
 WORKDIR /src
 RUN npm install -g yarn
 RUN yarn install && npm run build && npm run export
 
+
 # Second stage, building application
 FROM golang:alpine AS builder
 
-ARG app="login"
+ARG app="serial"
 
 RUN apk update && apk add git
 RUN go get -u github.com/golang/dep/cmd/dep && mv $GOPATH/bin/dep /usr/bin/
@@ -19,17 +20,17 @@ RUN go get -u github.com/GeertJohan/go.rice && go get -u github.com/GeertJohan/g
 
 ADD . $GOPATH
 
-COPY --from=node-env src/out $GOPATH/src/tasks/$app/gui/out
-WORKDIR $GOPATH/src/tasks/$app/webserver
+COPY --from=node-env src/out $GOPATH/src/plugins/$app/gui/out
+WORKDIR $GOPATH/src/plugins/$app/webserver
 RUN rice embed-go
 
-WORKDIR $GOPATH/src/tasks/$app
-RUN dep ensure
+WORKDIR $GOPATH/src/plugins/$app
+#RUN dep ensure
 WORKDIR $GOPATH/
-RUN go build tasks/$app
+RUN go build plugins/$app
 
 # Last stage : Creating final container
 FROM alpine
 WORKDIR /
-COPY --from=builder /go/login /login
-ENTRYPOINT /login
+COPY --from=builder /go/serial /serial
+ENTRYPOINT /serial

@@ -5,7 +5,9 @@ ARG app="zigbee"
 
 ADD ./src/plugins/$app/gui /src
 WORKDIR /src
-RUN npm install && npm run build && npm run export
+RUN npm install -g yarn
+RUN yarn install && npm run build && npm run export
+
 
 # Second stage, building application
 FROM golang:alpine AS builder

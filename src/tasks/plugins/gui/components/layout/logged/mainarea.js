@@ -108,6 +108,9 @@ const MainAreaStyle = {
         paddingLeft: 20
     },
     bookmark : {
+        position: 'absolute',
+        top: 5,
+        right: 5,
         float: 'right',
         paddingTop: 5,
         paddingRight: 5,
@@ -238,6 +241,7 @@ class MainArea extends React.Component {
         if (currentFilter == "")
             currentFilter = ".*"
 
+        /* STORE */
         if (storeShow)
 
             return (
@@ -304,6 +308,7 @@ class MainArea extends React.Component {
                     </div>
                 </div>
             )
+        /* NOT STORE */
         else
             return (
                 <div style={MainAreaStyle.p100}>
@@ -315,7 +320,7 @@ class MainArea extends React.Component {
                         {plugins && plugins.map(function(plugin){
 
                             let status = plugin.disabled ? "/plugins/static/disabled.png" : "/plugins/static/enabled.png"
-                            let bookmarkImage = "/plugins/static/bookmark.png" // plugin.bookmarked ? "/plugins/static/bookmark.png" : "/plugins/static/bookmark-disabled.png"
+                            let bookmarkImage = plugin.hasgui ? "/plugins/static/bookmark.png" : "/plugins/static/bookmark-disabled.png"
                             return (
 
                                     <div style={MainAreaStyle.cellStyle}>

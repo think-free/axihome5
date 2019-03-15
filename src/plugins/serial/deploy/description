@@ -1,0 +1,1 @@
+Arduino sensor serial port integration. Your arduino just have to write a string of '0' or '1'.

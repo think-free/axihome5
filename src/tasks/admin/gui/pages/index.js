@@ -40,7 +40,7 @@ class Index extends React.Component {
 
         this.interval2 = setInterval(() => {
             this.renewToken();
-        }, 300000);
+        }, 60000);
     }
 
     componentWillUnmount() {
