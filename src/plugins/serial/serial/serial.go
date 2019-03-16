@@ -125,6 +125,7 @@ func (s *Serial) ProcessFrame(bts string) {
 
 			if val.Value != readedVal {
 				val.Value = readedVal
+				s.values[i] = val
 
 				s.cli.PublishMessage(CWriteTopic+"/"+val.Home+"/"+val.Group+"/"+val.Name, readedVal)
 			}
