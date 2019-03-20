@@ -330,7 +330,7 @@ class MainArea extends React.Component {
                 </table>
 
                 <div style={MainAreaStyle.MainAreaList}>
-                    {serials && serials.map(function(serial){
+                    {serials && Array.isArray(serials) && serials.map(function(serial){
 
                             return (
                                 <div style={MainAreaStyle.panel} onClick={() => me.setCurrentVariable(serial.index)}>
