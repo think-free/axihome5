@@ -5,12 +5,12 @@ BASEURL="https://axihome.think-free.me/plugins"
 pushd .
 cd src/plugins
 
-rm -rf ../../plugins-releases
-mkdir ../../plugins-releases
-mkdir ../../plugins-releases/icons
-mkdir ../../plugins-releases/release
+rm -rf ../../plugins
+mkdir ../../plugins
+mkdir ../../plugins/icons
+mkdir ../../plugins/release
 
-echo "[" > ../../plugins-releases/plugins.json
+echo "[" > ../../plugins/plugins.json
 
 for NAME in *
 do
@@ -21,13 +21,13 @@ do
         cd $NAME
         tar cvfz $NAME.plugin deploy --transform="s|deploy|$NAME|"
         popd
-        mv $NAME/$NAME.plugin ../../plugins-releases/release
-	cp $NAME/deploy/icon.png ../../plugins-releases/icons/$NAME.png
+        mv $NAME/$NAME.plugin ../../plugins/release
+	cp $NAME/deploy/icon.png ../../plugins/icons/$NAME.png
 
         DESC=`cat $NAME/deploy/description`
         VERSION=`cat $NAME/deploy/version`
 
-        cat <<EOR >> ../../plugins-releases/plugins.json
+        cat <<EOR >> ../../plugins/plugins.json
     {
         "Name" : "$NAME",
         "Description" : "$DESC",
@@ -39,8 +39,8 @@ EOR
     fi
 done
 
-truncate -s-2 ../../plugins-releases/plugins.json
-echo "" >> ../../plugins-releases/plugins.json
-echo "]" >> ../../plugins-releases/plugins.json
+truncate -s-2 ../../plugins/plugins.json
+echo "" >> ../../plugins/plugins.json
+echo "]" >> ../../plugins/plugins.json
 
 popd

@@ -3,7 +3,7 @@ services:
 
     zwave:
         container_name: zwave
-        image: thinkfree84/ax5_zwave:latest
+        image: thinkfree84/ax5_zwave:0.2
         depends_on:
           - zwavemqttbridge
         build:

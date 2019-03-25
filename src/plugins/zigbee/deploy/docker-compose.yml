@@ -3,7 +3,7 @@ services:
 
     zigbee:
         container_name: zigbee
-        image: thinkfree84/ax5_zigbee:latest
+        image: thinkfree84/ax5_zigbee:0.2
         build:
             context: ../../../
             dockerfile: src/plugins/zigbee/Dockerfile

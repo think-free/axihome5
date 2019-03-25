@@ -3,7 +3,7 @@ services:
 
     time:
         container_name: time
-        image: thinkfree84/ax5_time:latest
+        image: thinkfree84/ax5_time:0.2
         build:
             context: ../../../
             dockerfile: src/plugins/time/Dockerfile

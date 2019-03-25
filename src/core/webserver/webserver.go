@@ -83,9 +83,6 @@ func (s *WebServer) Run() {
 	http.HandleFunc("/core/forceValue", s.checkLoggedHandlerFunc(s.handlerForceValue))    // TODO
 	http.HandleFunc("/core/deleteValue", s.checkLoggedHandlerFunc(s.handlerDeleteValue))  // GET : key
 
-	// UI
-	http.HandleFunc("/", s.handlerDefaultUI)
-
 	log.Println("Core will start listening on port :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -104,6 +101,8 @@ func (s *WebServer) addTaskRouteHandler(task *types.Task) {
 		s.registeredRoutes[task.URL] = struct{}{}
 		if task.URL == "login" || task.URL == "admin" {
 			http.Handle("/"+task.URL+"/", httputil.NewSingleHostReverseProxy(u))
+		} else if task.URL == "gui" {
+			http.Handle("/", s.checkLoggedHandler(httputil.NewSingleHostReverseProxy(u)))
 		} else {
 			http.Handle("/"+task.URL+"/", s.checkLoggedHandler(httputil.NewSingleHostReverseProxy(u)))
 		}
@@ -379,7 +378,8 @@ func (s *WebServer) checkLoggedHandler(next http.Handler) http.HandlerFunc {
 			}
 		}
 
-		w.Write([]byte("{\"type\" : \"logout\"}"))
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		//w.Write([]byte("{\"type\" : \"logout\"}"))
 	}
 }
 

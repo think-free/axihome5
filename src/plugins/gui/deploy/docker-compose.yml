@@ -1,26 +1,27 @@
 version: "3"
 services:
 
-    serial:
-        container_name: serial
-        image: thinkfree84/ax5_serial:0.2
+    gui:
+        container_name: gui
+        image: thinkfree84/ax5_gui:0.2
         build:
             context: ../../../
-            dockerfile: src/plugins/serial/Dockerfile
+            dockerfile: src/plugins/gui/Dockerfile
         environment:
             - AX_BROKER=mosquitto
             - AX_HOMEID=home
             - AX_GROUP=server
-            - AX_INSTANCE=serial
-            - AX_HOST=serial
+            - AX_INSTANCE=gui
+            - AX_HOST=gui
             - AX_PORT=8123
-        devices:
-            - "/dev/ttyUSB0:/dev/ttyUSB0"
+            - AX_GUIPATH=/etc/gui
         volumes:
             - AXPATH/config:/etc/ax5
+            - AXPATH/gui:/etc/gui
         networks:
             - axihome5_net
 
 networks:
   axihome5_net:
     external: true
+
