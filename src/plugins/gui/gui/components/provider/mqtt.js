@@ -31,10 +31,7 @@ class Mqtt extends React.Component {
 
                 let states = me.context.store.getState()
     
-                for (var i = 0; i < states.length; i++) { 
-
-                    let k = states[i].variable;
-                    let v = states[i].value;
+                for (const [k, v] of Object.entries(states)) {
 
                     if (k[0] !== "@") {
 
@@ -56,9 +53,11 @@ class Mqtt extends React.Component {
         var variable = topic.split(this.props.replace).join("");
         variable = variable.split("/").join(".");
 
-        if (this.values[variable] !== payload ){
-            this.values[variable] = payload;
-            this.props.dispatch(setValue(variable, payload));
+	var value = JSON.parse(payload);
+
+        if (this.values[variable] !== value ){
+            this.values[variable] = value;
+            this.props.dispatch(setValue(variable, value));
         }
     }
 

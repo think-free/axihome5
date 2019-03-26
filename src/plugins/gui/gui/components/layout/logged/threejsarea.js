@@ -8,12 +8,6 @@ import { setValue } from '../../redux/store.js'
 
 import mainStyle from '../../../styles/global.js'
 
-/* Devices */
-
-const ThreeJSStyle = {
-
-}
-
 const mapStateToProps = (state) => {
     return {
 
@@ -28,12 +22,12 @@ class ThreeJSArea extends React.Component {
         this.state = {
 		};
 		
-		this.setMaterial=this.setMaterial.bind(this);
-		this.setMaterialColor=this.setMaterialColor.bind(this);
 		this.parseScene=this.parseScene.bind(this);
 		this.load=this.load.bind(this);
-		this.postLoadAction=this.postLoadAction.bind(this);
+        this.postLoadAction=this.postLoadAction.bind(this);
+        this.createAnimationMethods=this.createAnimationMethods.bind(this);
 		this.subscribeStore=this.subscribeStore.bind(this);
+		this.getStates=this.getStates.bind(this);
 	}
 	
 	/* Setup ThreeJS */
@@ -47,7 +41,6 @@ class ThreeJSArea extends React.Component {
 		if ( WEBGL.isWebGLAvailable() === false ) {
 
 			document.body.appendChild( WEBGL.getWebGLErrorMessage() );
-
 		}
 
 		var container, stats, clock, controls;
@@ -68,7 +61,11 @@ class ThreeJSArea extends React.Component {
 			clock = new THREE.Clock();
 
 			me.scene = new THREE.Scene();
-			me.loader = new THREE.ColladaLoader();	
+            me.loader = new THREE.ColladaLoader();	
+            
+            me.raycaster = new THREE.Raycaster();
+            me.mouseDown = new THREE.Vector2();
+            me.mouseUp = new THREE.Vector2();
 
 			// Grid
 
@@ -101,7 +98,20 @@ class ThreeJSArea extends React.Component {
 
 			// Resize window event
 
-			window.addEventListener( 'resize', onWindowResize, false );
+            window.addEventListener( 'resize', onWindowResize, false );
+            window.addEventListener( 'mousedown', function(event) {
+
+                me.mouseDown.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                me.mouseDown.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+            }, false );
+
+            window.addEventListener( 'mouseup', function(event) {
+
+                me.mouseUp.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                me.mouseUp.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+            }, false );
 
 			me.getScene();
 		}
@@ -112,9 +122,9 @@ class ThreeJSArea extends React.Component {
 			camera.updateProjectionMatrix();
 
 			renderer.setSize( window.innerWidth, window.innerHeight );
-		}
-
-		function animate() {
+        }
+ 
+        function animate() {
 
 			requestAnimationFrame( animate );
 
@@ -123,17 +133,31 @@ class ThreeJSArea extends React.Component {
 
 		function render() {
 
+            if (me.mouseDown.x == me.mouseUp.x && me.mouseDown.y == me.mouseUp.y){
+
+                me.mouseDown.x = -1;
+                me.mouseDown.y = -1;
+
+                me.raycaster.setFromCamera( me.mouseUp, camera );
+                var intersects = me.raycaster.intersectObjects( me.scene.children, true );
+    
+                for ( var i = 0; i < intersects.length; i++ ) {
+    
+                    //intersects[i].object.material.color.set( 0xff0000 );
+                    console.log(intersects[i].object.name)
+                }
+            }
+
+
 			var delta = clock.getDelta();
 
 			if ( mixer !== undefined ) {
 
 				mixer.update( delta );
-
 			}
 
 			renderer.render( me.scene, camera );
 		}
-
 	}
 
 
@@ -186,14 +210,16 @@ class ThreeJSArea extends React.Component {
 
 				if (node.isSkinnedMesh) {
 
-					node.frustumCulled = false;
+                    node.frustumCulled = false;
+                    //node.name = name;
 				}
 			});
 
+            item.name = name;
 			me.collection[name] = item;
 			me.scene.add(item);
 			me.count = me.count + 1;
-			console.log("Loaded : " + me.count + "/" + me.totalCount);
+			console.log("Loaded " + name + " : " + me.count + "/" + me.totalCount);
 
 			if (me.count === me.totalCount){
 				me.postLoadAction();
@@ -205,48 +231,133 @@ class ThreeJSArea extends React.Component {
 
 		console.log(this.animations);
 
-		this.subscribeStore();
+        this.subscribeStore();
+        this.createAnimationMethods()
 
-		this.props.dispatch(setValue("@TEST", "test"));
-	}
+		//this.props.dispatch(setValue("@TEST", "test"));
+    }
+    
+    createAnimationMethods() {
+
+        var me = this;
+
+        me.animationMethods = {};
+
+        // Opacity animation
+        me.animationMethods["opacity"] = function(item, params, value) {
+
+            console.log("Running opacity animation for " + item)
+
+            var targetValue = params;
+            if (targetValue === "$value") {
+
+                if (value < 1) {
+                    targetValue = value;
+                } else {
+                    targetValue = value / 100
+                }                
+            }
+
+            var node = me.collection[item];
+            if (node.children) {
+                for (var i = 0; i < node.children.length; i++) {
+                    node.children[i].material.opacity = targetValue;
+                }
+            }
+        }
+
+        // Intensity animation
+        me.animationMethods["intensity"] = function(item, params, value) {
+
+            console.log("Running intensity animation for " + item)
+
+            var targetValue = params;
+            if (targetValue === "$value") {
+
+                if (value < 1) {
+                    targetValue = value;
+                } else {
+                    targetValue = value / 100
+                }                
+            }
+
+            var node = me.collection[item];
+            if (node.children) {
+                for (var i = 0; i < node.children.length; i++) {
+                    node.children[i].intensity = targetValue;
+                }
+            }
+        }        
+
+        // Color animation
+        me.animationMethods["color"] = function(item, params, value) {
+
+            console.log("Running color animation for " + item)
+
+            var targetValue = params;
+            if (targetValue === "$value") {
+                targetValue = value;
+            }
+
+            var node = me.collection[item];
+            if (node.children) {
+                for (var i = 0; i < node.children.length; i++) {
+                    node.children[i].material.color.set(targetValue);
+                }
+            }
+        }
+    }
 	
 	subscribeStore() {
 
 		var me = this;
 
-		me.context.store.subscribe(function(){
+		me.context.store.subscribe(me.getStates);
 
-			let states = me.context.store.getState()
+		me.getStates();
+    }
+    
+	/* Subscribe application state changes (store) */
+	/* ********************************************************************************************** */
 
-			for (var i = 0; i < states.length; i++) { 
+	getStates() {
 
-				let k = states[i].variable;
-				let v = states[i].value;
+		var me = this;
 
-				if (me.values[k] != v) {
+        // Loop throught all received states
+		let states = me.context.store.getState()
+        for (const [k, v] of Object.entries(states)) {
 
-					me.values[k] = v;
+            // Checking if value has changed
+			if (me.values[k] != v) {
+                me.values[k] = v;
+                
+				// Check if any elements should be animated by this k/v pair and run associated animation
+				for (var j=0; j < this.animations.length; j++) {
 
-					// Check if any elements should be animated by this k/v pair and run associated animation
+                    // Checking if the animation is associated with the current variable
+					var animation = this.animations[j];
+					if (animation.variable == k) {
 
-					for (var j=0; j < this.animations.length; j++) {
+                        // We've found an animation, checking if we have to animate depending of the value and the condition
+						if (this.compare(v, animation.operand, animation.value)){
 
-						var animation = this.animations[j];
-
-						if (animation.variable == k) {
-
-							if (this.compare(v, animation.operand, animation.value)){
-
-								console.log("Should run the animation :")
-								console.log(animation)
-							}
+                            console.log("Running the animation : " + animation.animation)
+                            try {
+                                me.animationMethods[animation.animation](animation.object, animation.parameters, v)
+                            } catch(err) {
+                                console.log(err)
+                            }							
 						}
 					}
 				}
 			}
-		});
+		}
 	}
 
+    /* Animation compare value */
+    /* ********************************************************************************************** */
+    
 	compare(post, operator, value) {
 		switch (operator) {
 		  case '>':   return post > value;
@@ -257,23 +368,6 @@ class ThreeJSArea extends React.Component {
 		  case '!=':  return post != value;
 		  case '===': return post === value;
 		  case '!==': return post !== value;
-		}
-	  }
-
-	/* Animations */
-	/* ********************************************************************************************** */
-
-	setMaterialColor(item, color){
-
-		this.setMaterial(item, new THREE.MeshBasicMaterial({ color: color }));
-	}
-
-	setMaterial (node, material) {
-		node.material = material;
-		if (node.children) {
-			for (var i = 0; i < node.children.length; i++) {
-				this.setMaterial(node.children[i], material);
-			}
 		}
 	}
 
@@ -301,5 +395,4 @@ class ThreeJSArea extends React.Component {
 
 ThreeJSArea.contextType = ReactReduxContext; 
 
-ThreeJSArea = Radium(ThreeJSArea);
 export default connect(mapStateToProps)(ThreeJSArea);
