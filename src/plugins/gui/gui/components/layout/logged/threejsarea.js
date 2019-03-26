@@ -143,8 +143,10 @@ class ThreeJSArea extends React.Component {
     
                 for ( var i = 0; i < intersects.length; i++ ) {
     
-                    //intersects[i].object.material.color.set( 0xff0000 );
-                    console.log(intersects[i].object.name)
+                    if (intersects[i].object.name !== "") {
+                        console.log(intersects[i].object.name)
+                        break;
+                    }                    
                 }
             }
 
