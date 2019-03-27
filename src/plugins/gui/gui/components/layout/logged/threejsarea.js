@@ -142,9 +142,21 @@ class ThreeJSArea extends React.Component {
                 var intersects = me.raycaster.intersectObjects( me.scene.children, true );
     
                 for ( var i = 0; i < intersects.length; i++ ) {
-    
+	
                     if (intersects[i].object.name !== "") {
-                        console.log(intersects[i].object.name)
+						console.log(intersects[i].object.name)
+						
+						// Looking the interactions array if we have to do something
+						var inter = me.interactions[intersects[i].object.name];
+						if (inter !== undefined) {
+							for ( var j=0; j < inter.length; j++ ){
+
+								if (inter[j].event == "leftMouse"){
+									me.props.dispatch(setValue(inter[j].storeKey, inter[j].storeValue));
+								}
+							}
+						}
+
                         break;
                     }                    
                 }
@@ -182,10 +194,12 @@ class ThreeJSArea extends React.Component {
 	
 		this.values = {};
 		this.animations = [];
+		this.interactions = {};
 
 		// Parse each elements
 		for (var i = 0; i < json.length; i++) { 
 			
+			// Register animations
 			if (json[i].animations != undefined){
 				
 				for (var j=0; j< json[i].animations.length; j++){
@@ -195,6 +209,13 @@ class ThreeJSArea extends React.Component {
 				}
 			}
 
+			// Register interaction
+			if (json[i].interactions != undefined){
+				
+				this.interactions[json[i].name] = json[i].interactions
+			}
+
+			// Load dae
 			console.log(json[i].dae)
 			this.load(json[i].dae, json[i].name)
 		}
@@ -208,15 +229,21 @@ class ThreeJSArea extends React.Component {
 
 			var item = collada.scene;
 
+			// Userfull ?
 			item.traverse(function (node) {
 
 				if (node.isSkinnedMesh) {
 
                     node.frustumCulled = false;
-                    //node.name = name;
 				}
 			});
 
+			// Setting name to item's childrens
+			for (var i = 0; i < item.children.length; i++) { 
+				item.children[i].name = name;
+			}			
+
+			// Registering item
             item.name = name;
 			me.collection[name] = item;
 			me.scene.add(item);
@@ -233,8 +260,8 @@ class ThreeJSArea extends React.Component {
 
 		console.log(this.animations);
 
+		this.createAnimationMethods()
         this.subscribeStore();
-        this.createAnimationMethods()
 
 		//this.props.dispatch(setValue("@TEST", "test"));
     }
@@ -316,10 +343,10 @@ class ThreeJSArea extends React.Component {
 
 		me.context.store.subscribe(me.getStates);
 
-		me.getStates();
+		setTimeout(me.getStates, 1000);
     }
     
-	/* Subscribe application state changes (store) */
+	/* Get states from store and run animations if needed */
 	/* ********************************************************************************************** */
 
 	getStates() {
@@ -328,6 +355,9 @@ class ThreeJSArea extends React.Component {
 
         // Loop throught all received states
 		let states = me.context.store.getState()
+
+		console.log(states)
+
         for (const [k, v] of Object.entries(states)) {
 
             // Checking if value has changed
