@@ -264,7 +264,8 @@ func (s *WebServer) handlerRenewLoginToken(w http.ResponseWriter, r *http.Reques
 				}
 
 				http.SetCookie(w, &ck)
-				s.db.Save(session)
+				s.db.Save(newsession)
+				s.db.Remove(&session)
 
 				w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + newsession.UserName + "\" , \"ssid\": \"" + newsession.SSID + "\" , \"client\": \"" + newsession.ClientID + "\"}"))
 				return

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
 import { connect } from 'react-redux';
+import Radium, {StyleRoot} from 'radium';
 
 import Header from './logged/header.js'
 import Menu from './logged/menu.js'
@@ -37,31 +38,34 @@ class Logged extends React.Component {
     render() {
 
         return (
-            <div style={htmlStyle}>
-                <style global jsx>{`
-                  html,
-                  body,
-                  body > div:first-child,
-                  div#__next,
-                  div#__next > div,
-                  div#__next > div > div {
-                    height: 100%;
-                    margin: 0;
-                    padding: 0;
-                    overflow: hidden;
-                  }
-                `}</style>
+            <StyleRoot>
+                <div style={htmlStyle}>
+                    <style global jsx>{`
+                    html,
+                    body,
+                    body > div:first-child,
+                    div#__next,
+                    div#__next > div,
+                    div#__next > div > div {
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                        overflow: hidden;
+                    }
+                    `}</style>
 
-                <div style={layoutStyle}>
-                    <MainArea />
-                    <Menu />
-                    <Header />
+                    <div style={layoutStyle}>
+                        <MainArea />
+                        <Menu />
+                        <Header />
+                    </div>
                 </div>
-            </div>
+            </StyleRoot>
         )
     }
 }
 
+Logged = Radium(Logged);
 Logged = connect()(Logged)
 
 export default connect()(Logged)

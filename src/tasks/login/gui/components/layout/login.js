@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
 import { connect } from 'react-redux';
+import Radium, {StyleRoot} from 'radium';
 
 import MainArea from './login/mainarea.js'
 
@@ -35,29 +36,32 @@ class Login extends React.Component {
     render() {
 
         return (
-            <div style={htmlStyle}>
-                <style global jsx>{`
-                  html,
-                  body,
-                  body > div:first-child,
-                  div#__next,
-                  div#__next > div,
-                  div#__next > div > div {
-                    height: 100%;
-                    margin: 0;
-                    padding: 0;
-                    overflow: hidden;
-                  }
-                `}</style>
+            <StyleRoot>
+                <div style={htmlStyle}>
+                    <style global jsx>{`
+                    html,
+                    body,
+                    body > div:first-child,
+                    div#__next,
+                    div#__next > div,
+                    div#__next > div > div {
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                        overflow: hidden;
+                    }
+                    `}</style>
 
-                <div style={layoutStyle}>
-                    <MainArea />
+                    <div style={layoutStyle}>
+                        <MainArea />
+                    </div>
                 </div>
-            </div>
+            </StyleRoot>
         )
     }
 }
 
+Login = Radium(Login);
 Login = connect()(Login)
 
 export default connect()(Login)

@@ -11,7 +11,11 @@ const variablesStyle = {
 
     p100 : {
         height: '100%',
-        display:'block'
+        display:'block',
+
+        '@media (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), (min-resolution: 192dpi) and (orientation: portrait)': {
+            zoom : 2
+        }
     },
     toolBar : {
         position: 'relative',

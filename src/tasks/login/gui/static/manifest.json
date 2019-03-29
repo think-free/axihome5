@@ -1,0 +1,25 @@
+{
+    "short_name": "Axihome 5",
+    "name": "",
+    "icons": [
+      {
+        "src": "/login/static/ax5.png",
+        "sizes": "100x100",
+        "type": "image/png"
+      },
+      {
+        "src": "/login/static/ax5-145.png",
+        "sizes": "145x145",
+        "type": "image/png"
+      },
+      {
+        "src": "/login/static/ax5-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "start_url": "/",
+    "display": "fullscreen",
+    "background_color": "#1F1F27",
+    "theme_color": "#1F1F27"
+  }

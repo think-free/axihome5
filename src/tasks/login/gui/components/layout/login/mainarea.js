@@ -1,5 +1,5 @@
 import React from 'react'
-import Radium from 'radium';
+import Radium, {StyleRoot} from 'radium';
 import fetch from 'isomorphic-unfetch';
 import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
@@ -30,7 +30,12 @@ const MainAreaStyle = {
         left: '50%',
         transform: 'translate(-50%,-50%)',
         backgroundColor: mainStyle.panelBackgroundColor,
-        border: mainStyle.border
+        border: mainStyle.border,
+
+        '@media (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), (min-resolution: 192dpi) and (orientation: portrait)': {
+
+            zoom: 3
+        }
     },
     loginInputs : {
         top: 100,

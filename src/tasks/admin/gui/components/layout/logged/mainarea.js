@@ -17,7 +17,11 @@ const layoutStyle = {
     left:mainStyle.menuWidth + 20,
     bottom:20,
     right:20,
-    color: mainStyle.textColor
+    color: mainStyle.textColor,
+
+    '@media (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), (min-resolution: 192dpi) and (orientation: portrait)': {
+        zoom : 2
+    }
 }
 
 const mapStateToProps = (state) => {

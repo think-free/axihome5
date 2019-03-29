@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
 import { createStore } from 'redux'
@@ -17,8 +16,7 @@ class Index extends React.Component {
         super(props);
 
         this.state = {
-            logged: false,
-            loginInfo: {},
+            logged: true
         };
 
         store.subscribe(() =>
@@ -27,33 +25,7 @@ class Index extends React.Component {
     }
 
     async componentDidMount() {
-
-        document.title = "Login";
-
-        this.getData();
-
-        // Periodicaly refresh states
-        this.interval = setInterval(() => {
-            this.getData();
-        }, 1000);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.interval);
-    }
-
-    async getData(url){
-        var url = "/core/getLoginInfo"
-
-        fetch(url)
-        .then(response => response.json())
-        .then(data => this.setState({ loginInfo: data }))
-
-        if (this.state.loginInfo.type === "login") {
-            this.setState({ logged : true });
-        } else {
-            this.setState({ logged : false });
-        }
+        document.title = "Project";
     }
 
     render() {
@@ -61,18 +33,12 @@ class Index extends React.Component {
         if (this.state.logged){
             return (
                 <Provider store={store}>
-                    <Head>
-                        <link rel="manifest" href="/login/static/manifest.json"/>
-                    </Head>
                     <Logged />
                 </Provider>
             )
         } else {
             return (
                 <Provider store={store}>
-                    <Head>
-                        <link rel="manifest" href="/login/static/manifest.json"/>
-                    </Head>
                     <Login />
                 </Provider>
             )

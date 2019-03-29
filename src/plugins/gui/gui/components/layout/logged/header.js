@@ -26,7 +26,7 @@ const logoStyle = {
     margin: "auto",
     position: "absolute",
     top: 15,
-    left: 15
+    left: 15,
 }
 
 const pageTitleStyle = {
@@ -43,10 +43,12 @@ const pageTitleStyle = {
 const userStyle = {
     color: mainStyle.textDarkerColor,
     fontSize: 20,
+    margin: "auto",
     position: "absolute",
-    top: 10,
-    right: 75,
-    fontVariant: "small-caps"
+    top: 15,
+    right: 100,
+    bottom: 0,
+    right: 0
 }
 
 const style = {
@@ -86,11 +88,7 @@ class Header extends React.Component {
         return (
           <div style={layoutStyle}>
             <img style={logoStyle} src="/admin/static/ax5.png" width="75" height="75" draggable="false"/>
-            <div style={pageTitleStyle}>
-                {this.props.currentTab}
-            </div>
             <span style={style.toolBar}>
-                <span style={userStyle}>{this.props.user}</span>
                 <img key="bt_exit" style={mainStyle.menuIcon} src="/admin/static/logout.png" width="20" height="20" draggable="false" onClick={this.logout}/>
             </span>
           </div>

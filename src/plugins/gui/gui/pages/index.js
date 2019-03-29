@@ -1,4 +1,6 @@
-
+import Head from 'next/head'
+import Link from 'next/link'
+import fetch from 'isomorphic-unfetch'
 import { createStore } from 'redux'
 import { Provider }  from 'react-redux'
 
@@ -8,7 +10,6 @@ import Login from '../components/layout/login.js'
 import Logged from '../components/layout/logged.js'
 
 const store = createStore(Store);
-const StoreContext = React.createContext();
 
 class Index extends React.Component {
 
@@ -16,36 +17,89 @@ class Index extends React.Component {
         super(props);
 
         this.state = {
-            logged: true
+            logged: true,
+            loginInfo: {}
         };
     }
 
     async componentDidMount() {
-        
+
+        document.title = "Axihome 5";
+
+        document.body.style = 'background: #1F1F27;';
+
+        this.getData();
+
+        // Periodicaly refresh states
+        this.interval = setInterval(() => {
+            this.getData();
+        }, 1000);
+
+        this.interval2 = setInterval(() => {
+            this.renewToken();
+        }, 60000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+        clearInterval(this.interval2);
+    }
+
+    async getData(){
+        var url = "/core/getLoginInfo"
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => this.setState({ loginInfo: data }))
+
+        if (this.state.loginInfo.type === "logout") {
+            this.setState({ logged : false });
+        } else {
+            this.setState({ logged : true });
+        }
+
+        if (this.state.loginInfo.user != undefined){
+            store.dispatch(setValue("@user", this.state.loginInfo.user))
+        }
+    }
+
+    async renewToken(){
+        var url = "/core/renewLoginToken"
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => this.setState({ loginInfo: data }))
+
+        if (this.state.loginInfo.type === "logout") {
+            this.setState({ logged : false });
+        } else {
+            this.setState({ logged : true });
+        }
+
+        if (this.state.loginInfo.user != undefined){
+            store.dispatch(setValue("@user", this.state.loginInfo.user))
+        }
     }
 
     render() {
 
         if (this.state.logged){
             return (
-                <div>
-                    <Provider store={store}>
-                        <StoreContext.Provider store={store}>
-                            <Logged />
-                        </StoreContext.Provider>
-                    </Provider>
-                </div>
-                
+                <Provider store={store}>
+                    <Head>
+                        <link rel="manifest" href="/login/static/manifest.json"/>
+                    </Head>
+                    <Logged />
+                </Provider>
             )
         } else {
             return (
-                <div>
-                    <Provider store={store}>
-                        <StoreContext.Provider store={store}>
-                            <Login />
-                        </StoreContext.Provider>
-                    </Provider>
-                </div>
+                <Provider store={store}>
+                    <Head>
+                        <link rel="manifest" href="/login/static/manifest.json"/>
+                    </Head>
+                    <Login />
+                </Provider>
             )
         }
     }

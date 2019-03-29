@@ -1,0 +1,23 @@
+version: "3"
+services:
+
+    places:
+        container_name: places
+        image: thinkfree84/ax5_places:0.2
+        build:
+            context: ../../../
+            dockerfile: src/plugins/places/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOMEID=home
+            - AX_GROUP=server
+            - AX_INSTANCE=places
+            - AX_HOST=places
+            - AX_PORT=8123
+        volumes:
+            - AXPATH/config:/etc/ax5
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true

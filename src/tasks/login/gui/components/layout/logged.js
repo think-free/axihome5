@@ -1,6 +1,13 @@
 import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
 
+import mainStyle from '../../styles/global.js'
+
+const htmlStyle = {
+    backgroundColor: mainStyle.mainBackgroundColor,
+    color: mainStyle.textColor
+}
+
 class Logged extends React.Component {
 
     getAllUrlParams(url) {
@@ -80,7 +87,20 @@ class Logged extends React.Component {
         }
         window.location.href = url;
 
-        return ( <div>
+        return ( <div style={htmlStyle}>
+                    <style global jsx>{`
+                    html,
+                    body,
+                    body > div:first-child,
+                    div#__next,
+                    div#__next > div,
+                    div#__next > div > div {
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                        overflow: hidden;
+                    }
+                    `}</style>
                     Redirecting ...
                 </div>
 	)

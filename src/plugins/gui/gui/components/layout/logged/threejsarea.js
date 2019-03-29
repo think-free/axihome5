@@ -91,7 +91,7 @@ class ThreeJSArea extends React.Component {
 			controls = new THREE.OrbitControls( camera, renderer.domElement );
 			controls.screenSpacePanning = true;
 			controls.minDistance = 5;
-			controls.maxDistance = 50;
+			controls.maxDistance = 80;
 			controls.target.set( 0, 2, 0 );
 			controls.update();
 
@@ -258,8 +258,6 @@ class ThreeJSArea extends React.Component {
 
 	postLoadAction() {
 
-		console.log(this.animations);
-
 		this.createAnimationMethods()
         this.subscribeStore();
 
@@ -290,7 +288,12 @@ class ThreeJSArea extends React.Component {
             var node = me.collection[item];
             if (node.children) {
                 for (var i = 0; i < node.children.length; i++) {
-                    node.children[i].material.opacity = targetValue;
+					node.children[i].material.opacity = targetValue;
+					
+					if (targetValue == 0)
+						node.children[i].visible = false;
+					else
+						node.children[i].visible = true;
                 }
             }
         }
@@ -355,8 +358,6 @@ class ThreeJSArea extends React.Component {
 
         // Loop throught all received states
 		let states = me.context.store.getState()
-
-		console.log(states)
 
         for (const [k, v] of Object.entries(states)) {
 

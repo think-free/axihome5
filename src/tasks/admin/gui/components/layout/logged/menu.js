@@ -17,7 +17,11 @@ const layoutStyle = {
     left:0,
     bottom:0,
     color: mainStyle.textColor,
-    backgroundColor: mainStyle.menuBackgroundColor
+    backgroundColor: mainStyle.menuBackgroundColor,
+
+    '@media (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), (min-resolution: 192dpi) and (orientation: portrait)': {
+        zoom : 2
+    }
 }
 
 const listStyle = {
