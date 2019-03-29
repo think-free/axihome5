@@ -75,3 +75,6 @@ Logged = Radium(Logged);
 Logged = connect()(Logged)
 
 export default connect()(Logged)
+
+// http://172.16.10.110:8080/places/getPlaces
+// http://172.16.10.110:8080/core/getDevices

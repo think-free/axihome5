@@ -33,7 +33,7 @@ func main() {
 	tsk := types.Task{
 		Host: *host,
 		Port: *port,
-		URL:  "gui",
+		URL:  "/",
 		Name: "Gui",
 	}
 
