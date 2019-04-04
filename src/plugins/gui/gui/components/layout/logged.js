@@ -40,7 +40,8 @@ class Logged extends React.Component {
 
         var currentUrl = window.location.href;
         var arr = currentUrl.split("/");
-        this.state.domain = arr[2].split(":")[0];
+
+        this.setState({ domain: arr[2].split(":")[0] });
 
         console.log("Domain : " + this.state.domain);
 
@@ -52,36 +53,43 @@ class Logged extends React.Component {
 
         let domain = this.state.domain;
 
-        console.log("Connecting mqtt to : " + domain);
-        
-        return (
-            <StyleRoot>
-                <div style={htmlStyle}>
-                    <style global jsx>{`
-                    html,
-                    body,
-                    body > div:first-child,
-                    div#__next,
-                    div#__next > div,
-                    div#__next > div > div {
-                        height: 100%;
-                        margin: 0;
-                        padding: 0;
-                        overflow: hidden;
-                    }
-                    `}</style>
+        if (domain != "" && domain != undefined) {
+            
+            console.log("Connecting mqtt to : " + domain);
+            
+            return (
+                <StyleRoot>
+                    <div style={htmlStyle}>
+                        <style global jsx>{`
+                        html,
+                        body,
+                        body > div:first-child,
+                        div#__next,
+                        div#__next > div,
+                        div#__next > div > div {
+                            height: 100%;
+                            margin: 0;
+                            padding: 0;
+                            overflow: hidden;
+                        }
+                        `}</style>
 
-                    <div style={layoutStyle}>
-                        
-                        <Mqtt url={"ws://" + domain +":9001"} topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
+                        <div style={layoutStyle}>
+                            
+                            <Mqtt url={"ws://" + domain +":9001"} topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
 
-                        <Header />
-                        <ThreeJSArea url={"/assets/scene.json"} />
-                        
+                            <Header />
+                            <ThreeJSArea url={"/assets/scene.json"} />
+                            
+                        </div>
                     </div>
-                </div>
-            </StyleRoot>
-        )
+                </StyleRoot>
+            )
+        }
+        else {
+            
+            return (null)
+        }
     }
 }
 
