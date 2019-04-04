@@ -1,7 +1,6 @@
 import React from 'react'
 import Radium from 'radium';
 import { connect } from 'react-redux'
-import { setValue } from '../../redux/store.js'
 
 import mainStyle from '../../../styles/global.js'
 
@@ -17,9 +16,7 @@ const layoutStyle = {
     backgroundColor: mainStyle.header,
     borderBottom: mainStyle.headerBorder, //Alternative
 
-    '@media (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), (min-resolution: 192dpi) and (orientation: portrait)': {
-        zoom : 2
-    }
+
 }
 
 const logoStyle = {
@@ -27,28 +24,6 @@ const logoStyle = {
     position: "absolute",
     top: 15,
     left: 15,
-}
-
-const pageTitleStyle = {
-    color: mainStyle.textDarkerColor,
-    fontSize: 20,
-    margin: "auto",
-    position: "absolute",
-    top: 15,
-    left: 100,
-    bottom: 0,
-    right: 0
-}
-
-const userStyle = {
-    color: mainStyle.textDarkerColor,
-    fontSize: 20,
-    margin: "auto",
-    position: "absolute",
-    top: 15,
-    right: 100,
-    bottom: 0,
-    right: 0
 }
 
 const style = {
