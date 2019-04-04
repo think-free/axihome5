@@ -15,10 +15,15 @@ class Mqtt extends React.Component {
 
     async componentDidMount() {
 
+        var currentUrl = window.location.href;
+        var arr = currentUrl.split("/");
+
+        var domain = arr[2].split(":")[0]
+
         var me = this;
          
         // Create Mqtt client
-        var client = mqtt.connect(this.props.url)
+        var client = mqtt.connect("ws://" + domain + ":9001");
         client.subscribe(this.props.topic)
         client.on("message", me.messageProcessor)
 
