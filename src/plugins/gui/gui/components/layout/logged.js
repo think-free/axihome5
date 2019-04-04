@@ -40,6 +40,10 @@ class Logged extends React.Component {
 
     render() {
 
+        var currentUrl = window.location.href;
+        var arr = currentUrl.split("/");
+        var domain = arr[2];
+        
         return (
             <StyleRoot>
                 <div style={htmlStyle}>
@@ -59,7 +63,7 @@ class Logged extends React.Component {
 
                     <div style={layoutStyle}>
                         
-                        <Mqtt url={"ws://172.16.10.110:9001"} topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
+                        <Mqtt url={"ws://" + domain +":9001"} topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
 
                         <Header />
                         <ThreeJSArea url={"/assets/scene.json"} />
