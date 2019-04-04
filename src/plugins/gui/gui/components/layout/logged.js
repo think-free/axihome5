@@ -40,9 +40,9 @@ class Logged extends React.Component {
 
         var currentUrl = window.location.href;
         var arr = currentUrl.split("/");
-        this.state.domain = arr[2];
+        this.state.domain = arr[2].split(":")[0];
 
-        console.log("Domain : " + arr[2]);
+        console.log("Domain : " + this.state.domain);
 
         document.title = "Axihome 5"
         document.body.style = 'background: #1F1F27;';
@@ -50,7 +50,9 @@ class Logged extends React.Component {
 
     render() {
 
+        let domain = this.state.domain;
 
+        console.log("Connecting mqtt to : " + domain);
         
         return (
             <StyleRoot>
@@ -71,7 +73,7 @@ class Logged extends React.Component {
 
                     <div style={layoutStyle}>
                         
-                        <Mqtt url={"ws://" + this.state.domain +":9001"} topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
+                        <Mqtt url={"ws://" + domain +":9001"} topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
 
                         <Header />
                         <ThreeJSArea url={"/assets/scene.json"} />
