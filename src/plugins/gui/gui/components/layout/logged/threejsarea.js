@@ -56,7 +56,7 @@ class ThreeJSArea extends React.Component {
 			container = document.getElementById( 'container' );
 
 			camera = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 1000 );
-			camera.position.set( 15, 10, - 15 );
+			camera.position.set( 15, 10, -50 );
 			
 			clock = new THREE.Clock();
 
@@ -290,10 +290,10 @@ class ThreeJSArea extends React.Component {
                 for (var i = 0; i < node.children.length; i++) {
 					node.children[i].material.opacity = targetValue;
 					
-					if (targetValue == 0)
+					/*if (targetValue == 0)
 						node.children[i].visible = false;
 					else
-						node.children[i].visible = true;
+						node.children[i].visible = true;*/
                 }
             }
         }
