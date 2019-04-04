@@ -30,13 +30,19 @@ class Logged extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            domain: ""
+        };
     }
 
     async componentDidMount() {
 
         var currentUrl = window.location.href;
         var arr = currentUrl.split("/");
-        this.domain = arr[2];
+        this.state.domain = arr[2];
+
+        console.log("Domain : " + arr[2]);
 
         document.title = "Axihome 5"
         document.body.style = 'background: #1F1F27;';
@@ -65,7 +71,7 @@ class Logged extends React.Component {
 
                     <div style={layoutStyle}>
                         
-                        <Mqtt url={"ws://" + this.domain +":9001"} topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
+                        <Mqtt url={"ws://" + this.state.domain +":9001"} topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
 
                         <Header />
                         <ThreeJSArea url={"/assets/scene.json"} />
