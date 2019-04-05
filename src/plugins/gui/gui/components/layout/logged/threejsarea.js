@@ -152,6 +152,8 @@ class ThreeJSArea extends React.Component {
 							for ( var j=0; j < inter.length; j++ ){
 
 								if (inter[j].event == "leftMouse"){
+
+									console.log(inter[j].storeKey + " -> " + inter[j].storeValue)
 									me.props.dispatch(setValue(inter[j].storeKey, inter[j].storeValue));
 								}
 							}
@@ -260,8 +262,6 @@ class ThreeJSArea extends React.Component {
 
 		this.createAnimationMethods()
         this.subscribeStore();
-
-		//this.props.dispatch(setValue("@TEST", "test"));
     }
     
     createAnimationMethods() {
@@ -290,10 +290,10 @@ class ThreeJSArea extends React.Component {
                 for (var i = 0; i < node.children.length; i++) {
 					node.children[i].material.opacity = targetValue;
 					
-					/*if (targetValue == 0)
+					if (targetValue == 0)
 						node.children[i].visible = false;
 					else
-						node.children[i].visible = true;*/
+						node.children[i].visible = true;
                 }
             }
         }

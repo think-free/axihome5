@@ -38,7 +38,7 @@ class Mqtt extends React.Component {
     
                 for (const [k, v] of Object.entries(states)) {
 
-                    if (k[0] !== "@") {
+                    if (k[0] !== "_") {
 
                         if (me.values[k] != v) {
     

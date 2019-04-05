@@ -7,6 +7,7 @@ import Mqtt from '../provider/mqtt.js'
 
 import Header from './logged/header.js'
 import ThreeJSArea from './logged/threejsarea.js'
+import PlaceHolder from './logged/placeholder.js'
 
 import mainStyle from '../../styles/global.js'
 
@@ -63,6 +64,8 @@ class Logged extends React.Component {
 
                         <Header />
                         <ThreeJSArea url={"/assets/scene.json"} />
+
+                        <PlaceHolder />
                         
                     </div>
                 </div>
