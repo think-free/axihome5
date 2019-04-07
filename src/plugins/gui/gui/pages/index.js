@@ -59,7 +59,7 @@ class Index extends React.Component {
         }
 
         if (this.state.loginInfo.user != undefined){
-            store.dispatch(setValue("@user", this.state.loginInfo.user))
+            store.dispatch(setValue("_user", this.state.loginInfo.user))
         }
     }
 
@@ -77,7 +77,7 @@ class Index extends React.Component {
         }
 
         if (this.state.loginInfo.user != undefined){
-            store.dispatch(setValue("@user", this.state.loginInfo.user))
+            store.dispatch(setValue("_user", this.state.loginInfo.user))
         }
     }
 
