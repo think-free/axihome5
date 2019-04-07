@@ -151,7 +151,7 @@ class ThreeJSArea extends React.Component {
 						if (inter !== undefined) {
 							for ( var j=0; j < inter.length; j++ ){
 
-								if (inter[j].event == "leftMouse"){
+								if (inter[j].event == "leftMouse" || inter[j].event == "touchend"){
 									me.props.dispatch(setValue(inter[j].storeKey, inter[j].storeValue));
 								}
 							}
