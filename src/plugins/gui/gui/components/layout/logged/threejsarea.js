@@ -56,7 +56,9 @@ class ThreeJSArea extends React.Component {
 			container = document.getElementById( 'container' );
 
 			camera = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 1000 );
-			camera.position.set( 15, 10, -50 );
+			//camera.position.set( 10, 52, -33 );
+			camera.position.set( 14, 58, -16 ); // PERSPECTIVE
+			//camera.position.set( 0, 70, 2 ); // TOP
 			
 			clock = new THREE.Clock();
 
@@ -98,22 +100,45 @@ class ThreeJSArea extends React.Component {
 
 			// Resize window event
 
-            window.addEventListener( 'resize', onWindowResize, false );
+			window.addEventListener( 'resize', onWindowResize, false );
+			
             window.addEventListener( 'mousedown', function(event) {
-
                 me.mouseDown.x = ( event.clientX / window.innerWidth ) * 2 - 1;
                 me.mouseDown.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-            }, false );
+			}, false );
+		
 
             window.addEventListener( 'mouseup', function(event) {
-
                 me.mouseUp.x = ( event.clientX / window.innerWidth ) * 2 - 1;
                 me.mouseUp.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-            }, false );
+			}, false );		
+			
+			
+			window.addEventListener("touchstart", touchHandler, true);
+			window.addEventListener("touchend", touchHandler, true);
 
 			me.getScene();
+		}
+
+		function touchHandler(event) {
+			var touches = event.changedTouches,
+				first = touches[0],
+				type = "";
+			switch(event.type)
+			{
+				case "touchstart": type = "mousedown"; break;
+				case "touchmove":  type = "mousemove"; break;        
+				case "touchend":   type = "mouseup";   break;
+				default:           return;
+			}
+
+			var simulatedEvent = document.createEvent("MouseEvent");
+			simulatedEvent.initMouseEvent(type, true, true, window, 1, 
+										first.screenX, first.screenY, 
+										first.clientX, first.clientY, false, 
+										false, false, false, 0/*left*/, null);
+
+			first.target.dispatchEvent(simulatedEvent);
 		}
 
 		function onWindowResize() {
@@ -133,6 +158,8 @@ class ThreeJSArea extends React.Component {
 
 		function render() {
 
+			//console.log(camera.position)
+
             if (me.mouseDown.x == me.mouseUp.x && me.mouseDown.y == me.mouseUp.y){
 
                 me.mouseDown.x = -1;
@@ -151,7 +178,7 @@ class ThreeJSArea extends React.Component {
 						if (inter !== undefined) {
 							for ( var j=0; j < inter.length; j++ ){
 
-								if (inter[j].event == "leftMouse" || inter[j].event == "touchend"){
+								if (inter[j].event == "leftMouse"){
 
 									me.props.dispatch(setValue(inter[j].storeKey, inter[j].storeValue));
 								}
