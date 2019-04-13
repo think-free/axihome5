@@ -263,9 +263,17 @@ func (s *WebServer) handlerRenewLoginToken(w http.ResponseWriter, r *http.Reques
 					Path:    "/",
 				}
 
+				log.Println("Renew login token for :", session.UserName, " -> ", newsession.SSID, " on ", client.Value)
+
 				http.SetCookie(w, &ck)
-				s.db.Save(newsession)
-				s.db.Remove(&session)
+				errS := s.db.Save(newsession)
+				if errS != nil {
+					log.Println(errS)
+				}
+				errR := s.db.Remove(&session)
+				if errR != nil {
+					log.Println(errR)
+				}
 
 				w.Write([]byte("{\"type\" : \"login\", \"user\": \"" + newsession.UserName + "\" , \"ssid\": \"" + newsession.SSID + "\" , \"client\": \"" + newsession.ClientID + "\"}"))
 				return

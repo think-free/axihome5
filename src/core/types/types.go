@@ -196,3 +196,14 @@ type Session struct {
 	ClientID string    `json:"cid" storm:"index"`
 	Time     time.Time `json:"time" storm:"index"`
 }
+
+/* Cmd payload */
+/* *************************************** */
+
+// CmdPayload is a write request payload
+type CmdPayload struct {
+	User      string      `json:"user"`
+	Device    string      `json:"device"`
+	Payload   interface{} `json:"payload"`
+	Signature string      `json:"signature"`
+}

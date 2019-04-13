@@ -1,6 +1,8 @@
 package mqtt
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"encoding/json"
 	"log"
 	"sync"
@@ -259,15 +261,36 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 
 		mq.cli.SubscribeTopic(CClientStatus+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+dv.Name+"/cmd", func(msg *message.PublishMessage) error {
 
-			// Send the value to the client status topic
-			log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "->", msg.Payload())
-			var inter interface{}
-			json.Unmarshal(msg.Payload(), &inter)
-			mq.cli.PublishMessageNoRetain(dv.CmdTopic, inter)
+			// Getting command payload
+			var cmd types.CmdPayload
+			json.Unmarshal(msg.Payload(), &cmd)
 
-			return nil
+			if mq.ValidateCommandSignature(cmd) {
+
+				// Send the value to the client status topic
+				log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "->", cmd.Payload)
+				var inter interface{}
+				json.Unmarshal(msg.Payload(), &inter)
+				mq.cli.PublishMessageNoRetain(dv.CmdTopic, inter)
+
+				return nil
+			} else {
+
+				log.Println("Failed to validate command signature")
+			}
 		})
 	} else {
 		log.Println("Any command topic defined for :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name)
 	}
+}
+
+// ValidateCommandSignature validate the command request signature
+func (mq *Mqtt) ValidateCommandSignature(cmd interface{}) bool {
+
+	var ssid string
+
+	mac := hmac.New(sha256.New, ssid)
+	mac.Write(cmd.Payload)
+	expectedMAC := mac.Sum(nil)
+	return hmac.Equal(messageMAC, expectedMAC)
 }
