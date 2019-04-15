@@ -270,7 +270,7 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 				// Send the value to the client status topic
 				log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "->", cmd.Payload)
 				var inter interface{}
-				json.Unmarshal(msg.Payload(), &inter)
+				json.Unmarshal(cmd.Payload, &inter)
 				mq.cli.PublishMessageNoRetain(dv.CmdTopic, inter)
 
 				return nil
@@ -285,12 +285,25 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 }
 
 // ValidateCommandSignature validate the command request signature
-func (mq *Mqtt) ValidateCommandSignature(cmd interface{}) bool {
+func (mq *Mqtt) ValidateCommandSignature(cmd types.CmdPayload) bool {
 
-	var ssid string
+	var sessions []types.Session
 
-	mac := hmac.New(sha256.New, ssid)
-	mac.Write(cmd.Payload)
-	expectedMAC := mac.Sum(nil)
-	return hmac.Equal(messageMAC, expectedMAC)
+	mq.db.GetFilter("User", cmd.User, &sessions)
+
+	for _, session := range sessions {
+
+		if session.ClientID == cmd.Device {
+
+			log.Println("Checking command for ", session.UserName)
+			mac := hmac.New(sha256.New, session.SSID)
+			mac.Write(cmd.Payload)
+			expectedMAC := mac.Sum(nil)
+			if hmac.Equal(cmd.Signature, expectedMAC) {
+				return true
+			}
+		}
+	}
+
+	return false
 }
