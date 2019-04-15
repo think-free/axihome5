@@ -3,6 +3,8 @@ import Radium from 'radium';
 import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
 
+import Dimmer from './widgets/dimmer.js'
+
 import mainStyle from '../../../styles/global.js'
 
 const layoutStyle = {
@@ -58,6 +60,7 @@ class PlaceHolder extends React.Component {
                    <span style={style.toolBar}>
                         <img key="bt_exit" style={mainStyle.menuIcon} src="/static/close.png" width="25" height="25" draggable="false" onClick={this.close}/>
                     </span>
+                    <Dimmer />
                 </div>
             );
         } else {

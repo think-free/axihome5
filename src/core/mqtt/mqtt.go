@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -269,14 +270,13 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 
 				// Send the value to the client status topic
 				log.Println("Writting to device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+dv.Name, "->", cmd.Payload)
-				var inter interface{}
-				json.Unmarshal(cmd.Payload, &inter)
-				mq.cli.PublishMessageNoRetain(dv.CmdTopic, inter)
+				mq.cli.PublishMessageNoRetain(dv.CmdTopic, cmd.Payload)
 
 				return nil
 			} else {
 
 				log.Println("Failed to validate command signature")
+				return nil
 			}
 		})
 	} else {
@@ -296,13 +296,20 @@ func (mq *Mqtt) ValidateCommandSignature(cmd types.CmdPayload) bool {
 		if session.ClientID == cmd.Device {
 
 			log.Println("Checking command for ", session.UserName)
-			mac := hmac.New(sha256.New, session.SSID)
-			mac.Write(cmd.Payload)
+			mac := hmac.New(sha256.New, []byte(session.SSID))
+			st := fmt.Sprintf("%v", cmd.Payload)
+			log.Println("Validating signature payload :", st)
+			mac.Write([]byte(st))
 			expectedMAC := mac.Sum(nil)
-			if hmac.Equal(cmd.Signature, expectedMAC) {
+			if hmac.Equal([]byte(cmd.Signature), expectedMAC) {
+				log.Println("Signature validated")
 				return true
 			}
 		}
+	}
+
+	if len(sessions) == 0 {
+		log.Println("Can't find valid session for user")
 	}
 
 	return false

@@ -2,37 +2,18 @@ import React from 'react'
 import Radium from 'radium';
 import { connect } from 'react-redux'
 
-import mainStyle from '../../../styles/global.js'
+import mainStyle from '../../../../styles/global.js'
 
 const layoutStyle = {
     display: 'block',
-    position: 'fixed',
-    height: mainStyle.headerHeight,
+    height: '100',
     width: 'auto',
-    top:0,
-    left:0,
-    right:0,
+    top: 20,
+    left: 20,
+    right: 20,
     color: mainStyle.textColor,
-    backgroundColor: mainStyle.header,
-    borderBottom: mainStyle.headerBorder, //Alternative
-
-
-}
-
-const logoStyle = {
-    margin: "auto",
-    position: "absolute",
-    top: 15,
-    left: 15,
-}
-
-const style = {
-
-    toolBar : {
-        position: 'relative',
-        float: 'right',
-        top: 5
-    }
+    backgroundColor: mainStyle.panelBackgroundColor,
+    border: mainStyle.borderOrange,
 }
 
 const mapStateToProps = (state) => {
@@ -42,7 +23,7 @@ const mapStateToProps = (state) => {
     }
 }
 
-class Header extends React.Component {
+class Dimmer extends React.Component {
     constructor(props) {
         super(props);
 
@@ -51,25 +32,20 @@ class Header extends React.Component {
             user: "",
         };
 
-        this.logout=this.logout.bind(this);
+        this.turnOn=this.turnOn.bind(this);
     }
 
-    logout(e) {
+    turnOn(e) {
         fetch("/core/logout")
     }
 
     render() {
 
         return (
-          <div style={layoutStyle}>
-            <img style={logoStyle} src="/admin/static/ax5.png" width="75" height="75" draggable="false"/>
-            <span style={style.toolBar}>
-                <img key="bt_exit" style={mainStyle.menuIcon} src="/admin/static/logout.png" width="20" height="20" draggable="false" onClick={this.logout}/>
-            </span>
-          </div>
+          <div style={layoutStyle} onClick={this.turnOn}>Turn On</div>
         );
     }
 }
 
-Header = Radium(Header);
-export default connect(mapStateToProps)(Header);
+Dimmer = Radium(Dimmer);
+export default connect(mapStateToProps)(Dimmer);
