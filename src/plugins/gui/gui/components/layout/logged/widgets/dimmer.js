@@ -33,16 +33,26 @@ class Dimmer extends React.Component {
         };
 
         this.turnOn=this.turnOn.bind(this);
+        this.turnOff=this.turnOff.bind(this);
     }
 
     turnOn(e) {
-        fetch("/core/logout")
+        this.props.dispatch(setValue(this.props.dimmer + ".level", "99"));
+        console.log("Turning on")
+    }
+
+    turnOff(e) {
+        this.props.dispatch(setValue(this.props.dimmer + ".level", "0"));
+        console.log("Turning off")
     }
 
     render() {
 
         return (
-          <div style={layoutStyle} onClick={this.turnOn}>Turn On</div>
+            <div>
+                <div style={layoutStyle} onClick={this.turnOn}>Turn On</div>
+                <div style={layoutStyle} onClick={this.turnOff}>Turn Off</div>
+            </div>
         );
     }
 }
