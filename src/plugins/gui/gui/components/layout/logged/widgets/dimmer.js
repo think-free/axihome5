@@ -1,6 +1,8 @@
 import React from 'react'
 import Radium from 'radium';
 import { connect } from 'react-redux'
+import { ReactReduxContext } from 'react-redux'
+import { setValue } from '../../../redux/store.js'
 
 import mainStyle from '../../../../styles/global.js'
 
