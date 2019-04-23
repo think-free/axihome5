@@ -1,4 +1,5 @@
 {
     "level" : "number",
-    "power" : "number"
+    "power" : "number",
+    "switch": "digital"
 }

@@ -18,6 +18,8 @@ import (
 
 // Mqtt topics
 const (
+	CAllowAnonCMD = true
+
 	// Special topics
 	CAutoDiscoverTask        = "axihome/5/tasks/discover/#"
 	CAutoDiscover            = "axihome/5/field/device/discover/#"
@@ -287,6 +289,10 @@ func (mq *Mqtt) MqttSubscribeDeviceTopicsVariable(dev types.FieldDevice, dv type
 // ValidateCommandSignature validate the command request signature
 func (mq *Mqtt) ValidateCommandSignature(cmd types.CmdPayload) bool {
 
+	if cmd.User == "anonymous" && CAllowAnonCMD {
+		return true
+	}
+
 	var sessions []types.Session
 
 	mq.db.GetFilter("User", cmd.User, &sessions)
@@ -298,6 +304,7 @@ func (mq *Mqtt) ValidateCommandSignature(cmd types.CmdPayload) bool {
 			log.Println("Checking command for ", session.UserName)
 			mac := hmac.New(sha256.New, []byte(session.SSID))
 			st := fmt.Sprintf("%v", cmd.Payload)
+
 			log.Println("Validating signature payload :", st)
 			mac.Write([]byte(st))
 			expectedMAC := mac.Sum(nil)

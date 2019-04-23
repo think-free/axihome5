@@ -43,8 +43,10 @@ class Mqtt extends React.Component {
                         if (me.values[k] != v) {
     
                             var topic = me.props.cmdTopicStart + k.split(".").join("/") + me.props.cmdTopicEnd
-                            console.log("Writting to : " + topic + " -> " + v )
-                            client.publish(topic, v);
+                            var payload = { "user": "anonymous", "device" : "", "payload" : v, "signature" : ""}
+
+                            console.log("Writting to : " + topic + " -> " + payload )
+                            client.publish(topic, payload);
                         }
                     }
                 }
