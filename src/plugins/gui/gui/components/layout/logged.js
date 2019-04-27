@@ -60,7 +60,7 @@ class Logged extends React.Component {
 
                     <div style={layoutStyle}>
                         
-                        <Mqtt topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} cmdTopicEnd={"/cmd"} replace={"axihome/5/status/"}/>
+                        <Mqtt topic={"axihome/5/status/#"} subscribeCmd={true} cmdTopicStart={"axihome/5/status/"} replace={"axihome/5/status/"}/>
 
                         <Header />
                         <ThreeJSArea url={"/assets/scene.json"} />

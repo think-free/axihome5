@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
 
 import Dimmer from './widgets/dimmer.js'
+import Climate from './widgets/climate.js'
 
 import mainStyle from '../../../styles/global.js'
 
@@ -28,6 +29,27 @@ const style = {
         float: 'right',
         top: 5,
         right: 5
+    },
+    title : {
+        position: 'fixed',
+        top: 40,
+        left: 40,
+        color: mainStyle.textColor,
+        fontSize: "1.2em",
+
+        '@media (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), (min-resolution: 192dpi) and (orientation: portrait)': {
+            zoom : 2
+        }
+    },
+    content : {
+        display: 'block',
+        position: 'fixed',
+        height: 'auto',
+        width: 'auto',
+        top: 80,
+        left: 40,
+        right: 40,
+        bottom: 40,
     }
 }
 
@@ -42,17 +64,41 @@ class PlaceHolder extends React.Component {
         super(props);
 
         this.state = {
-
+            places: [],
+            devices: [],
         };
 
+        this.getConfig=this.getConfig.bind(this);
         this.close=this.close.bind(this);
+        this.renderItems=this.renderItems.bind(this);
+        this.renderClimateDevices=this.renderClimateDevices.bind(this);
     }
+
+    async componentDidMount() {
+
+        this.getConfig();
+    }
+
+    async getConfig(){
+
+        fetch("/places/getPlaces")
+        .then(response => response.json())
+        .then(data => this.setState({ places: data }))
+
+        fetch("/core/getDevices")
+        .then(response => response.json())
+        .then(data => this.setState({ devices: data }))
+	}
 
     close(e) {
         this.props.dispatch(setValue("_view", ""));
     }
+    
 
     render() {
+
+        const places = this.state.places;
+        const me = this;
 
         if (this.props.view != undefined && this.props.view != "") {
             return (
@@ -60,14 +106,127 @@ class PlaceHolder extends React.Component {
                    <span style={style.toolBar}>
                         <img key="bt_exit" style={mainStyle.menuIcon} src="/static/close.png" width="25" height="25" draggable="false" onClick={this.close}/>
                     </span>
-                    {this.props.view}
-                    <Dimmer dimmer="gite.dimmer.studio"/>
+                    <span style={style.title}>{this.props.view}</span>
+                    <div style={style.content}>
+                        {places && Array.isArray(places) && places.map(function(place){
+
+                            if (place.name == me.props.view){
+                                console.log("Found place with devices, rendering items")
+                                return(
+                                    me.renderItems(place.devices)
+                                )
+                            } else {
+
+                                return (null);
+                            }
+                        })}
+                    </div>
                 </div>
             );
         } else {
 
             return (null);
         }
+    }
+
+    renderItems(placeDevices) {
+
+        var devices = this.state.devices;
+
+        console.log("Building items map for this place");
+
+        var climate = [];
+        var dimmers = [];
+        var switches = [];
+
+        for (var i=0; i<placeDevices.length; i++) {
+
+            for (var j=0; j<devices.length; j++) {
+
+                if (placeDevices[i] === devices[j].homeId + "." + devices[j].group + "." + devices[j].name){
+
+                    console.log("Found device : " + placeDevices[i] + " of type : " + devices[j].type)
+
+                    if (devices[j].type == "climate")
+                        climate.push(devices[j])
+                    else if (devices[j].type == "dimmer")
+                        dimmers.push(devices[j])
+                    else if (devices[j].type == "switch")
+                        switches.push(devices[j])
+                }
+            }
+        }
+
+        return (
+         
+            <div>
+                {this.renderClimateDevices(climate)}
+                <br />
+                {this.renderDimmerDevices(dimmers)}
+                <br />
+                {this.renderSwitchesDevices(switches)}
+            </div>
+        )
+    }
+
+    renderClimateDevices(devices) {
+
+        return(
+            <div>
+                {devices && Array.isArray(devices) && devices.map(function(device){
+
+                    var dev = device.homeId + "." + device.group + "." + device.name;
+
+                    console.log("Rendering climate : " + dev);
+                    return (
+                        <Climate name={dev} device={device}/>
+                    )
+                })}
+            </div>
+        )
+    }
+
+    renderDimmerDevices(devices) {
+
+        return(
+            <div>
+                {devices && Array.isArray(devices) && devices.map(function(device){
+
+                    var dev = device.homeId + "." + device.group + "." + device.name;
+
+                    console.log("Rendering dimmer : " + dev);
+                    return (
+                        <Dimmer name={dev} device={device}/>
+                    )
+                })}
+            </div>
+        )
+    }
+
+    renderSwitchesDevices(devices) {
+
+        /*return(
+            <div>
+                {devices && Array.isArray(devices) && devices.map(function(device){
+
+                    console.log("Rendering device : " + device);
+                    <div>{device}</div>
+                })}
+            </div>
+        )*/
+    }
+
+    renderRgbDevices(devices) {
+
+        /*return(
+            <div>
+                {devices && Array.isArray(devices) && devices.map(function(device){
+
+                    console.log("Rendering device : " + device);
+                    <div>{device}</div>
+                })}
+            </div>
+        )*/
     }
 }
 

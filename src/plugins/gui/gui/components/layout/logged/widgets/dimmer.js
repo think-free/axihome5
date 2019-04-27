@@ -13,6 +13,7 @@ const layoutStyle = {
     top: 20,
     left: 20,
     right: 20,
+    marginTop: 20,
     color: mainStyle.textColor,
     backgroundColor: mainStyle.panelBackgroundColor,
     border: mainStyle.borderOrange,
@@ -20,8 +21,7 @@ const layoutStyle = {
 
 const mapStateToProps = (state) => {
     return {
-        currentTab: state.currentTab,
-        user: state.user,
+
     }
 }
 
@@ -30,8 +30,7 @@ class Dimmer extends React.Component {
         super(props);
 
         this.state = {
-            currentTab: "",
-            user: "",
+
         };
 
         this.turnOn=this.turnOn.bind(this);
@@ -39,12 +38,12 @@ class Dimmer extends React.Component {
     }
 
     turnOn(e) {
-        this.props.dispatch(setValue(this.props.dimmer + ".level", "99"));
+        this.props.dispatch(setValue(this.props.name + ".level.cmd", 99));
         console.log("Turning on")
     }
 
     turnOff(e) {
-        this.props.dispatch(setValue(this.props.dimmer + ".level", "0"));
+        this.props.dispatch(setValue(this.props.name + ".level.cmd", 0));
         console.log("Turning off")
     }
 
@@ -52,8 +51,8 @@ class Dimmer extends React.Component {
 
         return (
             <div>
-                <div style={layoutStyle} onClick={this.turnOn}>Turn On</div>
-                <div style={layoutStyle} onClick={this.turnOff}>Turn Off</div>
+                <div style={layoutStyle} onClick={this.turnOn}>Turn {this.props.name} On</div>
+                <div style={layoutStyle} onClick={this.turnOff}>Turn {this.props.name} Off</div>
             </div>
         );
     }

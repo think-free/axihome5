@@ -38,15 +38,18 @@ class Mqtt extends React.Component {
     
                 for (const [k, v] of Object.entries(states)) {
 
-                    if (k[0] !== "_") {
+                    if (/*k[0] !== "_" &&*/ k.endsWith(".cmd")) {
 
-                        if (me.values[k] != v) {
-    
-                            var topic = me.props.cmdTopicStart + k.split(".").join("/") + me.props.cmdTopicEnd
+                        if (me.values[k.slice(0, -4)] != v && me.values[k] != v) {
+
+                            me.values[k] = v;
+
+                            var topic = me.props.cmdTopicStart + k.split(".").join("/")
                             var payload = { "user": "anonymous", "device" : "", "payload" : v, "signature" : ""}
+                            var payloadStr = JSON.stringify(payload)
 
-                            console.log("Writting to : " + topic + " -> " + JSON.stringify(payload) )
-                            client.publish(topic, payload);
+                            console.log("Writting to : " + topic + " -> " + payloadStr )
+                            client.publish(topic, payloadStr);
                         }
                     }
                 }
@@ -56,15 +59,22 @@ class Mqtt extends React.Component {
 
     messageProcessor (topic, payload) {
 
-        
-        var variable = topic.split(this.props.replace).join("");
-        variable = variable.split("/").join(".");
+        if (!topic.endsWith("/cmd")) {
 
-	var value = JSON.parse(payload);
+            console.log("Message received : " + topic + " -> " + payload)
 
-        if (this.values[variable] !== value ){
-            this.values[variable] = value;
-            this.props.dispatch(setValue(variable, value));
+            var variable = topic.split(this.props.replace).join("");
+            variable = variable.split("/").join(".");
+    
+            var value = JSON.parse(payload);
+    
+            if (this.values[variable] !== value ){
+                this.values[variable] = value;
+                this.props.dispatch(setValue(variable, value));
+            }
+        } else {
+
+            console.log("Command received, skipping : " + topic)
         }
     }
 
