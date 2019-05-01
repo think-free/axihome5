@@ -39,12 +39,12 @@ class Dimmer extends React.Component {
 
     turnOn(e) {
         this.props.dispatch(setValue(this.props.name + ".level.cmd", 99));
-        console.log("Turning on")
+        console.log("Turning on " + this.props.name);
     }
 
     turnOff(e) {
         this.props.dispatch(setValue(this.props.name + ".level.cmd", 0));
-        console.log("Turning off")
+        console.log("Turning off " + this.props.name);
     }
 
     render() {
