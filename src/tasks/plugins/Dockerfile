@@ -33,7 +33,7 @@ RUN go build tasks/$app
 FROM alpine
 WORKDIR /
 COPY --from=builder /go/plugins /plugins
-RUN apk update && apk add docker git curl py-pip openssh-client
+RUN apk update && apk add docker git curl py-pip openssh-client python-dev libffi-dev openssl-dev gcc libc-dev make
 RUN pip install 'docker-compose'
 RUN docker-compose version
 ENTRYPOINT /plugins

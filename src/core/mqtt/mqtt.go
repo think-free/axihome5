@@ -143,14 +143,35 @@ func (mq *Mqtt) MqttSubscribeDeviceAutoRegister() {
 		json.Unmarshal(msg.Payload(), &dev)
 
 		var devdb types.FieldDevice
-		mq.db.Get("ID", dev.ID, &devdb)
+		err := mq.db.Get("ID", dev.ID, &devdb)
+		if err != nil {
+			log.Println(err)
+		} else {
+
+			log.Println("Device already registered")
+
+			if devdb.Name != "" {
+				log.Println("Setting name of device to :", devdb.Name)
+				dev.Name = devdb.Name
+			}
+
+			if devdb.Group != "" {
+				log.Println("Setting group of device to :", devdb.Group)
+				dev.Group = devdb.Group
+			}
+
+			if devdb.HomeID != "" {
+				log.Println("Setting home of device to :", devdb.HomeID)
+				dev.HomeID = devdb.HomeID
+			}
+		}
 
 		// Save device to database
 		log.Println("Saving discovered device :", dev.HomeID+"."+dev.Group+"."+dev.ID)
-		err := mq.db.Save(&dev)
+		err2 := mq.db.Save(&dev)
 
-		if err != nil {
-			log.Println(err)
+		if err2 != nil {
+			log.Println(err2)
 		}
 
 		// Send the new device to the client topic

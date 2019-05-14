@@ -1,0 +1,21 @@
+version: "3"
+services:
+
+    hue:
+        container_name: hue
+        image: thinkfree84/ax5_hue:0.1
+        build:
+            context: ../../../
+            dockerfile: src/plugins/hue/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOMEID=home
+            - AX_GROUP=hue
+            - AX_INSTANCE=hue
+        volumes:
+            - AXPATH/config:/etc/ax5
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true
