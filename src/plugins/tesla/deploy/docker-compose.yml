@@ -1,0 +1,21 @@
+version: "3"
+services:
+
+    time:
+        container_name: time
+        image: thinkfree84/ax5_tesla:0.1
+        build:
+            context: ../../../
+            dockerfile: src/plugins/tesla/Dockerfile
+        environment:
+            - AX_BROKER=mosquitto
+            - AX_HOMEID=home
+            - AX_GROUP=tesla
+            - AX_INSTANCE=car
+        volumes:
+            - /etc/ax5:/etc/ax5
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true

@@ -159,12 +159,12 @@ func main() {
 		}
 	}()
 
-	cli.SubscribeTopic(deviceTopic+"/#", func(msg *message.PublishMessage) error {
+	cli.SubscribeTopic(topic+"/#", func(msg *message.PublishMessage) error {
 
-		topic := string(msg.Topic())
+		receivedTopic := string(msg.Topic())
 
 		var device string
-		deviceAndMessage := strings.TrimPrefix(topic, deviceTopic+"/")
+		deviceAndMessage := strings.TrimPrefix(receivedTopic, topic+"/")
 		if strings.Contains(deviceAndMessage, "status") {
 			device = strings.TrimSuffix(deviceAndMessage, "/status/cmd")
 			if dev, ok := devices[device]; ok {
@@ -184,10 +184,8 @@ func main() {
 			device = strings.TrimSuffix(deviceAndMessage, "/color/cmd")
 		}
 
-		var jsonMap map[string]interface{}
-		json.Unmarshal(msg.Payload(), &jsonMap)
-
-		log.Println("Processing device :", device)
+		log.Println("Received message on :", receivedTopic)
+		log.Println("Processing device :", device, "with payload", msg.Payload())
 
 		return nil
 	})
