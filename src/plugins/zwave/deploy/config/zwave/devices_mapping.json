@@ -1,3 +1,4 @@
 {
-    "level" : "dimmer"
+    "level" : "dimmer",
+    "switch" : "switch"
 }

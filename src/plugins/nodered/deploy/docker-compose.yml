@@ -1,0 +1,15 @@
+version: "3"
+services:
+
+    nodered:
+        container_name: nodered
+        image: nodered/node-red-docker
+        volumes:
+            - ./data:/data
+        ports:
+            - 0.0.0.0:81:1880
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true

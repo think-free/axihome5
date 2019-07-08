@@ -1,0 +1,22 @@
+version: "3"
+services:
+
+    script:
+        container_name: script
+        image: thinkfree84/ax5_script:0.1
+        build:
+            context: ../../../
+            dockerfile: src/plugins/script/Dockerfile
+        environment:
+            - AX_BROKER=mosquittofront
+            - AX_HOMEID=home
+            - AX_GROUP=script
+            - AX_INSTANCE=script
+        volumes:
+            - AXPATH/config:/etc/ax5
+            - AXPATH/scripts:/scripts
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true

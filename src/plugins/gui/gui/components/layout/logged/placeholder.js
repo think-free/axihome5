@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { setValue } from '../../redux/store.js'
 
 import Dimmer from './widgets/dimmer.js'
+import Switch from './widgets/switch.js'
+import Light from './widgets/light.js'
 import Climate from './widgets/climate.js'
 
 import mainStyle from '../../../styles/global.js'
@@ -37,19 +39,25 @@ const style = {
         color: mainStyle.textColor,
         fontSize: "1.2em",
 
-        '@media (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), (min-resolution: 192dpi) and (orientation: portrait)': {
+        /*'@media (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), (min-resolution: 192dpi) and (orientation: portrait)': {
             zoom : 2
-        }
+        }*/
     },
     content : {
         display: 'block',
         position: 'fixed',
-        height: 'auto',
+        height: 'calc(100% - 100px)',
         width: 'auto',
         top: 80,
         left: 40,
         right: 40,
         bottom: 40,
+        overflowY: 'auto',
+        fallbacks: [
+            { height: '-moz-calc(100% - 100px)' },
+            { height: '-webkit-calc(100% - 100px)' },
+            { height: '-o-calc(100% - 100px)' }
+        ]
     }
 }
 
@@ -138,6 +146,7 @@ class PlaceHolder extends React.Component {
         var climate = [];
         var dimmers = [];
         var switches = [];
+        var lights = [];
 
         for (var i=0; i<placeDevices.length; i++) {
 
@@ -153,6 +162,8 @@ class PlaceHolder extends React.Component {
                         dimmers.push(devices[j])
                     else if (devices[j].type == "switch")
                         switches.push(devices[j])
+                    else if (devices[j].type == "light")
+                        lights.push(devices[j])
                 }
             }
         }
@@ -165,6 +176,8 @@ class PlaceHolder extends React.Component {
                 {this.renderDimmerDevices(dimmers)}
                 <br />
                 {this.renderSwitchesDevices(switches)}
+                <br />
+                {this.renderLightsDevices(lights)}
             </div>
         )
     }
@@ -205,28 +218,36 @@ class PlaceHolder extends React.Component {
 
     renderSwitchesDevices(devices) {
 
-        /*return(
+        return(
             <div>
                 {devices && Array.isArray(devices) && devices.map(function(device){
 
-                    console.log("Rendering device : " + device);
-                    <div>{device}</div>
+                    var dev = device.homeId + "." + device.group + "." + device.name;
+
+                    console.log("Rendering switch : " + dev);
+                    return (
+                        <Switch name={dev} device={device}/>
+                    )
                 })}
             </div>
-        )*/
+        )
     }
 
-    renderRgbDevices(devices) {
+    renderLightsDevices(devices) {
 
-        /*return(
+        return(
             <div>
                 {devices && Array.isArray(devices) && devices.map(function(device){
 
-                    console.log("Rendering device : " + device);
-                    <div>{device}</div>
+                    var dev = device.homeId + "." + device.group + "." + device.name;
+
+                    console.log("Rendering light : " + dev);
+                    return (
+                        <Light name={dev} device={device}/>
+                    )
                 })}
             </div>
-        )*/
+        )
     }
 }
 

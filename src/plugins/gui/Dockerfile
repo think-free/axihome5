@@ -1,12 +1,12 @@
 # First stage, building gui
-FROM node:alpine AS node-env
+FROM node:jessie AS node-env
 
 ARG app="gui"
 
 ADD ./src/plugins/$app/gui /src
 WORKDIR /src
 RUN npm install -g yarn
-RUN yarn install && npm run build && npm run export
+RUN yarn install && yarn run build && yarn run export
 
 
 # Second stage, building application

@@ -22,6 +22,7 @@ class ThreeJSArea extends React.Component {
         this.state = {
 		};
 		
+		this.setupScene=this.setupScene.bind(this);
 		this.parseScene=this.parseScene.bind(this);
 		this.load=this.load.bind(this);
         this.postLoadAction=this.postLoadAction.bind(this);
@@ -67,18 +68,9 @@ class ThreeJSArea extends React.Component {
             
             me.raycaster = new THREE.Raycaster();
             me.mouseDown = new THREE.Vector2();
-            me.mouseUp = new THREE.Vector2();
-
-			// Grid
-
-			var gridHelper = new THREE.GridHelper( 25, 25 );
-			me.scene.add( gridHelper );
-
-			// Lights
-
-			var ambientLight = new THREE.AmbientLight( 0xffffff, 0.8 );
-			me.scene.add( ambientLight );
-
+			me.mouseUp = new THREE.Vector2();
+			
+			me.setupScene()
 
 			// Render
 
@@ -202,9 +194,37 @@ class ThreeJSArea extends React.Component {
 		}
 	}
 
+	componentDidUpdate(prevProps) {
+		let me = this;
+
+		if(this.props.url !== prevProps.url)
+		{
+
+			while(me.scene.children.length > 0){ 
+				me.scene.remove(me.scene.children[0]); 
+			}
+			me.setupScene();
+		  	this.getScene();
+		}
+	}
 
 	/* Load scene */
 	/* ********************************************************************************************** */
+
+	setupScene(){
+
+		let me = this;
+
+		// Grid
+
+		var gridHelper = new THREE.GridHelper( 25, 25 );
+		me.scene.add( gridHelper );
+
+		// Lights
+
+		var ambientLight = new THREE.AmbientLight( 0xffffff, 0.8 );
+		me.scene.add( ambientLight );
+	}
 
 	async getScene(){
         var url = this.props.url;
@@ -270,6 +290,8 @@ class ThreeJSArea extends React.Component {
 			for (var i = 0; i < item.children.length; i++) { 
 				item.children[i].name = name;
 			}			
+
+			console.log(item)
 
 			// Registering item
             item.name = name;
@@ -363,6 +385,25 @@ class ThreeJSArea extends React.Component {
                     node.children[i].material.color.set(targetValue);
                 }
             }
+		}
+		
+		me.animationMethods["text"] = function(item, params, value) {
+
+            console.log("Running text animation for " + item)
+			console.log(value)
+
+			/*
+            var targetValue = params;
+            if (targetValue === "$value") {
+                targetValue = value;
+            }
+
+            var node = me.collection[item];
+            if (node.children) {
+                for (var i = 0; i < node.children.length; i++) {
+                    node.children[i].material.color.set(targetValue);
+                }
+			}*/
         }
     }
 	

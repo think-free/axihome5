@@ -9,6 +9,8 @@ import { setValue } from '../components/redux/store.js'
 import Login from '../components/layout/login.js'
 import Logged from '../components/layout/logged.js'
 
+import "../static/scrollbar.css"
+
 const store = createStore(Store);
 
 class Index extends React.Component {

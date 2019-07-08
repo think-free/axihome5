@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"reflect"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/surgemq/message"
@@ -46,15 +48,19 @@ type MqttWrapper struct {
 	deviceMapping      map[string]string
 	variableMapping    map[string]string
 	variablesWrittable map[string]bool
+
+	mapVariableToBool      map[string]struct{}
+	mapVariableToBoolMutex sync.Mutex
 }
 
 // New create the mqttwrapper
 func New(cli *mqttclient.MqttClient, db *stormwrapper.Db) *MqttWrapper {
 
 	w := &MqttWrapper{
-		cli:             cli,
-		db:              db,
-		subscribedWrite: make(map[string]struct{}),
+		cli:               cli,
+		db:                db,
+		subscribedWrite:   make(map[string]struct{}),
+		mapVariableToBool: make(map[string]struct{}),
 	}
 	return w
 }
@@ -147,6 +153,13 @@ func (w *MqttWrapper) Run() {
 						} else {
 							sendValue = 0
 						}
+
+						w.mapVariableToBoolMutex.Lock()
+						if _, ok := w.mapVariableToBool[devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+id]; !ok {
+							w.mapVariableToBool[devdb.HomeID+"/"+devdb.Group+"/"+devdb.Name+"/"+id] = struct{}{}
+						}
+						w.mapVariableToBoolMutex.Unlock()
+
 					default:
 						log.Println("Setting default :", v)
 						sendValue = v
@@ -257,13 +270,15 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 		return
 	}
 
+	topic := CWriteTopic + "/" + dev.HomeID + "/" + dev.Group + "/" + dev.Name + "/" + variable.LocalVariable + "/cmd"
+
 	// Registering subscription
-	w.subscribedWrite[CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd"] = struct{}{}
+	w.subscribedWrite[topic] = struct{}{}
 
 	// Subscribing
-	log.Println("Registering :", CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd")
+	log.Println("Registering :", topic)
 
-	err := w.cli.SubscribeTopic(CWriteTopic+"/"+dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable+"/cmd", func(msg *message.PublishMessage) error {
+	err := w.cli.SubscribeTopic(topic, func(msg *message.PublishMessage) error {
 
 		var inter interface{}
 		json.Unmarshal(msg.Payload(), &inter)
@@ -272,6 +287,20 @@ func (w *MqttWrapper) SubscribeWriteTopic(dev ZwaveDevice, variable ZwaveDeviceV
 		log.Println(inter)
 		log.Println("-------------------------------------")
 		v := make(map[string]interface{})
+
+		if reflect.TypeOf(inter).Name() == "float64" {
+			log.Println("Checking if the value should be boolean")
+			if _, ok := w.mapVariableToBool[dev.HomeID+"/"+dev.Group+"/"+dev.Name+"/"+variable.LocalVariable]; ok {
+
+				log.Println("We will send a boolean to the device")
+				if inter.(float64) == 1 {
+					inter = true
+				} else {
+					inter = false
+				}
+			}
+		}
+
 		v[variable.ZwaveVariable] = inter
 
 		log.Println("Writting to zwave device :", dev.HomeID+"."+dev.Group+"."+dev.Name+"."+variable.LocalVariable, "->", v)

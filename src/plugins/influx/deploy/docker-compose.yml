@@ -1,0 +1,21 @@
+version: "3"
+services:
+
+    influx:
+        container_name: influx
+        image: thinkfree84/ax5_influx:0.1
+        build:
+            context: ../../../
+            dockerfile: src/plugins/influx/Dockerfile
+        environment:
+            - AX_BROKER=mosquittofront
+            - AX_HOMEID=home
+            - AX_GROUP=influx
+            - AX_INSTANCE=influx
+        volumes:
+            - AXPATH/config:/etc/ax5
+        networks:
+            - axihome5_net
+networks:
+  axihome5_net:
+    external: true

@@ -163,6 +163,8 @@ func main() {
 
 		receivedTopic := string(msg.Topic())
 
+		log.Println("Received message :", receivedTopic);
+
 		var device string
 		deviceAndMessage := strings.TrimPrefix(receivedTopic, topic+"/")
 		if strings.Contains(deviceAndMessage, "status") {
